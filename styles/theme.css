@@ -1,0 +1,10 @@
+
+:root {
+    --primary-color: #6366f1; /* 默认主题 */
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary-color: #a5b4fc; /* 暗黑模式 */
+    }
+}
