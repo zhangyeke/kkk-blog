@@ -1,4 +1,5 @@
 import {Metadata} from "next"
+import {Button} from "@/components/ui/button";
 
 
 export const metadata: Metadata = {
@@ -20,8 +21,8 @@ export const metadata: Metadata = {
 
 export default function Web() {
     return (
-        <div>
-            <span className="text-midnight/30">12312</span>
+        <div className="text-primary">
+            这是桌面
         </div>
     )
 }

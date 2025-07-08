@@ -28,9 +28,11 @@ const config = typescriptEslint.config(
   // ...eslintPluginTailwindcss.configs["flat/recommended"],
   typescriptEslint.configs.recommended,
   eslintPluginImport.flatConfigs.recommended,
+
   {
     plugins: {
       "@next/next": eslintPluginNext,
+      'react/jsx-no-useless-fragment': [2, { allowExpressions: true }]
     },
     rules: {
       ...eslintPluginNext.configs.recommended.rules,

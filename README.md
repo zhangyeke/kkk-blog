@@ -103,3 +103,87 @@ MIT
 
 
 [docs]: https://docs.blazity.com/next-enterprise/deployments/enterprise-cli
+
+```
+bolg
+├─ .all-contributorsrc
+├─ .idea
+│  ├─ bolg.iml
+│  ├─ git_toolbox_blame.xml
+│  ├─ inspectionProfiles
+│  │  └─ Project_Default.xml
+│  ├─ jsLinters
+│  │  └─ eslint.xml
+│  ├─ MarsCodeWorkspaceAppSettings.xml
+│  ├─ modules.xml
+│  ├─ vcs.xml
+│  └─ workspace.xml
+├─ .pre-commit-config.yaml
+├─ .prettierignore
+├─ .releaserc
+├─ .storybook
+│  ├─ main.ts
+│  └─ preview.ts
+├─ app
+│  ├─ api
+│  │  └─ health
+│  │     └─ route.ts
+│  ├─ blog
+│  │  ├─ (..)article
+│  │  │  └─ [id]
+│  │  │     └─ page.tsx
+│  │  ├─ article
+│  │  │  ├─ page.tsx
+│  │  │  └─ [id]
+│  │  │     └─ page.tsx
+│  │  ├─ layout.tsx
+│  │  └─ page.tsx
+│  ├─ desktop
+│  │  └─ page.tsx
+│  └─ layout.tsx
+├─ assets
+│  ├─ blazity-logo-dark.svg
+│  ├─ blazity-logo-light.svg
+│  └─ fonts
+│     ├─ DripOctober-vm0JA.ttf
+│     ├─ index.ts
+│     ├─ Sara1170470173201689.woff2
+│     ├─ shayu.ttf
+│     └─ YSHaoShenTi.ttf
+├─ components
+│  ├─ Button
+│  │  ├─ Button.stories.tsx
+│  │  └─ Button.tsx
+│  └─ ui
+│     └─ button.tsx
+├─ components.json
+├─ e2e
+│  └─ example.spec.ts
+├─ env.mjs
+├─ eslint.config.mjs
+├─ git-conventional-commits.yaml
+├─ graph.svg
+├─ instrumentation.ts
+├─ jest.config.js
+├─ jest.setup.js
+├─ lib
+│  └─ utils.ts
+├─ LICENSE
+├─ next-env.d.ts
+├─ next.config.ts
+├─ nextjs.study.md
+├─ package.json
+├─ playwright.config.ts
+├─ pnpm-lock.yaml
+├─ postcss.config.js
+├─ prettier.config.js
+├─ README.md
+├─ renovate.json
+├─ report-bundle-size.js
+├─ reset.d.ts
+├─ styles
+│  ├─ tailwind.css
+│  └─ theme.css
+└─ tsconfig.json
+
+```
