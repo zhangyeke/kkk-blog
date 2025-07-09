@@ -313,6 +313,24 @@ export default async function Page() {
 }
 ```
 
+### [`revalidateTag`](https://nextjs.org/docs/app/getting-started/caching-and-revalidating#revalidatetag)
+
+`revalidateTag` 用于根据标记和事件重新验证缓存条目。要将其与 `fetch` 一起使用，首先使用 `next.tags` 选项标记函数
+
+```tsx
+export async function getUserById(id: string) {
+  const data = await fetch(`https://...`, {
+    next: {
+      tags: ['user'],
+    },
+  })
+}
+```
+
+
+
+
+
 ## 🐓[`unstable_cache`](https://nextjs.org/docs/app/getting-started/caching-and-revalidating#unstable_cache)
 
 `unstable_cache` 允许您缓存数据库查询和其他异步函数的结果。要使用它，请将 `unstable_cache` 包裹在函数周围
