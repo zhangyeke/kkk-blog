@@ -1,18 +1,13 @@
 "use client"
 import React from "react"
-import http from "@/lib/http";
-import {env} from "@/env.mjs"
 
-console.log(env,"???")
-export default  function ArticleList() {
+export default function ArticleList(props: { api: Promise<any> }) {
+    const list = React.use(props.api)
+    console.log(list, "???")
 
-    const result = React.use(http.get('/shopapi/article/lists'))
-    console.log(result,"???")
     return (
         <div>
-            {
 
-            }
         </div>
     )
 }

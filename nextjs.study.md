@@ -120,6 +120,273 @@ export default function LoadingIndicator() {
 1. The [`fetch` API](https://nextjs.org/docs/app/getting-started/fetching-data#with-the-fetch-api) `fetch` API 的调用。 
 2. An [ORM or database](https://nextjs.org/docs/app/getting-started/fetching-data#with-an-orm-or-database)
 
+### 服务端
+
+```tsx
+//服务端页面请求
+import React from "react";
+import {ArticleList} from "@/app/blog/components/Article";
+import {Suspense} from "@/components/Loader";
+import http from "@/lib/http";
+
+
+export default async function Web() {
+    const data = await http.get('/shopapi/article/lists')
+    return (
+        <div className="text-primary">
+
+            <Suspense >
+                <ArticleList data={data}/>
+            </Suspense>
+        </div>
+    )
+}
+```
+
+### 客户端 (use)
+
+使用[SWR](https://swr.vercel.app/) or [React Query](https://tanstack.com/query/latest)第三方库从客户端发送请求
+
+从服务端请求流向客户端
+
+```tsx
+//服务端页面请求
+import React from "react";
+import {ArticleList} from "@/app/blog/components/Article";
+import {Suspense} from "@/components/Loader";
+import http from "@/lib/http";
+
+
+export default async function Web() {
+    return (
+        <div className="text-primary">
+
+            <Suspense >
+                <ArticleList api={http.get('/shopapi/article/lists')}/>
+            </Suspense>
+        </div>
+    )
+}
+```
+
+```tsx
+// 客户端使用use钩子读取Promise数据
+"use client"
+import React from "react"
+
+export default function ArticleList(props: { api: Promise<any> }) {
+    const list = React.use(props.api)
+    console.log(list, "???")
+
+    return (
+        <div>
+
+        </div>
+    )
+}
+
+```
+
+
+
+### [并行数据获取 ](https://nextjs.org/docs/app/getting-started/fetching-data#parallel-data-fetching)
+
+可以通过在使用数据的组件外部定义请求并一起解析它们来并行启动请求，例如，使用 `Promise.all` ：。
+
+```tsx
+import Albums from './albums'
+ 
+async function getArtist(username: string) {
+  const res = await fetch(`https://api.example.com/artist/${username}`)
+  return res.json()
+}
+ 
+async function getAlbums(username: string) {
+  const res = await fetch(`https://api.example.com/artist/${username}/albums`)
+  return res.json()
+}
+ 
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ username: string }>
+}) {
+  const { username } = await params
+  const artistData = getArtist(username)
+  const albumsData = getAlbums(username)
+ 
+  // Initiate both requests in parallel
+  const [artist, albums] = await Promise.all([artistData, albumsData])
+ 
+  return (
+    <>
+      <h1>{artist.name}</h1>
+      <Albums list={albums} />
+    </>
+  )
+}
+```
+
+
+
+### [预加载数据](https://nextjs.org/docs/app/getting-started/fetching-data#preloading-data)
+
+可以在 `getGoodsList()` 之前调用 `preload()` 来紧急启动 `<Item/>` 数据依赖关系。当 `<Item/>` 被渲染时，它的数据已经被获取了
+
+```tsx
+import React from "react";
+import {ArticleList} from "@/app/blog/components/Article";
+import {Suspense} from "@/components/Loader";
+import http from "@/lib/http";
+
+
+function getList() {
+    return http.get('/shopapi/article/lists')
+}
+
+function getGoodsList(){
+    return http.get('/shopapi/goods/lists?page_no=1&page_size=10&category_id=10')
+}
+
+export const preload = () => {
+    // void evaluates the given expression and returns undefined
+    // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/void
+    void getList()
+}
+
+export async function Item() {
+    const result = await getList()
+
+    console.log(result, "djsakljdasl")
+
+    return (
+        <div>
+            {JSON.stringify(result)}
+        </div>
+    )
+}
+
+export default async function Web() {
+
+    const res = await getGoodsList()
+    console.log(res,"商品列表")
+    if(!res.data.lists.length) return null
+    return (
+        <div className="text-primary">
+            <Suspense>
+                <Item></Item>
+                <div>123</div>
+                {/*<ArticleList api={http.get('/shopapi/article/lists')}/>*/}
+            </Suspense>
+        </div>
+    )
+}
+
+```
+
+
+
+# 🐓[更新数据](https://nextjs.org/docs/app/getting-started/updating-data) 
+
+# 缓存和重新验证 
+
+## [`fetch`](https://nextjs.org/docs/app/getting-started/caching-and-revalidating#fetch)
+
+### cache
+
+默认情况下，不会缓存 `fetch` 请求。您可以通过将 `cache` 选项设置为 `'force-cache'` 来缓存单个请求。
+
+```tsx
+export default async function Page() {
+  const data = await fetch('https://...', { cache: 'force-cache' })
+}
+```
+
+### next.revalidate
+
+重新验证 `fetch` 请求返回的数据，您可以使用 `next.revalidate` 选项。
+
+```tsx
+export default async function Page() {
+  //这将在指定的3600秒数后重新验证数据。
+  const data = await fetch('https://...', { next: { revalidate: 3600 } })
+}
+```
+
+## 🐓[`unstable_cache`](https://nextjs.org/docs/app/getting-started/caching-and-revalidating#unstable_cache)
+
+`unstable_cache` 允许您缓存数据库查询和其他异步函数的结果。要使用它，请将 `unstable_cache` 包裹在函数周围
+
+```tsx
+import { unstable_cache } from 'next/cache'
+import { getUserById } from '@/app/lib/data'
+ 
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ userId: string }>
+}) {
+  const { userId } = await params
+ 
+  const getCachedUser = unstable_cache(
+    async () => {
+      return getUserById(userId)
+    },
+    [userId],//将用户ID添加到缓存键中
+  {
+    tags: ['user'],//Next.js 用于重新验证缓存的标签数组..
+    revalidate: 3600,//缓存后的秒数应重新验证..
+  }
+  )
+}
+```
+
+
+
+## React cache 
+
+核心作用是：**在单次服务端渲染（Server Render）过程中，对数据请求或其他异步函数的结果进行缓存和去重（deduplication）。**
+
+简单来说：它能确保在一次页面渲染中，即使您在多个不同的组件里调用了同一个数据请求函数，这个函数也**只会被真正执行一次**。
+
+### `cache` 函数的作用和用法
+
+#### 1. 解决的问题：重复数据请求
+
+在一个复杂的页面中，不同的组件可能依赖于相同的数据。例如：
+
+- 页面的 `<Header />` 组件需要获取当前登录用户的信息来显示头像。
+- 页面的 `<Sidebar />` 组件也需要获取当前登录用户的信息来显示用户名。
+
+如果没有 `cache`，`<Header />` 和 `<Sidebar />` 会各自调用一次 `getUser()` 函数，导致对数据库或 API 的两次重复请求，既浪费资源又拖慢了渲染速度。
+
+#### 2.工作原理
+
+`React.cache` 会包裹一个您提供的数据获取函数（例如 `getUser`），并返回一个**新的、带缓存功能的版本**。
+
+- **首次调用**: 当您在渲染过程中第一次调用这个带缓存的函数时（例如 `cachedGetUser('123')`），它会正常执行原始的 `getUser` 函数，发起数据请求，然后将**返回的 Promise** 存入一个**仅限于本次请求生命周期**的缓存中。缓存的键（key）由函数本身和您传入的参数共同决定。
+- **后续调用**: 在同一次渲染过程中，如果任何其他组件以**完全相同的参数**再次调用这个带缓存的函数（`cachedGetUser('123')`），它会直接从缓存中返回之前存储的那个 Promise，而**不会再次执行**原始的 `getUser` 函数。
+
+#### **3.何时使用 `React.cache`?** **当您的数据获取函数不使用 `fetch` 时**
+
+```tsx
+// lib/data.ts
+import { cache } from 'react';
+import { db } from '@/lib/db'; // 假设数据库客户端
+
+// 原始的数据获取函数
+const getUserById_uncached = async (id: string) => {
+  console.log(`正在从数据库查询用户: ${id}`); // 我们用这个日志来观察它是否被重复执行
+  const user = await db.user.findUnique({ where: { id } });
+  return user;
+};
+
+// 使用 React.cache 将其包裹起来
+export const getUserById = cache(getUserById_uncached);
+```
+
+
+
 # 内置组件
 
 ### [Link](https://nextjs.org/docs/app/api-reference/components/link#reference)页面导航
