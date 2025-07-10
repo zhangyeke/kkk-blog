@@ -8,7 +8,7 @@
 
 # [项目结构图](#使用)
 
-```
+```tex
 next-app 项目名称
 ├─ eslint.config.mjs
 ├─ instrumentation.ts (服务器进程启动时执行的文件代码)
@@ -32,6 +32,247 @@ next-app 项目名称
 │     └─ page.tsx (首页页面 可删除)
 └─ tsconfig.json
 ```
+
+# CSS合并顺序
+
+```tex
+组件.module.css->页面.module.css->布局.css->根布局.css
+```
+
+# Meta设置
+
+1. 不能从同一路由段中同时导出 `metadata` 对象和 `generateMetadata` 函数。
+2. `metadata` 对象和 `generateMetadata` 函数导出仅在服务器组件中受支持。
+3. `generateMetadata`中的`fetch`请求会自动记住`generateMetadata`、`generateStaticParams`、布局、页面和服务器组件中的相同数据。
+4. `redirect()` 和 `notFound()` Next.js方法也可以在 `generateMetadata` 中使用 ..
+5. `searchParams` 仅适用于 `page.js` 段..
+
+## title设置
+
+### template 设置默认标题 ，子页面继承默认标题
+
+```tsx
+//app/layout.tsx 设置默认标题和模版
+export const metadata: Metadata = {
+    title: {
+        template: '%s | kkk',
+        default: 'kkk',
+    },
+}
+
+// app/blog/layout.tsx  此时如果跳转到这个页面 则显示 博客 | kkk
+export const metadata: Metadata = {
+    title: "博客"
+}
+
+```
+
+
+
+## metadata配置项大全
+
+### 基本元数据 (Basic Metadata)
+
+这些是描述您页面核心信息的基础标签。
+
+| 配置项 (`Property`) | 类型 (`Type`)                                      | 作用描述                                                     |
+| ------------------- | -------------------------------------------------- | ------------------------------------------------------------ |
+| `title`             | `string` | `{ default: string, template: string }` | 页面标题。可以是一个简单的字符串，也可以是一个模板对象，例如 `{ template: '%s | 我的网站' }`，`%s` 会被子页面的标题替换。 |
+| `description`       | `string`                                           | 页面的 `<meta name="description">` 标签内容，用于搜索引擎结果页（SERP）的摘要，对 SEO 非常重要。 |
+| `applicationName`   | `string`                                           | 网站应用的名称，生成 `<meta name="application-name">` 标签。 |
+| `authors`           | `Array<{ name: string, url?: string | URL }>`      | 页面内容的作者信息，生成 `<meta name="author">`。可以包含作者主页的链接。 |
+| `generator`         | `string`                                           | 生成此页面的软件名称。Next.js 会自动填充为 "Next.js"。       |
+| `keywords`          | `Array<string>`                                    | 页面的关键字。**注意：现代主流搜索引擎（如 Google）已基本忽略此标签的 SEO 价值。** |
+| `referrer`          | `string`                                           | 控制浏览器的 `Referrer` HTTP 头的策略，决定在用户从当前页面导航到其他页面时，发送多少引荐来源信息。 |
+| `creator`           | `string`                                           | 页面内容的创建者或机构的名称。                               |
+| `publisher`         | `string`                                           | 页面的发布者或机构的名称。                                   |
+
+导出到 Google 表格
+
+------
+
+
+
+### 视图与主题 (Viewport & Theme)
+
+
+
+这些选项控制页面在移动设备上的显示外观和行为。
+
+| 配置项 (`Property`) | 类型 (`Type`)                                               | 作用描述                                                     |
+| ------------------- | ----------------------------------------------------------- | ------------------------------------------------------------ |
+| `themeColor`        | `string` | `Array<{ media: string, color: string }>`        | 设置移动端浏览器（如 Chrome for Android）的地址栏和工具栏颜色。可以为不同模式（如暗黑模式 `(prefers-color-scheme: dark)`）设置不同颜色。 |
+| `colorScheme`       | `'normal' | 'light' | 'dark' | 'dark light' | 'light dark'` | 告知浏览器此页面支持的颜色方案，帮助浏览器渲染默认 UI（如滚动条、表单控件）的样式。 |
+| `viewport`          | `string` | `{ width?: number, initialScale?: number, ... }` | 控制页面的视口（viewport）行为，是响应式设计的核心。通常默认为 `width=device-width, initial-scale=1`。 |
+
+导出到 Google 表格
+
+------
+
+
+
+### 搜索引擎优化 (SEO)
+
+
+
+这些选项专门用于与搜索引擎爬虫沟通。
+
+| 配置项 (`Property`) | 类型 (`Type`)                                                | 作用描述                                                     |
+| ------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `robots`            | `string` | `{ index?: boolean, follow?: boolean, noarchive?: boolean, ... }` | 精细地控制搜索引擎爬虫的行为。可以指示爬虫是否索引此页面、是否跟踪页面上的链接、是否缓存页面快照等。 |
+| `verification`      | `{ google?: string, yahoo?: string, yandex?: string, other?: Record<string, string> }` | 用于向各大搜索引擎验证您的网站所有权。Next.js 会根据您提供的内容生成对应的 `<meta name="google-site-verification" content="...">` 等标签。 |
+
+导出到 Google 表格
+
+------
+
+
+
+### 社交媒体 - Open Graph (通用标准)
+
+
+
+Open Graph (OG) 协议是应用最广泛的社交媒体分享标准，被 Facebook, LinkedIn, Discord, WhatsApp 等多数平台支持。
+
+| 配置项 (`Property`)     | 类型 (`Type`)                                                | 作用描述                                                     |
+| ----------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `openGraph.title`       | `string`                                                     | 在社交媒体上分享时显示的标题 (`og:title`)。如果未提供，通常会回退使用 `metadata.title`。 |
+| `openGraph.description` | `string`                                                     | 在社交媒体上分享时显示的描述 (`og:description`)。如果未提供，会回退使用 `metadata.description`。 |
+| `openGraph.url`         | `string` | `URL`                                             | 该分享内容的唯一规范 URL (`og:url`)。                        |
+| `openGraph.siteName`    | `string`                                                     | 您的网站名称 (`og:site_name`)。                              |
+| `openGraph.images`      | `Array<string | { url: string, width?: number, height?: number, alt?: string }>` | 分享时显示的预览图 (`og:image`)。可以提供多张图片或带详细尺寸信息的图片对象。推荐尺寸为 1200x630。 |
+| `openGraph.locale`      | `string`                                                     | 内容的语言区域，例如 `zh_CN`。                               |
+| `openGraph.type`        | `'website' | 'article' | 'book' | ...`                       | 内容的类型。默认为 `website`。对于博客文章等应设置为 `article`。 |
+
+导出到 Google 表格
+
+------
+
+
+
+### 社交媒体 - Twitter (X)
+
+
+
+为 Twitter/X 平台提供专门的、更丰富的卡片展示效果。
+
+| 配置项 (`Property`)   | 类型 (`Type`)                                          | 作用描述                                                     |
+| --------------------- | ------------------------------------------------------ | ------------------------------------------------------------ |
+| `twitter.card`        | `'summary' | 'summary_large_image' | 'app' | 'player'` | 在 Twitter 上分享时显示的卡片类型。`summary_large_image`（带大图的摘要卡片）最常用。 |
+| `twitter.title`       | `string`                                               | 在 Twitter 卡片上显示的标题。                                |
+| `twitter.description` | `string`                                               | 在 Twitter 卡片上显示的描述。                                |
+| `twitter.siteId`      | `string`                                               | 您的网站在 Twitter 上的用户 ID。                             |
+| `twitter.creator`     | `string`                                               | 内容创建者的 Twitter 用户名（例如 `@username`）。            |
+| `twitter.images`      | `Array<string | { url: string, alt?: string }>`        | 在 Twitter 卡片上显示的预览图。如果未提供，Twitter 会回退使用 `openGraph.images`。 |
+
+导出到 Google 表格
+
+------
+
+
+
+### 网站图标 (Icons)
+
+
+
+定义在各种场景下代表您网站的图标。
+
+| 配置项 (`Property`) | 类型 (`Type`)                              | 作用描述                                                     |
+| ------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| `icons.icon`        | `string` | `UrlObject` | `Array<...>`      | 网站的主要图标 (favicon)，用于浏览器标签页等。可以提供多种尺寸和类型。 |
+| `icons.shortcut`    | `string` | `UrlObject` | `Array<...>`      | 用于 `rel="shortcut icon"` 的传统 favicon，主要为了向后兼容。 |
+| `icons.apple`       | `string` | `UrlObject` | `Array<...>`      | 用于苹果设备“添加到主屏幕”的图标 (`apple-touch-icon`)。推荐尺寸 180x180。 |
+| `icons.other`       | `Array<{ rel: string, url: string, ... }>` | 用于定义其他非标准的图标链接，例如 `rel="mask-icon"` 用于 Safari 的固定标签页图标。 |
+
+导出到 Google 表格
+
+------
+
+
+
+### 替代链接 (Alternate Links)
+
+
+
+为当前页面提供不同版本或格式的链接，对 SEO 和内容分发非常重要。
+
+| 配置项 (`Property`)    | 类型 (`Type`)                        | 作用描述                                                     |
+| ---------------------- | ------------------------------------ | ------------------------------------------------------------ |
+| `alternates.canonical` | `string` | `UrlObject`               | 指定页面的**规范 URL**。当一个内容可以通过多个 URL 访问时，用它来告诉搜索引擎哪个才是“官方”版本，以避免重复内容惩罚。 |
+| `alternates.languages` | `Record<string, string | UrlObject>` | 提供页面的其他语言版本 URL，用于国际化 SEO。例如 `{ 'en-US': '/en-US/about', 'de-DE': '/de-DE/about' }`。 |
+| `alternates.media`     | `Record<string, string | UrlObject>` | 提供页面的其他媒体类型版本，例如一个只适配移动设备的 URL。   |
+| `alternates.types`     | `Record<string, string | UrlObject>` | 提供页面的其他内容类型版本，最常用于链接到 RSS 或 Atom feed，例如 `{ 'application/rss+xml': '/rss.xml' }`。 |
+
+导出到 Google 表格
+
+------
+
+
+
+### 其他元数据 (Other Metadata)
+
+
+
+| 配置项 (`Property`) | 类型 (`Type`)              | 作用描述                                                     |
+| ------------------- | -------------------------- | ------------------------------------------------------------ |
+| `manifest`          | `string` | `URL`           | 指向 `manifest.json` 文件的路径，是 PWA（渐进式 Web 应用）的核心配置文件。 |
+| `archives`          | `string` | `Array<string>` | 指向该页面的归档（Archive）页面的 URL。                      |
+| `bookmarks`         | `string` | `Array<string>` | 指向该页面的一个合适的书签（Bookmark）URL。通常就是当前页面的永久链接。 |
+| `category`          | `string`                   | 页面的内容分类。                                             |
+
+## 默认meta配置
+
+```html
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+```
+
+## 静态metadata
+
+```tsx
+import type { Metadata } from 'next'
+ //在page导出metadata字段
+export const metadata: Metadata = {
+  title: 'My Blog',
+  description: '...',
+}
+ 
+export default function Page() {}
+```
+
+## 动态metadata
+
+例如使用fetch获取动态文章标题
+
+```tsx
+import type { Metadata, ResolvingMetadata } from 'next'
+ 
+type Props = {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+ 
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const slug = (await params).slug
+ 
+  // fetch post information
+  const post = await fetch(`https://api.vercel.app/blog/${slug}`).then((res) =>
+    res.json()
+  )
+ 
+  return {
+    title: post.title,
+    description: post.description,
+  }
+}
+ 
+export default function Page({ params, searchParams }: Props) {}
+```
+
+## 🚩[meta文件配置](#Metadata Files  元数据文件)
 
 # 字体
 

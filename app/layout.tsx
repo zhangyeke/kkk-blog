@@ -1,6 +1,14 @@
 import "styles/tailwind.css"
 import {globalFont, h1Font} from "@/assets/fonts"
 import {ThemeProvider} from "@/components/ThemeProvider/ThemeProvider";
+import {Metadata} from "next";
+
+export const metadata: Metadata = {
+    title: {
+        template: '%s | kkk',
+        default: 'kkk',
+    },
+}
 
 export default function RootLayout({children}: ContainerProps) {
     return (
