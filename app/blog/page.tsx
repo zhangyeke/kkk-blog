@@ -1,13 +1,13 @@
 import {Metadata} from "next"
 import Link from "next/link";
 import MyMdx from "@/components/MyMdx.mdx";
-import Spinner from "@/components/Loader/Spinner";
 
 export const metadata: Metadata = {
 
 }
 
 export default async function Web() {
+
 
     return (
         <div className="text-primary">
@@ -27,7 +27,7 @@ export default async function Web() {
             <div>
                 <Link href={"/blog/test"} prefetch={false}>
                     去测试页
-                    <Spinner></Spinner>
+
                 </Link>
             </div>
         </div>

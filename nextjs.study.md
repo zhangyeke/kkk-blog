@@ -46,6 +46,7 @@ next-app 项目名称
 3. `generateMetadata`中的`fetch`请求会自动记住`generateMetadata`、`generateStaticParams`、布局、页面和服务器组件中的相同数据。
 4. `redirect()` 和 `notFound()` Next.js方法也可以在 `generateMetadata` 中使用 ..
 5. `searchParams` 仅适用于 `page.js` 段..
+6. 如果页面未定义自己的标题，则将使用最接近的父级解析标题。
 
 ## title设置
 
@@ -64,7 +65,19 @@ export const metadata: Metadata = {
 export const metadata: Metadata = {
     title: "博客"
 }
+```
 
+### absolute设置绝对的标题 忽略模版
+
+```tsx
+//app/blog/layout.tsx 
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'About',
+}
+ 
+// Output: <title>About | Acme</title>
 ```
 
 
@@ -87,15 +100,7 @@ export const metadata: Metadata = {
 | `creator`           | `string`                                           | 页面内容的创建者或机构的名称。                               |
 | `publisher`         | `string`                                           | 页面的发布者或机构的名称。                                   |
 
-导出到 Google 表格
-
-------
-
-
-
-### 视图与主题 (Viewport & Theme)
-
-
+### [视图与主题 (Viewport & Theme)](https://nextjs.org/docs/app/api-reference/functions/generate-viewport)
 
 这些选项控制页面在移动设备上的显示外观和行为。
 
@@ -105,15 +110,7 @@ export const metadata: Metadata = {
 | `colorScheme`       | `'normal' | 'light' | 'dark' | 'dark light' | 'light dark'` | 告知浏览器此页面支持的颜色方案，帮助浏览器渲染默认 UI（如滚动条、表单控件）的样式。 |
 | `viewport`          | `string` | `{ width?: number, initialScale?: number, ... }` | 控制页面的视口（viewport）行为，是响应式设计的核心。通常默认为 `width=device-width, initial-scale=1`。 |
 
-导出到 Google 表格
-
-------
-
-
-
 ### 搜索引擎优化 (SEO)
-
-
 
 这些选项专门用于与搜索引擎爬虫沟通。
 
@@ -2050,9 +2047,146 @@ export default function manifest(): MetadataRoute.Manifest {
 
 
 
-# hook 
+# API 
+
+## after
+
+`after` 允许您安排在响应（或预呈现）完成后执行的工作。这对于不应阻止响应的任务和其他副作用（例如日志记录和分析）非常有用。
+
+```tsx
+import { after } from 'next/server'
+// Custom logging function
+import { log } from '@/app/utils'
+ 
+export default function Layout({ children }: { children: React.ReactNode }) {
+  after(() => {
+    // Execute after the layout is rendered and sent to the user
+    log()
+  })
+  return <>{children}</>
+}
+```
+
+## cookies
+
+`cookies` 是一个异步函数，允许您在服务器组件中读取 HTTP 传入请求 cookie，并在服务器作或路由处理程序中读/写传出请求 cookie。
+
+## 注意
+
+HTTP 不允许在流式处理开始后设置 Cookie，因此您必须在 Server Action 或 Route Handler 中使用 `.set` ..
+
+### 可以使用的方法
+
+| 方法                      | 返回值        | 描述                                                 |
+| ------------------------- | ------------- | ---------------------------------------------------- |
+| get('name')               | Object        | 接受 Cookie 名称并返回具有 name 和 value 的对象。    |
+| getAll()                  | Array<Object> | 返回具有匹配名称的所有 Cookie 的列表。               |
+| has('name')               | Boolean       | 接受 Cookie 名称，并根据 Cookie 是否存在返回布尔值。 |
+| set(name, value, options) | void          | 接受 Cookie 名称、值和选项，并设置传出请求 Cookie。  |
+| delete(name)              | void          | 删除某个name的缓存                                   |
+| clear()                   | void          | 清除所有缓存                                         |
+
+## cookie.set 配置项options
+
+| 选项            | 类型                        | 作用                                                         |
+| --------------- | --------------------------- | ------------------------------------------------------------ |
+| `name`          | `string`                    | Cookie 的名称。                                              |
+| `value`         | `string`                    | Cookie 的值。                                                |
+| `expires`       | `Date`                      | 设置 Cookie 的确切过期时间。                                 |
+| `maxAge`        | `number`                    | 设置 Cookie 的生命周期（从现在开始的秒数）。                 |
+| `domain`        | `string`                    | 指定 Cookie 生效的域名。                                     |
+| `path`          | `string`                    | 指定 Cookie 生效的路径。默认为 `'/'`，即整个网站。           |
+| `httpOnly`      | `boolean`                   | 如果为 `true`，则该 Cookie 无法通过客户端的 JavaScript (`document.cookie`) 访问，有助于防止 XSS 攻击。**强烈推荐用于存储敏感信息**。 |
+| `secure`        | `boolean`                   | 如果为 `true`，则该 Cookie 只会在 HTTPS 连接中被发送。       |
+| `sameSite`      | `'strict' | 'lax' | 'none'` | 控制 Cookie 是否随跨站请求一起发送，用于防御 CSRF 攻击。`'lax'` 是一个常见的默认值。 |
+| priority        | "low","medium"`,"high"      | 指定 Cookie 的优先级                                         |
+| encode('value') | Function                    | 指定将用于对 Cookie 的值进行编码的函数                       |
+| partitioned     | Boolean                     | 指示 Cookie 是否已分区 。                                    |
+
+## 🐓[draftMode](https://nextjs.org/docs/app/api-reference/functions/draft-mode) 
+
+## [headers](https://nextjs.org/docs/app/api-reference/functions/headers#returns)
+
+### 可用方法
+
+| 方法 (Method)   | 签名 (`Signature`)                                           | 作用描述                                                     |
+| --------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **`get()`**     | `get(name: string): string | null`                           | **获取单个请求头的值**。根据提供的 `name`（名称，不区分大小写）查找请求头。如果找到，返回其值（`string`）；如果找不到，则返回 `null`。 |
+| **`has()`**     | `has(name: string): boolean`                                 | **检查请求头是否存在**。根据提供的 `name` 检查是否存在对应的请求头，返回 `true` 或 `false`。这是一个比 `get()` 更高效的、只用于存在性检查的方法。 |
+| **`entries()`** | `entries(): IterableIterator<[string, string]>`              | **获取所有键值对**。返回一个迭代器，允许您通过 `for...of` 循环等方式遍历所有的 `[key, value]` 键值对。 |
+| **`keys()`**    | `keys(): IterableIterator<string>`                           | **获取所有键**。返回一个迭代器，允许您遍历所有的请求头名称（`key`）。 |
+| **`values()`**  | `values(): IterableIterator<string>`                         | **获取所有值**。返回一个迭代器，允许您遍历所有的请求头值（`value`）。 |
+| **`forEach()`** | `forEach(callback: (value: string, key: string, parent: Headers) => void): void` | **遍历所有请求头**。提供一个回调函数，对每个头信息执行该函数。回调函数会接收到 `value`, `key` 和 `Headers` 对象本身作为参数。 |
+
+## 
 
 ## next/navigation 导航
+
+### notFound 会将not-found ui渲染到该界面
+
+```tsx
+import { notFound } from 'next/navigation'
+ 
+async function fetchUser(id) {
+  const res = await fetch('https://...')
+  if (!res.ok) return undefined
+  return res.json()
+}
+ 
+export default async function Profile({ params }) {
+  const { id } = await params
+  const user = await fetchUser(id)
+ 
+  if (!user) {
+    notFound()
+  }
+}
+```
+
+### redirect用于服器端
+
+`redirect` 可用于 服务器组件 、 路由处理程序( [Route Handlers](https://nextjs.org/docs/app/api-reference/file-conventions/route),) 和 [Server Actions](https://nextjs.org/docs/app/getting-started/updating-data). ..
+
+```ts
+redirect(path, type) // 可选type: replace | push
+```
+
+#### [用于客户端组件 ](https://nextjs.org/docs/app/api-reference/functions/redirect#client-component)
+
+```tsx
+'use client'
+ 
+import { redirect, usePathname } from 'next/navigation'
+ 
+export function ClientRedirect() {
+  const pathname = usePathname()
+ 
+  if (pathname.startsWith('/admin') && !pathname.includes('/login')) {
+    redirect('/admin/login')
+  }
+ 
+  return <div>Login Page</div>
+}
+```
+
+### permanentRedirect永久重定向 参数与redirect
+
+### revalidatePath
+
+1. 只能在服务端组件、Server Actions 、route.ts使用
+2. 跳转该页面，使其页面路径的缓存失效
+3. `revalidatePath` 在服务器作中使用时，会使客户端 Router Cache 中的所有路由失效。此行为是临时的，将来将更新为仅适用于特定路径。
+
+```tsx
+import { revalidatePath } from 'next/cache'
+revalidatePath('/blog/[slug]', 'page') //重新验证页面路径  type可选：page layout
+revalidatePath('/blog/[slug]', 'layout')//重新验证布局路径 
+revalidatePath('/', 'layout') //重新验证所有数据
+```
+
+
+
+
 
 ### 🚩[useParams](#客户端组件获取单个参数)  获取参数
 
@@ -2171,6 +2305,64 @@ export default function LoadingIndicator() {
   to {
     transform: rotate(360deg);
   }
+}
+```
+
+## useReportWebVitals 上报页面性能指标只客户端可用
+
+```tsx
+// app/components/web-vitals.tsx
+'use client';
+
+import { useReportWebVitals } from 'next/web-vitals';
+
+export function WebVitals() {
+  useReportWebVitals((metric) => {
+    // 您可以在这里处理这些指标
+    // 1. 在开发环境中打印到控制台，方便调试
+    console.log(metric);
+    
+    // 2. 将数据发送到您的分析服务
+    const body = JSON.stringify({
+      // 添加额外信息，如当前路径
+      ...metric,
+      pathname: window.location.pathname,
+    });
+
+    const url = 'https://your-analytics-service.com/vitals';
+
+    // 使用 navigator.sendBeacon() 是一个好习惯，
+    // 它可以确保即使用户正在离开页面，数据也能可靠地发送出去，且不会阻塞主线程。
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url, body);
+    } else {
+      fetch(url, { body, method: 'POST', keepalive: true });
+    }
+  });
+
+  // 这个组件本身不需要渲染任何 UI
+  return null;
+}
+```
+
+```tsx
+// app/layout.tsx
+import { WebVitals } from '@/app/components/web-vitals';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        {/* 将 WebVitals 组件放在这里 */}
+        <WebVitals />
+        {children}
+      </body>
+    </html>
+  );
 }
 ```
 
