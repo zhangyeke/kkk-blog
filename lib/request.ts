@@ -1,21 +1,15 @@
-// export default function () {
-//     const res = await fetch('https://admin.zhengtuqicheng.top/shopapi/article/lists', {
-//
-//         headers: {
-//
-//             // server:1,
-//             // version:'1.0.0'
-//         }
-//     })
-// }
+"use server"
 
-type RequestConfig = {
+export interface RequestConfig extends Omit<RequestInit, "method"> {
     baseUrl?: string
     // timeout: number
     method: RequestMethod
     headers?: any
     url?: string
 }
+
+export type OmitMethodConfig = Omit<RequestConfig, "method">
+
 
 // & Record<string, any>
 class Request {
@@ -30,18 +24,19 @@ class Request {
         this.config = config
     }
 
-    request(config: RequestConfig) {
+    request<ResponseData>(config: RequestConfig) {
         const {baseUrl, url, ...otherConfig} = {
             ...this.config,
             ...config
         }
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise<ResponseData>(async (resolve, reject) => {
             try {
                 const res = await fetch(`${baseUrl}${url}`, {
                     ...otherConfig
                 })
-                resolve(await res.json())
+                const data = await res.json() as ResponseData
+                resolve(data)
             } catch (err) {
                 reject(err)
             }
@@ -50,10 +45,10 @@ class Request {
 
     }
 
-    get(url: string, config?:RequestConfig) {
-        return new Promise(async (resolve, reject) => {
+    get<Response>(url: string, config?: OmitMethodConfig) {
+        return new Promise<Response>(async (resolve, reject) => {
             try {
-                const res = await this.request({
+                const res = await this.request<Response>({
                     url,
                     method: "GET",
                     ...config

@@ -146,7 +146,7 @@ bolg
 │  ├─ blazity-logo-light.svg
 │  └─ fonts
 │     ├─ DripOctober-vm0JA.ttf
-│     ├─ index.ts
+│     ├─ route.ts
 │     ├─ Sara1170470173201689.woff2
 │     ├─ shayu.ttf
 │     └─ YSHaoShenTi.ttf

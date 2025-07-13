@@ -1,17 +1,22 @@
 import {Metadata} from "next";
-import {headers} from "next/headers"
+import {env} from "@/env.mjs";
+import http from "@/lib/http";
+
+
 export const metadata: Metadata = {
     title: "博客"
 }
 
 
 export default async function BlogLayout({children, header,modal}: Slots<'children' | 'header' | 'modal'>) {
-
+    console.log(env,"??")
+    const data = await http.get("/poem")
+    console.log(data,"请求")
     return (
-        <div>
+        <main>
             {header}
             {children}
             {modal}
-        </div>
+        </main>
     )
 }

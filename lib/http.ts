@@ -1,14 +1,15 @@
+import {env} from "@/env.mjs"
 import Request from "./request";
-// https://admin.zhengtuqicheng.top
- const http = new Request({
-    baseUrl: "https://admin.zhengtuqicheng.top",
-    method: "GET",
-    headers: {
-        server: 1,
-        version: '1.0.0'
-    }
-})
 
+// https://admin.zhengtuqicheng.top
+const http = new Request({
+    baseUrl: env.API_URL + env.REQUEST_URL,
+    method: "GET",
+    // headers: {
+    //     server: 1,
+    //     version: '1.0.0'
+    // }
+})
 
 
 export default http
