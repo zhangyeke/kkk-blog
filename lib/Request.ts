@@ -1,4 +1,6 @@
 "use server"
+import {omit} from "lodash"
+import {toQueryStr} from "@/lib/utils";
 
 export interface RequestConfig extends Omit<RequestInit, "method"> {
     baseUrl?: string
@@ -45,13 +47,17 @@ class Request {
 
     }
 
-    get<Response>(url: string, config?: OmitMethodConfig) {
+    get<Response>(url: string, config?: OmitMethodConfig & { params?: object }) {
+        let params = ''
+        if (config?.params) {
+            params = toQueryStr(config.params)
+        }
         return new Promise<Response>(async (resolve, reject) => {
             try {
                 const res = await this.request<Response>({
-                    url,
+                    url: `${url}?${params}`,
                     method: "GET",
-                    ...config
+                    ...omit(config, ["params"])
                 })
                 resolve(res)
             } catch (err) {

@@ -1,10 +1,29 @@
 "use client"
-import React from "react"
-import {useParams,useSearchParams,useSelectedLayoutSegment,useSelectedLayoutSegments} from "next/navigation"
+import {useParams, useSearchParams, useSelectedLayoutSegment, useSelectedLayoutSegments} from "next/navigation"
+import qs from "qs"
+import React, {useEffect} from "react"
 
-export default function Page() {
+export default function Nav() {
     const segment = useSelectedLayoutSegment();
     const segments = useSelectedLayoutSegments();
+
+    useEffect(() => {
+        const params = {
+            key: "43302062-211153aa0904393a2dd92a4b2",
+            orientation: "horizontal",
+            min_width: 1920,
+            min_height: 1080,
+            editors_choice: true,
+            per_page: '3',
+        }
+
+        const urlParams = qs.stringify(params)
+        console.log(urlParams, "lkjkl ")
+        fetch(`https://pixabay.com/api/?${urlParams}`).then(async (res) => {
+            console.log("有东西吗", await res.json())
+        })
+    }, [])
+
 
     return (
         <div>

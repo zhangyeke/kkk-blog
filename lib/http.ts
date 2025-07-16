@@ -1,5 +1,5 @@
 import {env} from "@/env.mjs"
-import Request from "./request";
+import Request from "./Request";
 
 // https://admin.zhengtuqicheng.top
 const http = new Request({
