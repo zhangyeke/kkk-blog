@@ -1,0 +1,7 @@
+// 在这里定义您的数据模型，例如 Post
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  createdAt DateTime @default(now())
+}

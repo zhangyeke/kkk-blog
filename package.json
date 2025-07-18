@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prisma:generate": "prisma-import --force && prisma generate",
+    "prisma:push": "prisma-import && prisma db push",
+    "prisma:migrate": "prisma-import && prisma migrate dev",
     "dev": "cross-env FORCE_COLOR=1 next dev --turbo",
     "build": "next build",
     "start": "next start",
@@ -108,6 +111,7 @@
     "prettier": "3.0.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "prisma": "^6.11.1",
+    "prisma-import": "^1.0.5",
     "semantic-release": "^22.0.12",
     "storybook": "^8.6.12",
     "tailwindcss": "^4.1.5",
@@ -118,6 +122,12 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.0",
     "webpack": "5.94.0"
+  },
+  "prisma": {
+    "import": {
+      "schemas": "prisma/schemas/*.prisma",
+      "output": "prisma/schema.prisma"
+    }
   },
   "engines": {
     "node": ">=20.0.0"

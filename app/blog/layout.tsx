@@ -19,6 +19,8 @@ export default async function BlogLayout({children, header, modal}: Slots<'child
     })
     console.log(res.hits, "请求图片素材")
 
+    const posts = await http.get('/posts')
+    console.log("文字",posts)
     return (
         <main>
             {header}
