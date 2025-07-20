@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prisma:generate": "prisma-import --force && prisma generate",
-    "prisma:push": "prisma-import && prisma db push",
+    "prisma:push": "prisma-import --force && prisma db push",
     "prisma:migrate": "prisma-import && prisma migrate dev",
     "dev": "cross-env FORCE_COLOR=1 next dev --turbo",
     "build": "next build",
@@ -25,12 +25,14 @@
     "coupling-graph": "npx madge --extensions js,jsx,ts,tsx,css,md,mdx ./ --exclude '.next|tailwind.config.js|reset.d.ts|prettier.config.js|postcss.config.js|playwright.config.ts|next.config.js|next-env.d.ts|instrumentation.ts|e2e/|README.md|.storybook/|.eslintrc.js' --image graph.svg"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
     "@next/bundle-analyzer": "^15.3.1",
     "@next/mdx": "^15.3.3",
     "@prisma/client": "^6.11.1",
     "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-navigation-menu": "^1.2.13",
     "@radix-ui/react-slot": "^1.2.3",
     "@semantic-release/changelog": "^6.0.3",
@@ -55,8 +57,9 @@
     "qs": "^6.14.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hook-form": "^7.60.0",
     "tailwind-merge": "^2.6.0",
-    "zod": "^3.24.4"
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

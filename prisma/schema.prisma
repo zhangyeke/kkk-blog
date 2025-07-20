@@ -8,16 +8,33 @@
 //
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
   // output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["auth", "public"] // <-- 关键：添加此行
 }
 
-// 在这里可以放置一些全局的 enum 或 type
+// 在这里可以放置一些全局的 enum 或 type   @supabase/ssr
+
+//
+// post-category.prisma
+//
+
+// 在这里定义您的数据模型，例如 Post
+model PostCategory {
+  id        Int      @id @default(autoincrement())
+  name      String
+  // 反向关系字段：让您可以轻松查询该分类下的所有文章
+  posts     Post[]
+  createdAt DateTime @default(now())
+
+  @@schema("public")
+}
 
 //
 // post.prisma
@@ -25,8 +42,45 @@ datasource db {
 
 // 在这里定义您的数据模型，例如 Post
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?
-  createdAt DateTime @default(now())
+  id       Int          @id @default(autoincrement())
+  cover    String       @default("")
+  userId   String       @db.Uuid
+  // --- 文章分类关系 ---
+  // 1. 关系字段 (Relation Field)
+  //    "category" 是一个虚拟字段，方便您通过 Prisma Client 访问关联的分类信息
+  category PostCategory @relation(fields: [categoryId], references: [id])
+
+  // 2. 外键字段 (Foreign Key)
+  //    "categoryId" 是一个真实存在于数据库表中的列
+  categoryId Int      @default(1)
+  // --- 关系定义 ---
+  author     User     @relation(fields: [userId], references: [id])
+  title      String
+  content    String
+  pv         Int      @default(0)
+  tags       String   @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@schema("public") // 明确指定 Post 模型在 public schema 下
+}
+
+//
+// user.prisma
+//
+
+model User {
+  // Supabase auth.users 表的主键是 uuid 类型
+  id    String  @id @db.Uuid
+  email String? // email 是可选的，因为 Supabase 支持多种登录方式
+  role  String
+  // 添加您关心的其他 auth.users 表中的字段
+  // 例如： raw_user_meta_data Json? @db.JsonB
+
+  // 反向关系，让您可以查询到该用户的所有文章
+  posts Post[]
+
+  // 关键：将此模型映射到 auth schema 下的 users 表
+  @@map("users")
+  @@schema("auth")
 }

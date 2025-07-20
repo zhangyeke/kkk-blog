@@ -86,13 +86,16 @@ const requestConfig = {
     },
 }
 // 获取图片素材
-export const fetchPhotoWall = (params?: Partial<FetchMaterialParams>) => http.get<MaterialResource<PhotoMaterial>>('/api/', {
-    params: {
-        key: APIKEY,
-        ...params,
-    },
-    ...requestConfig,
-})
+export async function fetchPhotoWall   (params?: Partial<FetchMaterialParams>) {
+
+    return await http.get<MaterialResource<PhotoMaterial>>('/api/', {
+        params: {
+            key: APIKEY,
+            ...params,
+        },
+        ...requestConfig,
+    })
+}
 
 export interface VideoResource {
     url: string;
@@ -130,10 +133,12 @@ export interface VideoMaterial {
 }
 
 // 获取视频素材
-export const fetchVideoMaterial = (params?: Partial<FetchMaterialParams>) => http.get<MaterialResource<VideoMaterial>>('/api/videos/', {
-    params: {
-        key: APIKEY,
-        ...params,
-    },
-    ...requestConfig,
-})
+export async function fetchVideoMaterial(params?: Partial<FetchMaterialParams>) {
+    return await http.get<MaterialResource<VideoMaterial>>('/api/videos/', {
+        params: {
+            key: APIKEY,
+            ...params,
+        },
+        ...requestConfig,
+    })
+}

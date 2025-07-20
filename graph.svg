@@ -69,15 +69,15 @@
 <path fill="none" stroke="#cfffac" d="M177.83,-187C177.83,-187 63.17,-187 63.17,-187 59.33,-187 55.5,-183.17 55.5,-179.33 55.5,-179.33 55.5,-171.67 55.5,-171.67 55.5,-167.83 59.33,-164 63.17,-164 63.17,-164 177.83,-164 177.83,-164 181.67,-164 185.5,-167.83 185.5,-171.67 185.5,-171.67 185.5,-179.33 185.5,-179.33 185.5,-183.17 181.67,-187 177.83,-187"/>
 <text text-anchor="middle" x="120.5" y="-171.8" font-family="Arial" font-size="14.00" fill="#cfffac">pages/api/health.ts</text>
 </g>
-<!-- pages/index.tsx -->
+<!-- pages/index.ts -->
 <g id="node8" class="node">
-<title>pages/index.tsx</title>
+<title>pages/index.ts</title>
 <path fill="none" stroke="#c6c5fe" d="M167.83,-23C167.83,-23 73.17,-23 73.17,-23 69.33,-23 65.5,-19.17 65.5,-15.33 65.5,-15.33 65.5,-7.67 65.5,-7.67 65.5,-3.83 69.33,0 73.17,0 73.17,0 167.83,0 167.83,0 171.67,0 175.5,-3.83 175.5,-7.67 175.5,-7.67 175.5,-15.33 175.5,-15.33 175.5,-19.17 171.67,-23 167.83,-23"/>
-<text text-anchor="middle" x="120.5" y="-7.8" font-family="Arial" font-size="14.00" fill="#c6c5fe">pages/index.tsx</text>
+<text text-anchor="middle" x="120.5" y="-7.8" font-family="Arial" font-size="14.00" fill="#c6c5fe">pages/index.ts</text>
 </g>
-<!-- pages/index.tsx&#45;&gt;components/Button/Button.tsx -->
+<!-- pages/index.ts&#45;&gt;components/Button/Button.tsx -->
 <g id="edge4" class="edge">
-<title>pages/index.tsx&#45;&gt;components/Button/Button.tsx</title>
+<title>pages/index.ts&#45;&gt;components/Button/Button.tsx</title>
 <path fill="none" stroke="#757575" d="M175.77,-15.79C202.08,-17.87 234.64,-20.44 265.75,-22.9"/>
 <polygon fill="#757575" stroke="#757575" points="265.43,-26.47 275.67,-23.77 265.98,-19.49 265.43,-26.47"/>
 </g>

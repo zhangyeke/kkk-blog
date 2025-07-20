@@ -1,6 +1,6 @@
 // app/api/posts/[id]/route.ts
 import { NextResponse } from 'next/server';
-import { getPostById, updatePost, deletePost } from '@/model/Post';
+import { deletePost, getPostById, updatePost } from '@/service/Post';
 
 type Context = { params: { id: string } };
 
