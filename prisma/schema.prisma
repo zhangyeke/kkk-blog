@@ -84,5 +84,5 @@ model User {
 
   // 关键：将此模型映射到 auth schema 下的 users 表
   @@map("users")
-  @@schema("public")
+  @@schema("auth")
 }
