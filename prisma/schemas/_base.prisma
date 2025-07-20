@@ -7,6 +7,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["auth", "public"] // <-- 关键：添加此行
+  schemas  = ["public"] // <-- 关键：添加此行
 }
 // 在这里可以放置一些全局的 enum 或 type   @supabase/ssr

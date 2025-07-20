@@ -1,8 +1,10 @@
 model User {
   // Supabase auth.users 表的主键是 uuid 类型
-  id    String @id @db.Uuid
+  id    String  @id @db.Uuid
   email String? // email 是可选的，因为 Supabase 支持多种登录方式
-  role String
+  username String
+  password String
+  role  String
   // 添加您关心的其他 auth.users 表中的字段
   // 例如： raw_user_meta_data Json? @db.JsonB
 
@@ -11,5 +13,5 @@ model User {
 
   // 关键：将此模型映射到 auth schema 下的 users 表
   @@map("users")
-  @@schema("auth")
+  @@schema("public")
 }
