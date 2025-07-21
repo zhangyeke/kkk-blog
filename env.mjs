@@ -10,12 +10,14 @@ export const env = createEnv({
         SUPABASE_URL: z.string().url(),
         SUPABASE_KEY: z.string(),
         SUPABASE_CONNECTION_URL: z.string(),
-        API_URL: z.string().url(),
-        REQUEST_URL: z.string(),
+        // API_URL: z.string().url(),
+        // REQUEST_URL: z.string(),
     },
     client: {
         // 客户端专用环境变量
         NEXT_PUBLIC_ENV: z.enum(["development", "production"]),
+        NEXT_PUBLIC_API_URL: z.string(),
+        NEXT_PUBLIC_REQUEST_URL: z.string()
     },
     runtimeEnv: {
         // 运行时环境变量（自动从process.env读取）
@@ -28,5 +30,7 @@ export const env = createEnv({
         SUPABASE_CONNECTION_URL:process.env.SUPABASE_CONNECTION_URL,
         // 客户端变量
         NEXT_PUBLIC_ENV: process.env.NODE_ENV, // 通常客户端环境与服务器一致
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+        NEXT_PUBLIC_REQUEST_URL: process.env.NEXT_PUBLIC_REQUEST_URL,
     },
 })

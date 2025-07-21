@@ -1,4 +1,3 @@
-"use server"
 import {omit} from "lodash"
 import {toQueryStr} from "@/lib/utils";
 
@@ -67,8 +66,21 @@ class Request {
         })
     }
 
-    post() {
+    post<D = Record<string, any>>(url: string, data?: D, config?: OmitMethodConfig) {
+        return new Promise<Response>(async (resolve, reject) => {
+            try {
+                const res = await this.request<Response>({
+                    url,
+                    method: "POST",
+                    body: JSON.stringify(data),
+                    ...config
+                })
+                resolve(res)
+            } catch (err) {
+                reject(err)
+            }
 
+        })
     }
 }
 

@@ -3,25 +3,36 @@ import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {Button} from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
+import {startTransition, useActionState} from "react";
+import {Loader2Icon} from "lucide-react";
+import http from "@/lib/http";
 
 const formSchema = z.object({
     email: z.email("请输入正确的邮箱"),
     password: z.string().min(6, "密码长度不能小于6位"),
 })
 
-function LoginForm() {
+export type LoginFormParams = z.infer<typeof formSchema>
+
+export type LoginFormProps = {}
+
+async function login(
+    previousState: boolean, // 第一个参数是之前的状态
+    formData: LoginFormParams      // 第二个参数是表单数据
+
+) {
+    const res = await http.post('/login', formData)
+    console.log("登录参数", res)
+    return true
+}
+
+export function LoginForm(props: LoginFormProps) {
+    const [state, action, pending] = useActionState(login, null)
+
     // ...
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<LoginFormParams>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
@@ -30,15 +41,19 @@ function LoginForm() {
     })
 
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    function handleSubmit(values: LoginFormParams) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        console.log(values)
+        startTransition(() => {
+            action(values)
+        })
+        console.log("快快快", values)
     }
 
+    //
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Form {...form} >
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
                     name="email"
@@ -67,11 +82,11 @@ function LoginForm() {
 
                     )}
                 />
-
-                <Button long type="submit">Submit</Button>
+                <Button long type={"submit"} loading={pending}>
+                    登录
+                </Button>
             </form>
         </Form>
     )
 }
 
-export default LoginForm

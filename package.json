@@ -3,9 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prisma:generate": "prisma-import --force && prisma generate",
-    "prisma:push": "prisma-import --force && prisma db push",
-    "prisma:migrate": "prisma-import && prisma migrate dev",
     "dev": "cross-env FORCE_COLOR=1 next dev --turbo",
     "build": "next build",
     "start": "next start",
@@ -30,7 +27,6 @@
     "@mdx-js/react": "^3.1.0",
     "@next/bundle-analyzer": "^15.3.1",
     "@next/mdx": "^15.3.3",
-    "@prisma/client": "^6.11.1",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-navigation-menu": "^1.2.13",
@@ -115,8 +111,6 @@
     "postinstall-postinstall": "^2.1.0",
     "prettier": "3.0.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "prisma": "^6.11.1",
-    "prisma-import": "^1.0.5",
     "semantic-release": "^22.0.12",
     "storybook": "^8.6.12",
     "tailwindcss": "^4.1.5",
@@ -127,12 +121,6 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.0",
     "webpack": "5.94.0"
-  },
-  "prisma": {
-    "import": {
-      "schemas": "prisma/schemas/*.prisma",
-      "output": "prisma/schema.prisma"
-    }
   },
   "engines": {
     "node": ">=20.0.0"

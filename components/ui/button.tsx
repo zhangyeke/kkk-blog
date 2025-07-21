@@ -3,14 +3,24 @@ import {cva, type VariantProps} from "class-variance-authority"
 import * as React from "react"
 
 import {cn} from "@/lib/utils"
+import {Loader2Icon} from "lucide-react";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap  text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap  text-sm font-medium transition-all  [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
     {
         variants: {
             shape: {
                 rounded: "rounded-full",
                 square: "rounded-md",
+            },
+            disabled: {
+                false: "",
+                // disabled:pointer-events-none
+                true: "cursor-not-allowed  disabled:opacity-50"
+            },
+            loading: {
+                false: "",
+                true: "cursor-progress"
             },
             long: {
                 false: "",
@@ -37,6 +47,8 @@ const buttonVariants = cva(
             },
         },
         defaultVariants: {
+            disabled: false,
+            loading: false,
             long: false,
             variant: "default",
             size: "default",
@@ -47,24 +59,32 @@ const buttonVariants = cva(
 
 function Button({
                     className,
+                    disabled,
                     variant,
                     size,
                     long,
                     shape,
                     asChild = false,
+                    loading,
                     ...props
                 }: React.ComponentProps<"button"> &
     VariantProps<typeof buttonVariants> & {
     asChild?: boolean
 }) {
     const Comp = asChild ? Slot : "button"
-
+    const isDisabled = loading || disabled;
     return (
         <Comp
             data-slot="button"
-            className={cn(buttonVariants({variant, size, className, long, shape}))}
+            className={cn(buttonVariants({variant, size, className, long, shape, disabled:isDisabled, loading}))}
             {...props}
-        />
+            disabled={isDisabled}
+        >
+            {
+                loading && <Loader2Icon className="animate-spin"/>
+            }
+            {props.children}
+        </Comp>
     )
 }
 

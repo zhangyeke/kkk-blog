@@ -1,9 +1,0 @@
-// 在这里定义您的数据模型，例如 Post
-model PostCategory {
-  id        Int      @id @default(autoincrement())
-  name      String
-  // 反向关系字段：让您可以轻松查询该分类下的所有文章
-  posts     Post[]
-  createdAt DateTime @default(now())
-  @@schema("public")
-}

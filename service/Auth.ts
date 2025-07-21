@@ -10,7 +10,6 @@ export interface FormParams {
 export async function login({email, password}: FormParams) {
     const supabase = await createClient()
 
-
     return await supabase.auth.signInWithPassword({
         email,
         password,
@@ -18,6 +17,7 @@ export async function login({email, password}: FormParams) {
 
 }
 
+// 注册
 export async function register({email, password}: FormParams) {
     const supabase = await createClient()
 

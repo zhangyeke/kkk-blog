@@ -4,7 +4,7 @@ export default async function Page() {
 
     return (
         <div>
-            <LoginForm></LoginForm>
+            <LoginForm ></LoginForm>
         </div>
     )
 }

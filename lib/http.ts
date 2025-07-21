@@ -3,7 +3,7 @@ import Request from "./Request";
 
 // https://admin.zhengtuqicheng.top
 const http = new Request({
-    baseUrl: env.API_URL + env.REQUEST_URL,
+    baseUrl: env.NEXT_PUBLIC_API_URL + env.NEXT_PUBLIC_REQUEST_URL,
     method: "GET",
     // headers: {
     //     server: 1,
