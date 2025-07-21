@@ -1,4 +1,5 @@
 import {Metadata} from "next";
+import http from "@/lib/http";
 
 export const metadata: Metadata = {
     title: "博客"
@@ -6,6 +7,7 @@ export const metadata: Metadata = {
 
 
 export default async function BlogLayout({children, header}: Slots<'children' | 'header'>) {
+
     // const data = await http.get("/poem")
     // console.log(data, "请求诗词")
     // const res = await http.get('/material',{
@@ -19,8 +21,8 @@ export default async function BlogLayout({children, header}: Slots<'children' | 
     // })
     // console.log(res, "请求图片素材")
 
-    // const posts = await http.get('/posts')
-    // console.log("文字",posts)
+    const posts = await http.get('/posts')
+    console.log("文字",posts)
     return (
         <main>
             {header}

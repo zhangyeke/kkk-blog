@@ -1,9 +1,8 @@
+import Header from "@/app/blog/components/Layout/Header";
 
 export default async function Default() {
 
     return (
-        <div>
-            默认菜单
-        </div>
+        <Header/>
     )
 }
