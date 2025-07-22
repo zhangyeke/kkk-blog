@@ -21,11 +21,14 @@ type BaseComponentProps = {
     style?: React.CSSProperties;
 }
 
-
-// 请求返回资源
-type ApiResource<D = unknown> = {
+interface BaseResource<D = unknown> {
     code: number;
     message: string;
+    data: D
+}
+
+// 请求返回资源
+interface ApiResource<D> extends BaseResource {
     data: {
         error?: Error;
         data: D;
@@ -33,5 +36,4 @@ type ApiResource<D = unknown> = {
         status: number;
         statusText: string;
     }
-
 }
