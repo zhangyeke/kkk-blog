@@ -3,7 +3,7 @@ import * as React from "react"
 import {Avatar, AvatarFallback, AvatarImage} from "../ui/avatar";
 
 export interface ImageProps extends React.ComponentProps<typeof AvatarImage> {
-    fallback?: Slots<'fallback'>;
+    fallback?: Slots<'fallback'> | string;
 }
 
 export default function Image(props: ImageProps) {

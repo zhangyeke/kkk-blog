@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import Image from "@/components/Image"
 import {
     NavigationMenu,
     NavigationMenuContent, NavigationMenuIndicator,
@@ -65,6 +66,10 @@ export default async function HeaderMenu(props: BaseComponentProps) {
                         }
                     </NavigationMenuContent>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <Image src={"/images/logo.png"} className={'size-10 rounded-full'} fallback={'登录'}></Image>
+                </NavigationMenuItem>
+
             </NavigationMenuList>
         </NavigationMenu>
     )
