@@ -3,6 +3,7 @@ import Link from "next/link";
 import Banner from "@/components/Banner";
 import http from "@/lib/http";
 import {MaterialResource, PhotoMaterial} from "@/types/Material";
+import {WavyGroup} from "@/components/Wavy";
 
 export const metadata: Metadata = {}
 
@@ -20,8 +21,11 @@ export default async function Web() {
     })
     return (
         <div className="text-primary">
-            <Banner<PhotoMaterial> list={bannerRes.data.hits} imageKey={"webformatURL"}
-                                   imageClass={'w-full h-[500px]'}/>
+            <div className={"relative"}>
+                <Banner<PhotoMaterial> list={bannerRes.data.hits} imageKey={"largeImageURL"}
+                                       imageClass={'w-full h-[500px]'}/>
+                <WavyGroup className={"absolute bottom-0 w-full z-10"}/>
+            </div>
             <Link href={'/blog/login'}>去登录页</Link>
         </div>
     )
