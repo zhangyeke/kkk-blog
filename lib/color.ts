@@ -17,12 +17,12 @@ export function hex2rgb(hex: string, opacity: number = 1) {
 
 // rgb 转 16进制颜色
 export function rgb2hex(color: string) {
-    var values = color
+    const values = color
         .replace(/rgba?\(/, "")
         .replace(/\)/, "")
         .replace(/[\s+]/g, "")
         .split(",");
-    var a = parseFloat(values[3] || "1"),
+    const a = parseFloat(values[3] || "1"),
         r = Math.floor(a * parseInt(values[0]) + (1 - a) * 255),
         g = Math.floor(a * parseInt(values[1]) + (1 - a) * 255),
         b = Math.floor(a * parseInt(values[2]) + (1 - a) * 255);
@@ -53,6 +53,8 @@ export const registerProperty = (key: string, value: string) => {
     rootElement.style.setProperty(key, value);
 }
 
+export const rgbaRegex = /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*([\d.]+)\s*\)$/;
+
 // 是否为颜色值
 export function isColor(str: string): boolean {
     // 十六进制颜色值
@@ -61,7 +63,6 @@ export function isColor(str: string): boolean {
 
     // RGB 颜色值
     const rgbRegex = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/;
-    const rgbaRegex = /^rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*([\d.]+)\s*\)$/;
 
     // 英文颜色名称
     const colorNames = [
