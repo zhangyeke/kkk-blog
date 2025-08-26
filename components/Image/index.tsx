@@ -7,7 +7,7 @@ export interface ImageProps extends React.ComponentProps<typeof AvatarImage> {
 }
 
 export default function Image(props: ImageProps) {
-    const {fallback,className, ...imageProps} = props;
+    const {fallback, className, ...imageProps} = props;
     return (
         <Avatar className={className}>
             <AvatarImage {...imageProps} className={'object-cover'}/>

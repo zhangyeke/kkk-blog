@@ -32,7 +32,9 @@ export default async function HeaderMenu(props: BaseComponentProps) {
             revalidate: 60 * 60 * 24
         }
     })
-    console.log(categoryResult.data.data, "分类")
+
+    const categoryList = categoryResult.data.data
+
 
     return (
         <NavigationMenu className={props.className} viewport={false}>
@@ -58,7 +60,7 @@ export default async function HeaderMenu(props: BaseComponentProps) {
                     <NavigationMenuTrigger>记录</NavigationMenuTrigger>
                     <NavigationMenuContent className={"w-fit"}>
                         {
-                            categoryResult.data.data.map((item) => (
+                            Array.isArray(categoryList) && categoryList.map((item) => (
                                 <NavigationMenuLink asChild key={item.id}>
                                     <Link className={'text-nowrap'} href={`/blog/post/${item.id}`}>{item.name}</Link>
                                 </NavigationMenuLink>
@@ -67,7 +69,10 @@ export default async function HeaderMenu(props: BaseComponentProps) {
                     </NavigationMenuContent>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                    <Image src={"/images/logo.png"} className={'size-10 rounded-full'} fallback={'登录'}></Image>
+                    <Link href="/blog/login">
+                        <Image className={'size-10 rounded-full'} fallback={'登录'}></Image>
+                    </Link>
+
                 </NavigationMenuItem>
 
             </NavigationMenuList>

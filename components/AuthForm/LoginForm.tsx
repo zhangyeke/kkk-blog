@@ -1,12 +1,12 @@
 "use client"
 import {zodResolver} from "@hookform/resolvers/zod"
+import {Loader2Icon} from "lucide-react";
+import {startTransition, useActionState} from "react";
 import {useForm} from "react-hook-form"
 import {z} from "zod"
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
-import {startTransition, useActionState} from "react";
-import {Loader2Icon} from "lucide-react";
 import http from "@/lib/http";
 
 const formSchema = z.object({
@@ -82,7 +82,7 @@ export function LoginForm(props: LoginFormProps) {
 
                     )}
                 />
-                <Button long type={"submit"} loading={pending}>
+                <Button long={true} type={"submit"} loading={pending}>
                     登录
                 </Button>
             </form>
