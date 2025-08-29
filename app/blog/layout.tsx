@@ -1,31 +1,20 @@
 import {Metadata} from "next";
-import http from "@/lib/http";
+import Header from "@/app/blog/components/Layout/Header";
+import {getPostCategoryList} from "@/service/PostCategory";
+import blogConfig from "@/config/blog"
 
 export const metadata: Metadata = {
-    title: "博客"
+    title: blogConfig.globalTitle,
 }
 
 
-export default async function BlogLayout({children, header}: Slots<'children' | 'header'>) {
+export default async function BlogLayout({children}: Slots<'children'>) {
+    const categoryList = await getPostCategoryList()
+    console.log("分类", categoryList)
 
-    // const data = await http.get("/poem")
-    // console.log(data, "请求诗词")
-    // const res = await http.get('/material',{
-    //     params:{
-    //         min_width: 1920,
-    //         min_height: 500,
-    //         orientation: "horizontal",
-    //         editors_choice: true,
-    //         per_page: 5,
-    //     }
-    // })
-    // console.log(res, "请求图片素材")
-
-    const posts = await http.get('/posts')
-    console.log("文字",posts)
     return (
         <main>
-            {header}
+            <Header categoryList={categoryList}/>
             {children}
         </main>
     )

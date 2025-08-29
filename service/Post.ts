@@ -1,6 +1,4 @@
 'use server';
-import {createClient} from "@/lib/supabase/server"
-
 // --- CREATE (新增) ---
 export async function createPost(data: { title: string, content?: string }) {
 
@@ -9,10 +7,7 @@ export async function createPost(data: { title: string, content?: string }) {
 // --- READ (查询) ---
 // 获取所有文章
 export async function getAllPosts() {
-    const client = await createClient()
-    const res =  await client.from("posts").select()
-    console.log("所有文章",res)
-    return res
+
 }
 
 // 根据 ID 获取单篇文章

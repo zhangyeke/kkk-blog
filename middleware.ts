@@ -1,6 +1,6 @@
 // middleware.ts
-import type { NextRequest } from 'next/server';
-import {updateSession} from "@/lib/supabase/middleware";
+import type {NextRequest} from 'next/server';
+import {NextResponse} from "next/server";
 
 // 允许通过的白名单
 const allowedOrigins = ['https://acme.com', 'http://localhost:3000']
@@ -9,8 +9,11 @@ const corsOptions = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
-export async  function middleware(request: NextRequest) {
-    return await updateSession(request)
+
+export async function middleware(request: NextRequest) {
+    return NextResponse.next({
+        request,
+    })
 }
 
 export const config = {

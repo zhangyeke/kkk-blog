@@ -75,8 +75,10 @@ class Request {
                     body: JSON.stringify(data),
                     ...config
                 })
+                console.log("请求结果",res)
                 resolve(res)
             } catch (err) {
+                console.log("报错了", err)
                 reject(err)
             }
 

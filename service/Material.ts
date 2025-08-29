@@ -19,7 +19,7 @@ const requestConfig = {
     },
 }
 // 获取图片素材
-export async function fetchPhotoWall   (params?: Partial<FetchMaterialParams>) {
+export async function fetchPhotoWall(params?: Partial<FetchMaterialParams>) {
 
     return await http.get<MaterialResource<PhotoMaterial>>('/api/', {
         params: {

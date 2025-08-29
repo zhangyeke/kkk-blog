@@ -7,6 +7,7 @@ export default function GlobalError({
     error: Error & { digest?: string }
     reset: () => void
 }) {
+
     return (
         // 必须定义html结构 已替换根布局
         <html>

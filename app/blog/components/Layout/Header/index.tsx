@@ -1,12 +1,29 @@
-import HeaderMenu from "./HaderMenu"
+"use client"
+import {useSelectedLayoutSegment} from "next/navigation";
 import Logo from "./Logo";
-export default async function Header() {
+import HeaderMenu from "./HaderMenu";
+import blogConfig from "@/config/blog"
+import {PostCategory} from "@/types/PostCategory";
+import {MenuContext} from "./context";
 
+export interface HeaderProps {
+    categoryList?: PostCategory[]
+}
+
+export default function Header(props: HeaderProps) {
+    const segment = useSelectedLayoutSegment();
+    if (segment && blogConfig.headerBlacks.includes(segment)) {
+        return null
+    }
+    const fixedClassName = `fixed left-0 top-0 z-100`
 
     return (
-        <header className={"fixed left-0 top-0 z-100 w-full flex items-center px-5 h-15 bg-white/50"}>
+        <header
+            className={`bg-black/25 ${segment ? '' : fixedClassName} w-full flex justify-between items-center px-5 h-15 `}>
             <Logo/>
-            <HeaderMenu className={"ml-auto"}></HeaderMenu>
+            <MenuContext value={props}>
+                <HeaderMenu/>
+            </MenuContext>
         </header>
     )
 }

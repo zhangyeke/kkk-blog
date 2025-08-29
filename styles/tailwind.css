@@ -1,14 +1,14 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
+
 /*
   ---break---
 */
 @custom-variant dark (&:is(.dark *));
 
 
-
 @theme inline {
-    --font-h1:var(--h1-font);
+    --font-h1: var(--h1-font);
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
@@ -51,6 +51,7 @@
 */
 
 :root {
+    --header-height: 60px;
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -58,7 +59,7 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
+    --primary: hsl(222, 100%, 54.3%);
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -128,7 +129,25 @@
 */
 
 @layer base {
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@layer utilities {
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+    .header-height {
+        height: var(--header-height);
+    }
+
+    .header-padding {
+        padding-top: var(--header-height);
+    }
+
+    .position-center {
+        @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
     }
 }

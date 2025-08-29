@@ -16,8 +16,6 @@ const formSchema = z.object({
 
 export type LoginFormParams = z.infer<typeof formSchema>
 
-export type LoginFormProps = {}
-
 async function login(
     previousState: boolean, // 第一个参数是之前的状态
     formData: LoginFormParams      // 第二个参数是表单数据
@@ -28,7 +26,7 @@ async function login(
     return true
 }
 
-export function LoginForm(props: LoginFormProps) {
+export function LoginForm() {
     const [state, action, pending] = useActionState(login, null)
 
     // ...
@@ -52,7 +50,7 @@ export function LoginForm(props: LoginFormProps) {
 
     //
     return (
-        <Form {...form} >
+        <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}

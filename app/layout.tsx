@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: {
         template: '%s | kkk',
         default: 'kkk',
-    },
+    }
 }
 
 export default function RootLayout({children}: ContainerProps) {

@@ -1,22 +1,21 @@
-import Link from "next/link"
-
-import Image from "@/components/Image"
+"use client"
+import React from "react";
+import {ChevronDownIcon} from "lucide-react"
 import {
-    NavigationMenu,
-    NavigationMenuContent, NavigationMenuIndicator,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import http from "@/lib/http";
-import {PostCategory} from "@/types/PostCategory";
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    HoverDropdownMenu,
+} from "@/components/ui/dropdown-menu"
+import Image from "@/components/Image"
+import Link from "next/link";
+import {MenuContext} from "./context";
 
 const materialList = [
     {
         title: "图片素材",
-        href: "/blog/picture",
+        href: "/blog/pictures",
     },
     {
         title: "视频素材",
@@ -25,53 +24,60 @@ const materialList = [
 
 ]
 
-export default async function HeaderMenu(props: BaseComponentProps) {
-
-    const categoryResult = await http.get<ApiResource<PostCategory[]>>('/postCategory', {
-        next: {
-            revalidate: 60 * 60 * 24
-        }
-    })
-    console.log(categoryResult.data.data, "分类")
-
+function HeaderMenu(props: BaseComponentProps) {
+    const {categoryList} = React.useContext(MenuContext)
     return (
-        <NavigationMenu className={props.className} viewport={false}>
-            <NavigationMenuList>
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                        <Link href="/blog">首页</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger>素材资源</NavigationMenuTrigger>
-                    <NavigationMenuContent>
+        <nav className={'flex items-center gap-x-4 h-full text-white'}>
+            <Link href={"/"} className={'hover:text-primary flex-center'}>首页</Link>
+            <HoverDropdownMenu className={''}>
+                <DropdownMenuTrigger className={'cursor-pointer h-full flex-center group'}>
+                    素材
+                    <ChevronDownIcon className={'group-hover:rotate-180 transition-all duration-300'}/>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 z-[200]" align="start">
+                    <DropdownMenuGroup>
                         {
                             materialList.map((item, index) => (
-                                <NavigationMenuLink asChild key={index}>
+                                <DropdownMenuItem key={index}>
                                     <Link href={item.href}>{item.title}</Link>
-                                </NavigationMenuLink>
+                                </DropdownMenuItem>
                             ))
                         }
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger>记录</NavigationMenuTrigger>
-                    <NavigationMenuContent className={"w-fit"}>
-                        {
-                            categoryResult.data.data.map((item) => (
-                                <NavigationMenuLink asChild key={item.id}>
-                                    <Link className={'text-nowrap'} href={`/blog/post/${item.id}`}>{item.name}</Link>
-                                </NavigationMenuLink>
-                            ))
-                        }
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <Image src={"/images/logo.png"} className={'size-10 rounded-full'} fallback={'登录'}></Image>
-                </NavigationMenuItem>
+                    </DropdownMenuGroup>
 
-            </NavigationMenuList>
-        </NavigationMenu>
+                </DropdownMenuContent>
+            </HoverDropdownMenu>
+            <HoverDropdownMenu className={''}>
+                <DropdownMenuTrigger className={'cursor-pointer h-full flex-center group'}>
+                    记录
+                    <ChevronDownIcon className={'group-hover:rotate-180 transition-all duration-300'}/>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 z-[200]" align="start">
+                    <DropdownMenuGroup>
+                        {
+                            categoryList && categoryList.map((item, index) => (
+                                <DropdownMenuItem key={index}>
+                                    <Link href={{
+                                        pathname: "/blog/article/search",
+                                        query: {
+                                            c_id: item.id
+                                        }
+                                    }}>{item.name}</Link>
+                                </DropdownMenuItem>
+                            ))
+                        }
+                    </DropdownMenuGroup>
+
+                </DropdownMenuContent>
+            </HoverDropdownMenu>
+
+            <Link href={'/blog/login'}>
+                <Image className={'w-10 h-10 rounded-full'} fallback={'登录'}/>
+            </Link>
+        </nav>
     )
+
 }
 
+
+export default React.memo(HeaderMenu)
