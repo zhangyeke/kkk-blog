@@ -1,10 +1,10 @@
 import {Metadata} from "next";
 import Header from "@/app/blog/components/Layout/Header";
 import {getPostCategoryList} from "@/service/PostCategory";
-import blogConfig from "@/config/blog"
+import {GLOBAL_TITLE} from "@/config/blog"
 
 export const metadata: Metadata = {
-    title: blogConfig.globalTitle,
+    title: GLOBAL_TITLE,
 }
 
 

@@ -1,17 +1,14 @@
 'use server'
 
-export interface FormParams {
-    email: string;
-    password: string
-}
-
 // 登录
-export async function login({email, password}: FormParams) {
+import {LoginParams, RegisterParams} from "@/types/ahth";
+
+export async function loginAction({email, password}: LoginParams) {
 
 }
 
 // 注册
-export async function register({email, password}: FormParams) {
+export async function register({email, password}: RegisterParams) {
 
 }
 

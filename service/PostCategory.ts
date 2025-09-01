@@ -1,13 +1,12 @@
 'use server';
-import {PrismaClient} from '@prisma/client'
+import {prisma} from '@/lib/prisma'
 import {PostCategory} from "@/types/PostCategory";
 
-export async function createPostCategory(data: { title: string, content?: string }) {
+export async function createPostCategory() {
 
 }
 
 export async function getPostCategoryList() {
-    const prisma = new PrismaClient()
     const data: PostCategory[] = await prisma.postCategory.findMany()
     return data
 }

@@ -247,7 +247,7 @@ function HoverDropdownMenu({trigger, children}) {
                 onMouseEnter={() => setIsOpen(true)}
                 onMouseLeave={() => setIsOpen(false)}
             >
-                {children}
+                {children && children(isOpen)}
             </div>
         </DropdownMenu>
     );

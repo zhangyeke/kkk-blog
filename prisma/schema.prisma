@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
   // output   = "../generated/prisma"
 }
 
@@ -15,22 +16,23 @@ datasource db {
 }
 
 model Post {
-  id         Int      @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   category   PostCategory @relation(fields: [categoryId], references: [id])
   categoryId Int
-  pv         Int      @default(0)
+  pv         Int          @default(0)
   cover      String
   tags       String
   title      String
   content    String
-  status     Int      @default(1)
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  status     Int          @default(1)
+  createdAt  DateTime     @default(now()) @db.Timestamp(6)
 }
+
 model PostCategory {
-  id         Int      @id @default(autoincrement())
-  name       String
-  icon       String?
-  status     Int      @default(1)
-  posts Post[]
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  id        Int      @id @default(autoincrement())
+  name      String
+  icon      String?
+  status    Int      @default(1)
+  posts     Post[]
+  createdAt DateTime @default(now()) @db.Timestamp(6)
 }

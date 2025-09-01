@@ -2,7 +2,7 @@
 import {useSelectedLayoutSegment} from "next/navigation";
 import Logo from "./Logo";
 import HeaderMenu from "./HaderMenu";
-import blogConfig from "@/config/blog"
+import {HEADER_BLACKS} from "@/config/blog"
 import {PostCategory} from "@/types/PostCategory";
 import {MenuContext} from "./context";
 
@@ -12,7 +12,7 @@ export interface HeaderProps {
 
 export default function Header(props: HeaderProps) {
     const segment = useSelectedLayoutSegment();
-    if (segment && blogConfig.headerBlacks.includes(segment)) {
+    if (segment && HEADER_BLACKS.includes(segment)) {
         return null
     }
     const fixedClassName = `fixed left-0 top-0 z-100`

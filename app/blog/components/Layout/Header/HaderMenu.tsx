@@ -30,46 +30,64 @@ function HeaderMenu(props: BaseComponentProps) {
         <nav className={'flex items-center gap-x-4 h-full text-white'}>
             <Link href={"/"} className={'hover:text-primary flex-center'}>首页</Link>
             <HoverDropdownMenu className={''}>
-                <DropdownMenuTrigger className={'cursor-pointer h-full flex-center group'}>
-                    素材
-                    <ChevronDownIcon className={'group-hover:rotate-180 transition-all duration-300'}/>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 z-[200]" align="start">
-                    <DropdownMenuGroup>
-                        {
-                            materialList.map((item, index) => (
-                                <DropdownMenuItem key={index}>
-                                    <Link href={item.href}>{item.title}</Link>
-                                </DropdownMenuItem>
-                            ))
-                        }
-                    </DropdownMenuGroup>
+                {
+                    (isOpen) => (
+                        <>
+                            <DropdownMenuTrigger className={'cursor-pointer h-full flex-center'}>
+                                素材
+                                <ChevronDownIcon
+                                    className={` ${isOpen ? 'rotate-180' : ''} transition-all duration-300`}/>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 z-[200]">
+                                <DropdownMenuGroup>
+                                    {
+                                        materialList.map((item, index) => (
+                                            <DropdownMenuItem key={index}>
+                                                <Link className={'w-full h-full'} href={item.href}>{item.title}</Link>
+                                            </DropdownMenuItem>
+                                        ))
+                                    }
+                                </DropdownMenuGroup>
 
-                </DropdownMenuContent>
+                            </DropdownMenuContent>
+                        </>
+                    )
+                }
+
             </HoverDropdownMenu>
+
             <HoverDropdownMenu className={''}>
-                <DropdownMenuTrigger className={'cursor-pointer h-full flex-center group'}>
-                    记录
-                    <ChevronDownIcon className={'group-hover:rotate-180 transition-all duration-300'}/>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 z-[200]" align="start">
-                    <DropdownMenuGroup>
-                        {
-                            categoryList && categoryList.map((item, index) => (
-                                <DropdownMenuItem key={index}>
-                                    <Link href={{
-                                        pathname: "/blog/article/search",
-                                        query: {
-                                            c_id: item.id
-                                        }
-                                    }}>{item.name}</Link>
-                                </DropdownMenuItem>
-                            ))
-                        }
-                    </DropdownMenuGroup>
+                {
+                    (isOpen) => (
+                        <>
+                            <DropdownMenuTrigger className={'cursor-pointer h-full flex-center group'}>
+                                记录
+                                <ChevronDownIcon
+                                    className={`${isOpen ? 'rotate-180' : ''} transition-all duration-300`}/>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 z-[200]">
+                                <DropdownMenuGroup>
+                                    {
+                                        categoryList && categoryList.map((item, index) => (
+                                            <DropdownMenuItem key={index}>
+                                                <Link className={'w-full h-full'} href={{
+                                                    pathname: "/blog/article/search",
+                                                    query: {
+                                                        c_id: item.id
+                                                    }
+                                                }}>{item.name}</Link>
+                                            </DropdownMenuItem>
+                                        ))
+                                    }
+                                </DropdownMenuGroup>
 
-                </DropdownMenuContent>
+                            </DropdownMenuContent>
+
+                        </>
+                    )
+                }
             </HoverDropdownMenu>
+
 
             <Link href={'/blog/login'}>
                 <Image className={'w-10 h-10 rounded-full'} fallback={'登录'}/>
