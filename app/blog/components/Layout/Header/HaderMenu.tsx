@@ -1,6 +1,8 @@
 "use client"
-import React from "react";
 import {ChevronDownIcon} from "lucide-react"
+import Link from "next/link";
+import React from "react";
+import Image from "@/components/Image"
 import {
     DropdownMenuContent,
     DropdownMenuGroup,
@@ -8,8 +10,6 @@ import {
     DropdownMenuTrigger,
     HoverDropdownMenu,
 } from "@/components/ui/dropdown-menu"
-import Image from "@/components/Image"
-import Link from "next/link";
 import {MenuContext} from "./context";
 
 const materialList = [
@@ -24,14 +24,14 @@ const materialList = [
 
 ]
 
-function HeaderMenu(props: BaseComponentProps) {
+function HeaderMenu() {
     const {categoryList} = React.useContext(MenuContext)
     return (
         <nav className={'flex items-center gap-x-4 h-full text-white'}>
             <Link href={"/"} className={'hover:text-primary flex-center'}>首页</Link>
-            <HoverDropdownMenu className={''}>
+            <HoverDropdownMenu>
                 {
-                    (isOpen) => (
+                    (isOpen: boolean) => (
                         <>
                             <DropdownMenuTrigger className={'cursor-pointer h-full flex-center'}>
                                 素材
@@ -56,9 +56,9 @@ function HeaderMenu(props: BaseComponentProps) {
 
             </HoverDropdownMenu>
 
-            <HoverDropdownMenu className={''}>
+            <HoverDropdownMenu>
                 {
-                    (isOpen) => (
+                    (isOpen: boolean) => (
                         <>
                             <DropdownMenuTrigger className={'cursor-pointer h-full flex-center group'}>
                                 记录

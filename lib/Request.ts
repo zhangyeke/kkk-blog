@@ -5,7 +5,7 @@ export interface RequestConfig extends Omit<RequestInit, "method"> {
     baseUrl?: string
     // timeout: number
     method: RequestMethod
-    headers?: any
+    headers?: Record<string, string> | HeadersInit
     url?: string
 }
 
@@ -66,7 +66,7 @@ class Request {
         })
     }
 
-    post<D = Record<string, any>>(url: string, data?: D, config?: OmitMethodConfig) {
+    post<D extends object>(url: string, data?: D, config?: OmitMethodConfig) {
         return new Promise<Response>(async (resolve, reject) => {
             try {
                 const res = await this.request<Response>({

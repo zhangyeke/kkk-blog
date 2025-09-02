@@ -1,32 +1,27 @@
 "use client"
-import React from "react"
-import {zodResolver} from "@hookform/resolvers/zod"
-import {startTransition, useActionState} from "react";
-import {useForm} from "react-hook-form"
 import {z} from "zod"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {useForm} from "react-hook-form"
+import React from "react"
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
-import {LoginParams} from "@/types/ahth";
 import {loginAction} from "@/service/Auth"
+import {LoginParams} from "@/types/ahth";
 
 const formSchema = z.object({
     email: z.email("请输入正确的邮箱"),
     password: z.string().min(6, "密码长度不能小于6位"),
 })
 
-async function login(
-    previousState: boolean, // 第一个参数是之前的状态
-    formData: LoginParams      // 第二个参数是表单数据
-
-) {
-    const res = await loginAction(formData)
+async function login() {
+    const res = await loginAction()
     console.log("登录操作", res)
     return true
 }
 
 export function LoginForm() {
-    const [state, action, pending] = useActionState(login, null)
+    const [_, action, pending] = React.useActionState(login, false)
 
     // ...
     const form = useForm({
@@ -41,8 +36,8 @@ export function LoginForm() {
     function handleSubmit(values: LoginParams) {
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        startTransition(() => {
-            action(values)
+        React.startTransition(() => {
+            action()
         })
         console.log("快快快", values)
     }

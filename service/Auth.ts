@@ -1,14 +1,12 @@
 'use server'
 
-// 登录
-import {LoginParams, RegisterParams} from "@/types/ahth";
 
-export async function loginAction({email, password}: LoginParams) {
+export async function loginAction() {
 
 }
 
 // 注册
-export async function register({email, password}: RegisterParams) {
+export async function register() {
 
 }
 

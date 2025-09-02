@@ -1,10 +1,10 @@
 "use client"
 import {useSelectedLayoutSegment} from "next/navigation";
-import Logo from "./Logo";
-import HeaderMenu from "./HaderMenu";
 import {HEADER_BLACKS} from "@/config/blog"
 import {PostCategory} from "@/types/PostCategory";
+import HeaderMenu from "./HaderMenu";
 import {MenuContext} from "./context";
+import Logo from "./Logo";
 
 export interface HeaderProps {
     categoryList?: PostCategory[]

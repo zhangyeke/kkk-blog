@@ -1,8 +1,8 @@
 "use client"
-import * as React from "react"
-import Image from "../Image"
-import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel"
+import React from "react"
 import Autoplay from "embla-carousel-autoplay";
+import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel"
+import Image from "@/components/Image"
 
 export interface BannerProps<T> extends React.ComponentProps<typeof Carousel> {
     list: T[] | string[];
@@ -24,12 +24,22 @@ export default function Banner<T>(props: BannerProps<T>) {
     return (
         <Carousel {...carouselProps} plugins={autoplay ? [plugin.current] : []}>
             <CarouselContent>
-                {list.map((item, index) => (
-                    <CarouselItem key={index}>
-                        <Image className={imageClass}
-                               src={typeof item === 'string' ? item : item[imageKey]}/>
-                    </CarouselItem>
-                ))}
+                {list.map((item, index) => {
+                    let imageSrc = ''
+                    if (typeof item === 'string') {
+                        imageSrc = item;
+                    }
+                    // 2. 关键改动：在使用 imageKey 之前，先检查它是否存在
+                    else if (imageKey && item[imageKey]) {
+                        imageSrc = item[imageKey] as string; // as string 告诉 TS 我们确定这个值是字符串
+                    }
+
+                    return (
+                        <CarouselItem key={index}>
+                            <Image className={imageClass} src={imageSrc}/>
+                        </CarouselItem>
+                    )
+                })}
             </CarouselContent>
             <CarouselPrevious/>
             <CarouselNext/>

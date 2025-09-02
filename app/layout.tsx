@@ -1,7 +1,7 @@
 import "styles/tailwind.css"
+import {Metadata} from "next";
 import {globalFont, h1Font} from "@/assets/fonts"
 import {ThemeProvider} from "@/components/ThemeProvider/ThemeProvider";
-import {Metadata} from "next";
 import WebVitals from "@/components/WebVitals/WebVitals";
 
 export const metadata: Metadata = {

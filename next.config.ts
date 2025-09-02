@@ -29,7 +29,7 @@ const config: NextConfig = {
     }
     ,
     rewrites: async () => [
-        {source: "/shopapi/:path*", destination: "https://admin.zhengtuqicheng.top/shopapi/:path*"},
+        // {source: "/shopapi/:path*", destination: "https://admin.zhengtuqicheng.top/shopapi/:path*"},
     ],
 }
 

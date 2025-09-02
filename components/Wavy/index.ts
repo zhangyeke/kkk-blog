@@ -1,2 +1,2 @@
-export {Wavy, WavyProps} from "./Wavy"
-export {WavyGroup, WavyGroupProps} from "./WavyGroup"
+export {Wavy, type WavyProps} from "./Wavy"
+export {WavyGroup, type WavyGroupProps} from "./WavyGroup"

@@ -1,8 +1,8 @@
 "use client"
 
-import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import {CheckIcon, ChevronRightIcon, CircleIcon} from "lucide-react"
+import * as React from "react"
 
 import {cn} from "@/lib/utils"
 
@@ -238,7 +238,7 @@ function DropdownMenuSubContent({
     )
 }
 
-function HoverDropdownMenu({trigger, children}) {
+function HoverDropdownMenu({children}: { children: (isOpen: boolean) => React.ReactNode }) {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (

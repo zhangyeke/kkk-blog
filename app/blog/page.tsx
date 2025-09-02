@@ -1,12 +1,14 @@
 import {Metadata} from "next"
-import Link from "next/link";
 import Banner from "@/components/Banner";
-import {PhotoMaterial} from "@/types/Material";
 import {WavyGroup} from "@/components/Wavy";
-import {getPostCategoryList} from "@/service/PostCategory";
 import {fetchPhotoWall} from "@/service/Material";
+import {getPostCategoryList} from "@/service/PostCategory"
+import {PhotoMaterial} from "@/types/Material";
+import {GLOBAL_TITLE} from "@/config/blog"
 
-export const metadata: Metadata = {}
+export const metadata: Metadata = {
+    title: GLOBAL_TITLE
+}
 
 
 export default async function Web() {
@@ -18,6 +20,9 @@ export default async function Web() {
         editors_choice: true,
         category: "动漫"
     })
+
+    const postCategorys = await getPostCategoryList()
+    console.log("分类数据", postCategorys)
 
     return (
         <div>

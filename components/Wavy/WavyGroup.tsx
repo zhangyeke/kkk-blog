@@ -1,8 +1,8 @@
 // WavyGroup.tsx
 "use client"
-import React, {useEffect, useState} from "react" // 导入 useState 和 useEffect
 import {useWindowSize} from "react-use"
 import {noop, times} from "lodash"
+import React, {useEffect, useState} from "react" // 导入 useState 和 useEffect
 import {Wavy} from "./Wavy";
 
 export interface WavyGroupProps extends BaseComponentProps {
@@ -38,6 +38,7 @@ export function WavyGroup(props: WavyGroupProps) {
                 emptyArray.map((_, index) => (
                     <div className={"absolute bottom-0 left-0"} key={index}>
                         <Wavy
+                            waveColor={waveColor}
                             width={winWidth} // 此时 winWidth 已经是客户端的真实宽度
                             waveSpeed={index + 1}
                             direction={index % 2 === 0 ? 'rtl' : 'ltr'}
