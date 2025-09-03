@@ -1,4 +1,3 @@
-// WavyGroup.tsx
 "use client"
 import {useWindowSize} from "react-use"
 import {noop, times} from "lodash"
