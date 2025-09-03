@@ -20,7 +20,7 @@ export function WavyGroup(props: WavyGroupProps) {
         setIsClient(true);
     }, []);
 
-    const {style, className, waveColor = '#fff', waveNumber = 2} = props;
+    const {style, className, waveColor = '#ffffff', waveNumber = 2} = props;
 
     // 只有在 isClient 为 true 时，才调用 useWindowSize
     const {width: winWidth} = useWindowSize();
