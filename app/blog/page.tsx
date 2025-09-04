@@ -1,10 +1,10 @@
 import {Metadata} from "next"
-import Banner from "@/components/Banner";
-import {WavyGroup} from "@/components/Wavy";
-import {fetchPhotoWall} from "@/service/Material";
-import {getPostCategoryList} from "@/service/PostCategory"
-import {PhotoMaterial} from "@/types/Material";
-import {GLOBAL_TITLE} from "@/config/blog"
+import Banner from "components/Banner";
+import {WavyGroup} from "components/Wavy";
+import {fetchPhotoWall} from "service/Material";
+import {getPostCategoryList} from "service/PostCategory"
+import {PhotoMaterial} from "types/Material";
+import {GLOBAL_TITLE} from "config/blog"
 
 export const metadata: Metadata = {
     title: GLOBAL_TITLE
