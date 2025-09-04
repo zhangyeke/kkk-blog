@@ -1,7 +1,7 @@
 "use client"
 import {useSelectedLayoutSegment} from "next/navigation";
 import {HEADER_BLACKS} from "@/config/blog"
-import {PostCategory} from "@/types/PostCategory";
+import {PostCategory} from "@/types/postCategory";
 import HeaderMenu from "./HaderMenu";
 import {MenuContext} from "./context";
 import Logo from "./Logo";

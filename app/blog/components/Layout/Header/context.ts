@@ -1,5 +1,5 @@
 import {createContext} from "react";
-import {PostCategory} from "@/types/PostCategory";
+import {PostCategory} from "@/types/postCategory";
 
 
 export const MenuContext = createContext<{

@@ -1,9 +1,8 @@
 import {Metadata} from "next"
 import Banner from "components/Banner";
 import {WavyGroup} from "components/Wavy";
-import {fetchPhotoWall} from "service/Material";
-import {getPostCategoryList} from "service/PostCategory"
-import {PhotoMaterial} from "types/Material";
+import {fetchPhotoWall} from "@/service/material";
+import {PhotoMaterial} from "types/material";
 import {GLOBAL_TITLE} from "config/blog"
 
 export const metadata: Metadata = {
@@ -21,8 +20,6 @@ export default async function Web() {
         category: "动漫"
     })
 
-    const postCategorys = await getPostCategoryList()
-    console.log("分类数据", postCategorys)
 
     return (
         <div>

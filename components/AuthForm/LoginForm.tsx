@@ -6,7 +6,7 @@ import React from "react"
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
-import {loginAction} from "@/service/Auth"
+import {loginAction} from "@/service/auth"
 import {LoginParams} from "@/types/ahth";
 
 const formSchema = z.object({

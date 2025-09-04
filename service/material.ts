@@ -1,5 +1,5 @@
 import Request from "@/lib/Request"
-import {FetchMaterialParams, MaterialResource, PhotoMaterial, VideoMaterial} from "@/types/Material";
+import {FetchMaterialParams, MaterialResource, PhotoMaterial, VideoMaterial} from "@/types/material";
 
 const http = new Request({
     baseUrl: 'https://pixabay.com',

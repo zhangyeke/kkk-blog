@@ -1,6 +1,6 @@
 'use server';
 import prisma from '@/lib/prisma'
-import {PostCategory} from "@/types/PostCategory";
+import {PostCategory} from "@/types/postCategory";
 
 export async function createPostCategory() {
 
