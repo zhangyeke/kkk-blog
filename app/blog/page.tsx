@@ -1,6 +1,5 @@
 import {Metadata} from "next"
-import Banner from "components/Banner";
-import {WavyGroup} from "components/Wavy";
+import {Banner, WavyGroup} from "components/k-view";
 import {fetchPhotoWall} from "@/service/material";
 import {PhotoMaterial} from "types/material";
 import {GLOBAL_TITLE} from "config/blog"

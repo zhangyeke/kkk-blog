@@ -1,51 +1,54 @@
 "use client"
-import {z} from "zod"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {useForm} from "react-hook-form"
 import React from "react"
+import Link from "next/link";
+import {toast} from "sonner";
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
 import {Input} from "@/components/ui/input"
-import {loginAction} from "@/service/auth"
+import {login} from "@/service/auth"
+import {loginSchema} from "@/validators/auth"
 import {LoginParams} from "@/types/ahth";
+import {useRouter} from "next/navigation";
 
-const formSchema = z.object({
-    email: z.email("请输入正确的邮箱"),
-    password: z.string().min(6, "密码长度不能小于6位"),
-})
 
-async function login() {
-    const res = await loginAction()
-    console.log("登录操作", res)
-    return true
-}
+export function LoginForm({callbackUrl}: { callbackUrl: string }) {
+    const router = useRouter()
+    const [data, action, pending] = React.useActionState(login, {
+        code: -1,
+        message: ""
+    })
 
-export function LoginForm() {
-    const [_, action, pending] = React.useActionState(login, false)
-
-    // ...
     const form = useForm({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "",
             password: ""
         },
     })
 
-    // 2. Define a submit handler.
     function handleSubmit(values: LoginParams) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
         React.startTransition(() => {
-            action()
+            action(values)
         })
-        console.log("快快快", values)
     }
 
-    //
+    React.useEffect(() => {
+        const {code, message} = data
+        if (code === 0 && message) {
+            toast.error(message)
+        } else if (code === 200) {
+            toast.success(message)
+            router.replace(callbackUrl)
+        }
+
+    }, [data])
+
+
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 p-5">
                 <FormField
                     control={form.control}
                     name="email"
@@ -53,7 +56,7 @@ export function LoginForm() {
                         <FormItem>
                             <FormLabel>邮箱地址</FormLabel>
                             <FormControl>
-                                <Input placeholder="请输入邮箱地址" {...field} />
+                                <Input placeholder="请输入邮箱地址" {...field} autoComplete={'username'}/>
                             </FormControl>
                             <FormMessage/>
                         </FormItem>
@@ -67,16 +70,21 @@ export function LoginForm() {
                         <FormItem>
                             <FormLabel>密码</FormLabel>
                             <FormControl>
-                                <Input placeholder="请输入密码" {...field} />
+                                <Input placeholder="请输入密码" {...field} type={"password"}
+                                       autoComplete={'current-password'}/>
                             </FormControl>
                             <FormMessage/>
                         </FormItem>
 
                     )}
                 />
-                <Button long={true} type={"submit"} loading={pending}>
+
+                <Button disabled={data.code === 200} long={true} type={"submit"} loading={pending}>
                     登录
                 </Button>
+                <Link className={'text-gray-500 text-center block  text-sm  hover:underline'} href={"/register"}>
+                    还没有账号? 去注册
+                </Link>
             </form>
         </Form>
     )

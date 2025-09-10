@@ -238,23 +238,10 @@ function DropdownMenuSubContent({
     )
 }
 
-function HoverDropdownMenu({children}: { children: (isOpen: boolean) => React.ReactNode }) {
-    const [isOpen, setIsOpen] = React.useState(false);
 
-    return (
-        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-            <div
-                onMouseEnter={() => setIsOpen(true)}
-                onMouseLeave={() => setIsOpen(false)}
-            >
-                {children && children(isOpen)}
-            </div>
-        </DropdownMenu>
-    );
-}
 
 export {
-    HoverDropdownMenu,
+
     DropdownMenu,
     DropdownMenuPortal,
     DropdownMenuTrigger,

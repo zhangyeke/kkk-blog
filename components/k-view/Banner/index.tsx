@@ -2,7 +2,7 @@
 import React from "react"
 import Autoplay from "embla-carousel-autoplay";
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel"
-import Image from "@/components/Image"
+import {Image} from "@/components/k-view"
 
 export interface BannerProps<T> extends React.ComponentProps<typeof Carousel> {
     list: T[] | string[];
@@ -12,7 +12,7 @@ export interface BannerProps<T> extends React.ComponentProps<typeof Carousel> {
     delay?: number;
 }
 
-export default function Banner<T>(props: BannerProps<T>) {
+export function Banner<T>(props: BannerProps<T>) {
     const {list, imageKey, imageClass, autoplay = true, delay = 3000, ...carouselProps} = props;
     // 2. 将插件实例的创建放入一个 ref 中
     const plugin = React.useRef(

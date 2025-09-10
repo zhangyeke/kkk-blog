@@ -2,9 +2,18 @@ import {type ClassValue, clsx} from "clsx"
 import qs from "qs"
 import {twMerge} from "tailwind-merge"
 
+/*
+ * @Author: EDY
+ * @Date: 2025/9/8
+ * @LastEditors: EDY
+ * @Description: 合并类名
+ * @Params:
+ */
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
+
+
 
 /*
  * @Author: kkk
@@ -29,3 +38,4 @@ export function parseUrlQuery(url: string) {
     const queryString = urlObject.search.substring(1);
     return qs.parse(queryString)
 }
+

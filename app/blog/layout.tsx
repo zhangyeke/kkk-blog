@@ -1,17 +1,22 @@
 import {Metadata} from "next";
-import {GLOBAL_TITLE} from "config/blog"
 import Header from "./components/Layout/Header";
 import {getPostCategoryList} from "@/service/postCategory";
+import {headers} from "next/headers";
+
 
 export const metadata: Metadata = {
-    title: GLOBAL_TITLE,
+    title: {
+        template: '%s | kkk',
+        default: 'kkk',
+    }
 }
 
 
 export default async function BlogLayout({children}: Slots<'children'>) {
     const categoryList = await getPostCategoryList()
-    console.log("分类", categoryList)
-
+    const headerList = await headers()
+    const pathname = headerList.get('k-pathname');
+    console.log(pathname,"12321")
     return (
         <main>
             <Header categoryList={categoryList}/>

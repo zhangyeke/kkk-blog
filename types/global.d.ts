@@ -1,7 +1,10 @@
 // 服务端页面属性
-interface PageParams<Params = Record<string, unknown>, SearchParams = Record<string, unknown>> {
-    params: Promise<Params>;
-    searchParams?: Promise<SearchParams>;
+interface PageSearchParams<T = Record<string, unknown>> {
+    searchParams?: Promise<T>;
+}
+
+interface PageParams<T = Record<string, unknown>> {
+    params?: Promise<T>;
 }
 
 // 页面容器
@@ -37,3 +40,4 @@ interface ApiResource<D> extends BaseResource {
         statusText: string;
     }
 }
+

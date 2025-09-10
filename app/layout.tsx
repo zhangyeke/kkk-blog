@@ -1,20 +1,14 @@
 import "styles/tailwind.css"
-import {Metadata} from "next";
 import {globalFont, h1Font} from "@/assets/fonts"
+import {Toaster} from "@/components/ui/sonner"
 import {ThemeProvider} from "@/components/ThemeProvider/ThemeProvider";
 import WebVitals from "@/components/WebVitals/WebVitals";
 
-export const metadata: Metadata = {
-    title: {
-        template: '%s | kkk',
-        default: 'kkk',
-    }
-}
 
 export default function RootLayout({children}: ContainerProps) {
     return (
         <html suppressHydrationWarning lang="zh-cn" className={`${globalFont.className} ${h1Font.variable} `}>
-        <body>
+        <body className={'overflow-y-auto overflow-x-hidden'}>
         <WebVitals/>
         <ThemeProvider
             attribute="class"
@@ -23,6 +17,7 @@ export default function RootLayout({children}: ContainerProps) {
             disableTransitionOnChange
         >
             {children}
+            <Toaster position="top-center" richColors duration={1500}/>
         </ThemeProvider>
         </body>
         </html>

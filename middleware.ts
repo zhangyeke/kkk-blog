@@ -11,9 +11,12 @@ const corsOptions = {
 }
 
 export async function middleware(request: NextRequest) {
-    return NextResponse.next({
-        request,
-    })
+    // const requestHeaders = new Headers(request.headers)
+    // requestHeaders.set('x-hello-from-middleware1', 'hello')
+    const response = NextResponse.next()
+    const pathname = request.nextUrl.pathname;
+    response.headers.set('k-pathname', pathname)
+    return response
 }
 
 export const config = {

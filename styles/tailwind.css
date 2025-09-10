@@ -51,7 +51,7 @@
 */
 
 :root {
-    --header-height: 60px;
+    --header-height: 64px;
     --radius: 0.625rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -149,5 +149,56 @@
 
     .position-center {
         @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
+        animation: reverse;
     }
+}
+
+@theme {
+    --animate-avatar-offset-scale: avatarOffsetScale 0.35s ease-in-out forwards;
+
+    @keyframes avatarOffsetScale {
+        0% {
+            display: none;
+            opacity: 0;
+        }
+        30% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 1;
+            transform: translate(-50px, 30px) scale(2);
+        }
+    }
+
+    --animate-avatar-offset-scale-reverse: avatarOffsetScaleReverse 0.35s ease-in-out forwards;
+
+    @keyframes avatarOffsetScaleReverse {
+        0% {
+            opacity: 1;
+            transform: translate(-50px, 30px) scale(2);
+        }
+        30% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            display: none;
+        }
+    }
+
+    --animate-small-avatar-show: smallAvatarShow .5s linear forwards;
+
+    @keyframes smallAvatarShow {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+
+    }
+}
+.k-icon svg {
+    width: inherit;
+    height: inherit;
 }

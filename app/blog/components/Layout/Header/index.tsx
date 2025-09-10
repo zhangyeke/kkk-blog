@@ -1,30 +1,33 @@
-"use client"
-import {useSelectedLayoutSegment} from "next/navigation";
+import {headers} from "next/headers";
 import {HEADER_BLACKS} from "@/config/blog"
 import {PostCategory} from "@/types/postCategory";
-import HeaderMenu from "./HaderMenu";
-import {MenuContext} from "./context";
+import LeftNavigationMenu from "./LeftNavigationMenu";
+import RightNavigation from "./RightNavigation";
 import Logo from "./Logo";
+import Header from "./Header";
 
 export interface HeaderProps {
-    categoryList?: PostCategory[]
+    categoryList: PostCategory[]
 }
 
-export default function Header(props: HeaderProps) {
-    const segment = useSelectedLayoutSegment();
-    if (segment && HEADER_BLACKS.includes(segment)) {
+export default async function HeaderContainer({categoryList}: HeaderProps) {
+    const headerList = await headers()
+    const pathname = headerList.get('k-pathname');
+    const isHide = HEADER_BLACKS.some(path => pathname?.includes(path))
+
+    if (isHide) {
         return null
     }
-    const fixedClassName = `fixed left-0 top-0 z-100`
 
     return (
-        <header
-            className={`bg-black/25 ${segment ? '' : fixedClassName} w-full flex justify-between items-center px-5 h-15 `}>
-            <Logo/>
-            <MenuContext value={props}>
-                <HeaderMenu/>
-            </MenuContext>
-        </header>
+        <Header
+            >
+            <div className={'flex flex-items'}>
+                <Logo/>
+                <LeftNavigationMenu categoryList={categoryList} className={'ml-4'}/>
+            </div>
+            <RightNavigation/>
+        </Header>
     )
 }
 
