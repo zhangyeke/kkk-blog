@@ -11,6 +11,7 @@ import {Image} from "@/components/k-view";
 import {MenuItem} from "./MenuItem"
 import {Separator} from "@/components/ui/separator";
 import {logout} from "@/service/auth";
+import {User} from "@/types/user"
 
 export type PopoverMenuProps = {
     username?: string;
@@ -74,9 +75,9 @@ export function UserBrief({session}: UserBriefProps) {
         {label: "写文章", icon: <NotebookPen/>,},
         {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>},
     ]
-
-    const username = (session.user?.name || "kkk").substring(0, 1)
-    const avatar = session.user?.avatar || ''
+    const user = session.user as User
+    const username = (user?.name || "kkk").substring(0, 1)
+    const avatar = user?.avatar || ''
 
     const [isFirstHover, setIsFirstHover] = React.useState(false)
     const [isOpen, setIsOpen] = React.useState(true)
