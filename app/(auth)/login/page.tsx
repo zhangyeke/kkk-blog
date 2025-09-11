@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default async function loginPage({searchParams}: PageSearchParams<{ callbackUrl?: string }>) {
     const session = await auth()
     const pageParams = await searchParams
-    const callbackUrl = pageParams.callbackUrl || '/'
+    const callbackUrl = pageParams?.callbackUrl || '/'
     if (session) {
         return redirect(callbackUrl)
     }
