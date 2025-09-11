@@ -46,7 +46,7 @@ export function PopoverMenu({username, menuList = []}: PopoverMenuProps) {
                     ))
                 }
             </div>
-            <Separator />
+            <Separator/>
             <MenuItem className={'px-4 py-2 hover:bg-gray-100'} onClick={handleLogout}>
                 <LogOut className={'size-4.5'}/>
                 退出登录
@@ -76,7 +76,7 @@ export function UserBrief({session}: UserBriefProps) {
     ]
 
     const username = (session.user?.name || "kkk").substring(0, 1)
-    const avatar = session.user.avatar
+    const avatar = session.user?.avatar || ''
 
     const [isFirstHover, setIsFirstHover] = React.useState(false)
     const [isOpen, setIsOpen] = React.useState(true)
