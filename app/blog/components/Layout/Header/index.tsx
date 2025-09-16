@@ -20,8 +20,7 @@ export default async function HeaderContainer({categoryList}: HeaderProps) {
     }
 
     return (
-        <Header
-            >
+        <Header>
             <div className={'flex flex-items'}>
                 <Logo/>
                 <LeftNavigationMenu categoryList={categoryList} className={'ml-4'}/>

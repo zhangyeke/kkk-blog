@@ -41,3 +41,7 @@ interface ApiResource<D> extends BaseResource {
     }
 }
 
+/* 自定义css变量 并包含基础的css样式*/
+interface StyleProperties extends React.CSSProperties {
+    [key: string]: string
+}

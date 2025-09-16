@@ -1,6 +1,7 @@
 import {type ClassValue, clsx} from "clsx"
 import qs from "qs"
 import {twMerge} from "tailwind-merge"
+import {get, set} from "lodash"
 
 /*
  * @Author: EDY
@@ -13,7 +14,29 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
+/*
+ * @Author: EDY
+ * @Date: 2025/9/15
+ * @LastEditors: EDY
+ * @Description: 获取深层对象属性
+ * @Params:
+ */
 
+export function getDeepValue<T, S>(obj: T, path: string, defaultValue?: S) {
+    return get(obj, path, defaultValue);
+}
+
+/*
+ * @Author: EDY
+ * @Date: 2025/9/15
+ * @LastEditors: EDY
+ * @Description: 设置深层对象属性
+ * @Params:
+ */
+
+export function setDeepValue<T, V>(obj: T, path: string, value: V) {
+    return set(obj, path, value)
+}
 
 /*
  * @Author: kkk

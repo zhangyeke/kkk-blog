@@ -12,21 +12,21 @@ import {MenuItem} from "./MenuItem"
 import {Separator} from "@/components/ui/separator";
 import {logout} from "@/service/auth";
 import {User} from "@/types/user"
+import {useRouter} from "next/navigation";
 
 export type PopoverMenuProps = {
     username?: string;
     menuList: Array<{
         label: string;
-        icon: React.ReactNode
+        icon: React.ReactNode;
+        href?: string
     }>
+    onMenuClick: <T>(item: T) => void
 }
 
 /*菜单弹窗内容*/
-export function PopoverMenu({username, menuList = []}: PopoverMenuProps) {
+export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuProps) {
 
-    function handleMenuClick() {
-
-    }
 
     async function handleLogout() {
         await logout()
@@ -39,7 +39,8 @@ export function PopoverMenu({username, menuList = []}: PopoverMenuProps) {
             <div className={'mt-2'}>
                 {
                     menuList.map((item, index) => (
-                        <MenuItem key={index} className={'group px-4 py-2 hover:bg-gray-100'} onClick={handleMenuClick}>
+                        <MenuItem key={index} className={'group px-4 py-2 hover:bg-primary/30'}
+                                  onClick={() => onMenuClick(item)}>
                             <i className={'size-4.5 k-icon'}>{item.icon}</i>
                             <span className={'flex-1'}>{item.label}</span>
                             <ChevronRight className={'size-3.5'}/>
@@ -70,18 +71,18 @@ export function UserBrief({session}: UserBriefProps) {
         )
     }
 
-    const menuList = [
+    const menuList = React.useRef([
         {label: "个人中心", icon: <UserRound/>, href: "/blog/user/me"},
-        {label: "写文章", icon: <NotebookPen/>,},
-        {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>},
-    ]
+        {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/editor"},
+        {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>, href: "/blog/setting"},
+    ])
     const user = session.user as User
     const username = (user?.name || "kkk").substring(0, 1)
     const avatar = user?.avatar || ''
 
     const [isFirstHover, setIsFirstHover] = React.useState(false)
-    const [isOpen, setIsOpen] = React.useState(true)
-
+    const [isOpen, setIsOpen] = React.useState(false)
+    const router = useRouter();
     const Avatar = React.useCallback(
         ({className}: BaseComponentProps) => (
             <Image
@@ -118,17 +119,20 @@ export function UserBrief({session}: UserBriefProps) {
 
     const [hoverable] = useHover(avatarElement)
 
+    function handleMenuClick(item: typeof menuList.current[number]) {
+        router.push(item.href)
+    }
+
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>{hoverable}</PopoverTrigger>
             <PopoverContent
-                collisionPadding={100}
                 sideOffset={10}
-                className={"p-0  pt-12 border-none shadow-md overflow-hidden"}
+                className={"p-0  pt-12 border-none shadow-md overflow-hidden transform -translate-x-1/6"}
                 onMouseEnter={() => setIsOpen(true)}
                 onMouseLeave={() => setIsOpen(false)}
             >
-                <PopoverMenu username={username} menuList={menuList}/>
+                <PopoverMenu username={username} menuList={menuList.current} onMenuClick={handleMenuClick}/>
             </PopoverContent>
         </Popover>
     )

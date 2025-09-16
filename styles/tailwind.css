@@ -21,6 +21,7 @@
     --color-popover-foreground: var(--popover-foreground);
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
+    --color-primary-dark: var(--primary-dark);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
     --color-muted: var(--muted);
@@ -59,7 +60,7 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: hsl(222, 100%, 54.3%);
+    --primary: transparent;
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
@@ -91,13 +92,14 @@
 */
 
 .dark {
+    /*--background: color-mix(in oklab, var(--primary-dark) 50%, transparent);*/
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
+    --primary: transparent;
     --primary-foreground: oklch(0.205 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
@@ -129,6 +131,10 @@
 */
 
 @layer base {
+    ::selection {
+        @apply text-foreground bg-primary/50;
+    }
+
     body {
         @apply bg-background text-foreground;
     }
@@ -149,11 +155,11 @@
 
     .position-center {
         @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
-        animation: reverse;
     }
 }
 
 @theme {
+    /*头像偏移放大*/
     --animate-avatar-offset-scale: avatarOffsetScale 0.35s ease-in-out forwards;
 
     @keyframes avatarOffsetScale {
@@ -171,7 +177,7 @@
     }
 
     --animate-avatar-offset-scale-reverse: avatarOffsetScaleReverse 0.35s ease-in-out forwards;
-
+    /*头像偏移回正*/
     @keyframes avatarOffsetScaleReverse {
         0% {
             opacity: 1;
@@ -197,8 +203,38 @@
         }
 
     }
+
+    --animate-smoky: smoky both;
+
+    /*文字烟雾消失*/
+    @keyframes smoky {
+
+        60% {
+            text-shadow: 0 0 2.5rem var(--color);
+        }
+        to {
+            opacity: 0;
+            transform: translate3d(10rem, -5rem, 0) rotate(-40deg) skewX(70deg) scale(1.5);
+            text-shadow: 0 0 1.25rem var(--color);
+        }
+    }
+
+    --animate-fade-in: fadeIn .25s both;
+    /*元素显示*/
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
 }
 .k-icon svg {
     width: inherit;
     height: inherit;
+}
+
+.dark .rc-color-picker-panel {
+    @apply bg-primary/30;
 }
