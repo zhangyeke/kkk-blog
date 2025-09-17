@@ -16,5 +16,8 @@ export function ThemeProvider({
         rootRegisterProperty(`--primary`, themes.primary)
     }, [themes])
 
+
+
+
     return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }

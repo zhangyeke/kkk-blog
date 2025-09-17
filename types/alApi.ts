@@ -1,15 +1,14 @@
 export interface Saying {
-    content: string;
-    author: string;
-    typeid: number;
-}
-
-export interface SayingResource {
-    request_id: string;
-    success: boolean;
-    message: string;
-    code: number;
-    data: Saying;
-    time: number;
-    usage: number;
+    id: number;
+    uuid: string;
+    hitokoto: string;
+    type: string;
+    from: string;
+    from_who: string;
+    creator: string;
+    creator_uid: number;
+    reviewer: number;
+    commit_from: string;
+    created_at: string;
+    length: number;
 }

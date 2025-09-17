@@ -1,5 +1,4 @@
-import {headers} from "next/headers";
-import {HEADER_BLACKS} from "@/config/blog"
+
 import {PostCategory} from "@/types/postCategory";
 import LeftNavigationMenu from "./LeftNavigationMenu";
 import RightNavigation from "./RightNavigation";
@@ -11,13 +10,6 @@ export interface HeaderProps {
 }
 
 export default async function HeaderContainer({categoryList}: HeaderProps) {
-    const headerList = await headers()
-    const pathname = headerList.get('k-pathname');
-    const isHide = HEADER_BLACKS.some(path => pathname?.includes(path))
-
-    if (isHide) {
-        return null
-    }
 
     return (
         <Header>

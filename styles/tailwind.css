@@ -138,6 +138,10 @@
     body {
         @apply bg-background text-foreground;
     }
+
+    html, body {
+        @apply h-full;
+    }
 }
 
 @layer utilities {
@@ -156,9 +160,16 @@
     .position-center {
         @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform;
     }
+
+    .container {
+        @apply w-[1200px] mx-auto;
+    }
+
+
 }
 
 @theme {
+
     /*头像偏移放大*/
     --animate-avatar-offset-scale: avatarOffsetScale 0.35s ease-in-out forwards;
 
@@ -227,6 +238,21 @@
         }
         100% {
             opacity: 1;
+        }
+    }
+    --animate-gradient-transition: gradientTransition 10s infinite linear alternate;
+    /*渐变背景过渡*/
+    @keyframes gradientTransition {
+        0% {
+            /*filter: hue-rotate(0);*/
+            background-position: 0 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0 50%;
+            /*filter: hue-rotate(var(--diff, 150deg));*/
         }
     }
 }

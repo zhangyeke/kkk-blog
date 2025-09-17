@@ -1,10 +1,10 @@
 import React from "react"
-import Spinner from "./Spinner"
+import {Skeleton} from "@/components/ui/skeleton"
 
-export default async function Suspense({children}:ContainerProps) {
+export default async function Suspense({children, className, style}: ContainerProps & BaseComponentProps) {
 
     return (
-        <React.Suspense fallback={<Spinner/>}>
+        <React.Suspense fallback={<Skeleton  className={className} style={style}/>}>
             {children}
         </React.Suspense>
     )

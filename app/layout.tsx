@@ -7,7 +7,7 @@ import {AppStoreProvider, ThemeProvider} from "@/providers";
 export default function RootLayout({children}: ContainerProps) {
     return (
         <html suppressHydrationWarning lang="zh-cn" className={`${globalFont.className} ${h1Font.variable} `}>
-        <body className={'overflow-y-auto overflow-x-hidden'}>
+        <body  className={'overflow-y-auto overflow-x-hidden'}>
         <WebVitals/>
         <AppStoreProvider>
             <ThemeProvider

@@ -11,13 +11,17 @@ export const metadata: Metadata = {
 }
 
 
-export default async function BlogLayout({children, drawer}: Slots<'children' | 'drawer'>) {
+export default async function BlogLayout({children, drawer, footer}: Slots<'children' | 'drawer' | 'footer'>) {
     const categoryList = await getPostCategoryList()
+
     return (
-        <main>
+        <section className={'min-h-full flex flex-col'}>
             <Header categoryList={categoryList}/>
-            {children}
+            <main className={'flex-1'}>
+                {children}
+            </main>
+            {footer}
             {drawer}
-        </main>
+        </section>
     )
 }

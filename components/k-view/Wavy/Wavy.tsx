@@ -60,7 +60,7 @@ export const Wavy: React.FC<WavyProps> = (props) => {
                 // 添加颜色断点：顶部 (0%) 的颜色透明度为 0.6
                 gradient.addColorStop(0, hex2rgb(waveColor, 0.2));
                 // 添加颜色断点：底部 (100%) 的颜色透明度为 1.0
-                gradient.addColorStop(1, hex2rgb(waveColor, 1.0));
+                gradient.addColorStop(1, hex2rgb(waveColor, 0.92));
 
             }
             // 将填充样式设置为我们创建的渐变

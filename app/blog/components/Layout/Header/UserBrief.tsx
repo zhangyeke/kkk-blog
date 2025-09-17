@@ -49,7 +49,7 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
                 }
             </div>
             <Separator/>
-            <MenuItem className={'px-4 py-2 hover:bg-gray-100'} onClick={handleLogout}>
+            <MenuItem className={'px-4 py-2 hover:bg-primary/30'} onClick={handleLogout}>
                 <LogOut className={'size-4.5'}/>
                 退出登录
             </MenuItem>

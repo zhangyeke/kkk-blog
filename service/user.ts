@@ -16,25 +16,29 @@ export async function getAllUsers() {
 
 }
 
-// 根据 ID 获取单个
-export async function getUserById(id: string) {
+/*获取单个用户*/
+export async function findUniqueUser(where: Partial<Omit<User, 'password'>>) {
     const user: User = await prisma.user.findUnique({
-        where: {
-            id
+        where,
+        omit: {
+            password: true
         }
     })
     return user
 }
 
+// 根据 ID 获取单个
+export async function getUserById(id: string) {
+    return await findUniqueUser({
+        id
+    })
+}
+
 // 根据 邮箱 获取单个
 export async function getUserByEmail(email: string) {
-
-    const user: User = await prisma.user.findUnique({
-        where: {
-            email
-        }
+    return await findUniqueUser({
+        email
     })
-    return user
 }
 
 // --- UPDATE (更新) ---
