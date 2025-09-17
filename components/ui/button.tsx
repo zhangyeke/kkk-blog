@@ -30,7 +30,9 @@ const buttonVariants = cva(
             long: {
                 true: "w-full"
             },
-            loading: {}
+            loading: {
+                true: ""
+            }
         },
         defaultVariants: {
             variant: "default",

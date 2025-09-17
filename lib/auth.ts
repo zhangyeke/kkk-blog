@@ -21,21 +21,24 @@ const config = {
         CredentialsProvider({
             credentials: {
                 email: {
-                    type: "emil"
+                    type: "text"
                 },
                 password: {
                     type: "password"
                 }
             },
             async authorize(credentials) {
+                console.log("进来:", credentials)
                 if (credentials === null) return null
                 // 根据邮箱查询用户
                 const user = await getUserByEmail(credentials.email as string)
-
+                console.log("查询用户", user)
                 // 验证密码
                 if (user && user.password) {
                     // 明文密码与加密 密码比对
                     const isMatch = compareSync(credentials.password as string, user.password)
+
+                    console.log("是否一致", isMatch)
                     if (isMatch) {
                         return user
                     }

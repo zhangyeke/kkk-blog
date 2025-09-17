@@ -31,7 +31,7 @@ export function WavyGroup(props: WavyGroupProps) {
                 emptyArray.map((_, index) => (
                     <div className={"absolute bottom-0 left-0"} key={index}>
                         <Wavy
-                            waveColor={theme === 'light' ? waveColor : color2dark(themes.primary, 0.05)}
+                            waveColor={theme === 'light' ? waveColor : color2dark(themes.primary, 0.02)}
                             width={winWidth}
                             waveSpeed={index + 1}
                             direction={index % 2 === 0 ? 'rtl' : 'ltr'}

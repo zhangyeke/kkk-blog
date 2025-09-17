@@ -3,23 +3,12 @@ import {GoButton, GradientTransition, Image} from "@/components/k-view"
 import {findUniqueUser} from "@/service/user";
 
 
-
-function delay() {
-    return new Promise((res) => {
-        setTimeout(() => {
-            res()
-        }, 5000)
-    })
-
-}
-
 export default async function Master() {
 
     const user = await findUniqueUser({
         email: "997610780@qq.com",
         roles: "superAdmin"
     })
-    await delay()
 
     const statistics = [
         {

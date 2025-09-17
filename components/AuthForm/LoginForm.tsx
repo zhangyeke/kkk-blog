@@ -17,7 +17,8 @@ export function LoginForm({callbackUrl}: { callbackUrl: string }) {
     const router = useRouter()
     const [data, action, pending] = React.useActionState(login, {
         code: -1,
-        message: ""
+        message: "",
+        data: {}
     })
 
     const form = useForm({

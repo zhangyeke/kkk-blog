@@ -32,8 +32,8 @@ export default async function Web() {
 
             </div>
             <div className={'container flex'}>
-                <aside className={'w-300px'}>
-                    <Suspense className={'w-full h-[330px]'}>
+                <aside>
+                    <Suspense className={'w-[300px] h-[330px]'}>
                         <Master/>
                     </Suspense>
                 </aside>

@@ -1,9 +1,11 @@
 'use server';
 import prisma from "@/lib/prisma"
-import {User} from "@/types/user";
+import {Prisma, User} from '@prisma/client'
+// import {User} from "@/types/user";
+
 
 // --- CREATE (新增) ---
-export async function createUser(data: Pick<User, 'name' | 'email' | 'password'>) {
+export async function createUser(data: Prisma.UserCreateInput) {
     const user: User = await prisma.user.create({
         data
     })
@@ -11,14 +13,14 @@ export async function createUser(data: Pick<User, 'name' | 'email' | 'password'>
 }
 
 // --- READ (查询) ---
-// 获取所有文章
+// 获取所有
 export async function getAllUsers() {
 
 }
 
 /*获取单个用户*/
-export async function findUniqueUser(where: Partial<Omit<User, 'password'>>) {
-    const user: User = await prisma.user.findUnique({
+export async function findUniqueUser(where: Prisma.UserWhereUniqueInput) {
+    const user = await prisma.user.findUnique({
         where,
         omit: {
             password: true
@@ -36,13 +38,18 @@ export async function getUserById(id: string) {
 
 // 根据 邮箱 获取单个
 export async function getUserByEmail(email: string) {
-    return await findUniqueUser({
-        email
+    const user = await prisma.user.findUnique({
+        where: {
+            email
+        },
+
     })
+
+    return user
 }
 
 // --- UPDATE (更新) ---
-export async function updateUser(id: string, data: Partial<Omit<User, 'id'>>) {
+export async function updateUser(id: string, data: Prisma.UserUpdateInput) {
     const user: User = await prisma.user.update({
         where: {
             id
