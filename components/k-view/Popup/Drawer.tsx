@@ -1,17 +1,17 @@
 "use client"
 import {X} from "lucide-react";
 import React from "react";
-import {Button} from "@/components/ui/button";
 import {
-    Drawer as ShadDrawer,
     DrawerClose,
     DrawerContent,
     DrawerDescription,
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-    DrawerTrigger
+    DrawerTrigger,
+    Drawer as ShadDrawer
 } from "@/components/ui/drawer";
+import {FooterButtons} from "./FooterButtons";
 
 
 export type DrawerProps = {
@@ -19,11 +19,23 @@ export type DrawerProps = {
     description?: React.ReactNode
     trigger?: React.ReactNode
     showCloseIcon?: boolean
-    footer?: React.ReactNode
+    footer?: React.ReactNode,
+    onConfirm?: () => void
+    onCancel?: () => void
 } & React.ComponentProps<typeof ShadDrawer>
 
 export function Drawer(props: DrawerProps) {
-    const {description, showCloseIcon = true, trigger, footer, title, children, ...drawerProps} = props;
+    const {
+        description,
+        showCloseIcon = true,
+        trigger,
+        footer,
+        title,
+        children,
+        onCancel,
+        onConfirm,
+        ...drawerProps
+    } = props;
     return (
         <ShadDrawer {...drawerProps}>
             {
@@ -53,12 +65,7 @@ export function Drawer(props: DrawerProps) {
                 <DrawerFooter className={`${footer === null && 'hidden'} border-t-1 border-solid border-gray-200`}>
                     {
                         footer === undefined ? (
-                            <div className={'flex items-center justify-end gap-x-4 w-full'}>
-                                <DrawerClose asChild>
-                                    <Button variant="outline">取消</Button>
-                                </DrawerClose>
-                                <Button>确定</Button>
-                            </div>
+                            <FooterButtons className={'px-6'} type={'drawer'} onCancel={onCancel} onConfirm={onConfirm}/>
                         ) : footer
                     }
 

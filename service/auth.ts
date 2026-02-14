@@ -10,7 +10,7 @@ import {createUser, getUserByEmail} from "@/service/user";
 
 
 /*登录*/
-export async function login(preState: unknown, formData: LoginParams) {
+export async function login(_: unknown, formData: LoginParams) {
     try {
         const user = loginSchema.parse(formData)
         await signIn('credentials', {
@@ -49,7 +49,7 @@ export async function logout() {
 }
 
 /*注册*/
-export async function register(preState: unknown, formData: RegisterParams) {
+export async function register(_: unknown, formData: RegisterParams) {
     try {
         const user = await registerSchema.parseAsync(formData)
         const originPwd = user.password

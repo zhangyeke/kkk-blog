@@ -1,6 +1,7 @@
 import React from 'react';
-import {GoButton, GradientTransition, Image} from "@/components/k-view"
+import {GradientTransition, Image} from "@/components/k-view"
 import {findUniqueUser} from "@/service/user";
+import WriteArticleButton from "./WriteArticleButton";
 
 
 export default async function Master() {
@@ -24,10 +25,13 @@ export default async function Master() {
             value: 130000
         }
     ]
-    return (
-        <GradientTransition className={'flex-center flex-col w-[300px]  py-4 px-8 rounded-lg text-white'}>
+    if (!user) return null;
 
-            <Image className={'size-30 rounded-full'} src={user.avatar} draggable={false}/>
+    return (
+        <GradientTransition
+            className={'flex-center flex-col w-full  py-4 px-8 rounded-lg text-white shadow-sm hover:shadow-lg transition-all'}>
+
+            <Image className={'size-30 rounded-full'} src={user.avatar as string} draggable={false}/>
 
             <div className={'text-3xl mt-3.5 font-bold'}>{user.name}</div>
 
@@ -43,7 +47,7 @@ export default async function Master() {
 
             </div>
 
-            <GoButton className={'mt-4'}/>
+            <WriteArticleButton/>
         </GradientTransition>
 
     )

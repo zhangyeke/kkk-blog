@@ -49,7 +49,7 @@ export default async function HeaderMenu({categoryList, className, style}: Heade
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger
-                        className={'text-white hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>学习日记</NavigationMenuTrigger>
+                        className={'text-white hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>记录</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         {
                             categoryList.map((item, index) => (

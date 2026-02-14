@@ -1,21 +1,31 @@
+"use client"
 import {ArrowRight} from "lucide-react";
 import React from "react";
-import Link from "next/link"
+import {useRouter} from "next/navigation";
 
 
 export type GoButtonProps = {
     title?: string
-    href?: React.ComponentProps<Link>['href']
+    href?: string
+    onClick?: () => void
 } & BaseComponentProps
 
 export function GoButton(props: GoButtonProps) {
-    const {title = '写文章', className, href = '/', style} = props;
+    const {title = '写文章', className, href, style, onClick} = props;
+    const router = useRouter()
+
+    function handleClick() {
+        if (href) {
+            return router.push(href)
+        }
+        if (typeof onClick === 'function') onClick()
+    }
 
     return (
-        <Link
-            href={href}
+        <div
             style={style}
             className={`${className} group relative cursor-pointer p-2 w-full border border-gray-200 bg-white rounded-full overflow-hidden text-black text-center font-semibold`}
+            onClick={handleClick}
         >
             <span
                 className='translate-x-1 group-hover:translate-x-12 group-hover:opacity-0 transition-all duration-300 inline-block'>
@@ -26,6 +36,6 @@ export function GoButton(props: GoButtonProps) {
                 <span>{title}</span> <ArrowRight/></div>
             <div
                 className='absolute top-[40%] left-[36%] h-2 w-2 group-hover:h-full group-hover:w-full rounded-lg bg-primary/50 scale-[1]  group-hover:bg-bg-primary group-hover:scale-[1.8] transition-all duration-300 group-hover:top-[0%] group-hover:left-[0%] '></div>
-        </Link>
+        </div>
     );
 }

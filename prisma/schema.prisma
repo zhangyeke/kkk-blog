@@ -19,15 +19,15 @@ model Post {
   id         Int          @id @default(autoincrement())
   category   PostCategory @relation(fields: [categoryId], references: [id])
   categoryId Int
-  pv         Int          @default(0)
+  pv         Int?          @default(0)
   cover      String
   tags       String
   title      String
   content    String
-  status     Int          @default(1)
+  status     Int?          @default(1)
   userId     String       @db.Uuid
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime     @default(now()) @db.Timestamp(6)
+  createdAt  DateTime?     @default(now()) @db.Timestamp(6)
 }
 
 model PostCategory {

@@ -11,17 +11,19 @@ import {Image} from "@/components/k-view";
 import {MenuItem} from "./MenuItem"
 import {Separator} from "@/components/ui/separator";
 import {logout} from "@/service/auth";
-import {User} from "@/types/user"
+import {User} from '@prisma/client'
 import {useRouter} from "next/navigation";
+
+type Menu = {
+    label: string;
+    icon: React.ReactNode;
+    href?: string
+}
 
 export type PopoverMenuProps = {
     username?: string;
-    menuList: Array<{
-        label: string;
-        icon: React.ReactNode;
-        href?: string
-    }>
-    onMenuClick: <T>(item: T) => void
+    menuList: Array<Menu>
+    onMenuClick: (item: Menu) => void
 }
 
 /*菜单弹窗内容*/
@@ -119,8 +121,8 @@ export function UserBrief({session}: UserBriefProps) {
 
     const [hoverable] = useHover(avatarElement)
 
-    function handleMenuClick(item: typeof menuList.current[number]) {
-        router.push(item.href)
+    function handleMenuClick(item: Menu) {
+        if (item.href) router.push(item.href)
     }
 
     return (

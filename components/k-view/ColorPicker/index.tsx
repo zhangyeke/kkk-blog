@@ -10,7 +10,7 @@ import {cn} from "@/lib/utils";
 
 export interface ColorPickerProps extends Pick<RcColorPickerProps, 'panelRender'> {
     onChange?: (color?: string) => void
-    onChangeComplete?: (color?: string) => void
+    onChangeComplete?: (color: string) => void
     defaultValue?: string
     value?: string
 }
@@ -19,9 +19,13 @@ export type Color = RcColor
 
 
 function conversionHex(color: Color | string) {
-    const {r, g, b, a} = color
-    const rgba = `rgba(${r}, ${g}, ${b}, ${a})`
-    return typeof color !== 'string' ? rgb2hex(rgba) : color
+    if (typeof color === 'string') {
+        return color
+    } else {
+        const {r, g, b, a} = color
+        const rgba = `rgba(${r}, ${g}, ${b}, ${a})`
+        return rgb2hex(rgba)
+    }
 }
 
 export type ColorBoxProps = {
@@ -51,7 +55,7 @@ export function ColorBox({color, style, className, onClick}: ColorBoxProps) {
 }
 
 export function ColorPicker(props: ColorPickerProps) {
-    const {defaultValue, panelRender, value, onChange, onChangeComplete} = props
+    const {defaultValue, value, onChange, onChangeComplete} = props
     const [color, setColor] = React.useState(defaultValue || value)
     const presetColors = React.useRef([
         "#fb2c36",
@@ -79,14 +83,14 @@ export function ColorPicker(props: ColorPickerProps) {
         React.startTransition(() => {
             const value = conversionHex(color)
             setColor(value)
-            onChange && onChange(value)
+            if (typeof onChange === 'function') onChange(value)
         })
     }
 
     function handleChangeComplete(color: Color | string) {
         const hex = conversionHex(color)
         setColor(hex)
-        onChangeComplete && onChangeComplete(hex)
+        if (typeof onChangeComplete === 'function') onChangeComplete(hex)
     }
 
 

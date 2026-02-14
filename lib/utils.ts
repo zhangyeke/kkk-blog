@@ -34,7 +34,7 @@ export function getDeepValue<T, S>(obj: T, path: string, defaultValue?: S) {
  * @Params:
  */
 
-export function setDeepValue<T, V>(obj: T, path: string, value: V) {
+export function setDeepValue<T extends object, V>(obj: T, path: string, value: V) {
     return set(obj, path, value)
 }
 

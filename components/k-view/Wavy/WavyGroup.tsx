@@ -33,7 +33,7 @@ export function WavyGroup(props: WavyGroupProps) {
                         <Wavy
                             waveColor={theme === 'light' ? waveColor : color2dark(themes.primary, 0.02)}
                             width={winWidth}
-                            waveSpeed={index + 1}
+                            waveSpeed={(index + 1) * 0.3}
                             direction={index % 2 === 0 ? 'rtl' : 'ltr'}
                         />
                     </div>

@@ -15,7 +15,7 @@ export default function SettingPage() {
 
     function handleOpenChange(open: boolean = false) {
         setOpen(open)
-        !open && router.back()
+        if (!open) router.back()
     }
 
     function handlePrimaryColorConfirm(color: string) {
@@ -38,7 +38,7 @@ export default function SettingPage() {
                     <PopoverTrigger asChild>
                         <div className={'flex items-center'}>
                             <span>主题颜色：</span>
-                            <ColorBox  color={themes.primary}/>
+                            <ColorBox color={themes.primary}/>
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className={'z-[101] border-0  w-fit p-0'}>

@@ -5,6 +5,7 @@ import {PhotoMaterial} from "@/types/material";
 import {GLOBAL_TITLE} from "@/config/blog"
 import Saying from "@/app/blog/components/Saying";
 import Master from "@/app/blog/components/Master";
+import TodayPoetry from "@/app/blog/components/TodayPoetry";
 
 export const metadata: Metadata = {
     title: GLOBAL_TITLE
@@ -31,10 +32,14 @@ export default async function Web() {
                 />
 
             </div>
-            <div className={'container flex'}>
-                <aside>
-                    <Suspense className={'w-[300px] h-[330px]'}>
+            <div className={'container flex mb-4'}>
+                <aside className={'w-[320px]'}>
+                    <Suspense className={'w-full h-[330px]'}>
                         <Master/>
+                    </Suspense>
+
+                    <Suspense className={'w-full h-[200px]'}>
+                        <TodayPoetry/>
                     </Suspense>
                 </aside>
                 <section>

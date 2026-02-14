@@ -10,7 +10,7 @@ export default function Default() {
     return (
         <footer className={'relative rounded-tr-[24px] rounded-tl-[24px] overflow-hidden shadow-lg shadow-gray-500'}>
             <Squares
-                speed={0.5}
+                speed={0.2}
                 squareSize={40}
                 direction='diagonal' // up, down, left, right, diagonal
                 borderColor={hex2rgb(themes.primary, 0.2)}

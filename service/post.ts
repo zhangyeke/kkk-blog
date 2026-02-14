@@ -1,7 +1,17 @@
 'use server';
-// --- CREATE (新增) ---
-export async function createPost(data: { title: string, content?: string }) {
+import {Post, Prisma} from '@prisma/client'
+import prisma from "@/lib/prisma";
+import {addPostParams} from "@/types/post";
 
+// --- CREATE (新增) ---
+export async function createPost(_: unknown, data: addPostParams) {
+    const post: Post = await prisma.post.create({
+        data: {
+            ...data,
+            userId: ''
+        }
+    })
+    return post
 }
 
 // --- READ (查询) ---
