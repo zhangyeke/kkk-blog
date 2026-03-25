@@ -2,16 +2,26 @@
 import {Post, Prisma} from '@prisma/client'
 import prisma from "@/lib/prisma";
 import {addPostParams} from "@/types/post";
+import {auth} from "@/lib/auth"
+import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 
 // --- CREATE (新增) ---
-export async function createPost(_: unknown, data: addPostParams) {
-    const post: Post = await prisma.post.create({
-        data: {
-            ...data,
-            userId: ''
+export async function createPost(data: addPostParams) {
+    try {
+        const session = await auth()
+        if (session && session.user) {
+            const post: Post = await prisma.post.create({
+                data: {
+                    ...data,
+                    userId: session.user.id || ''
+                }
+            })
+            return backSuccessMessage("创建文章成功", post)
         }
-    })
-    return post
+    } catch (err) {
+        return Promise.reject(backFailMessage("创建文章失败", err))
+    }
+
 }
 
 // --- READ (查询) ---

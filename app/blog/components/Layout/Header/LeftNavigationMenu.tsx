@@ -8,7 +8,11 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger
 } from "@/components/ui/navigation-menu";
-import {type HeaderProps} from "./index";
+import {PostCategory} from "@/types/postCategory";
+
+export interface HeaderMenuProps extends BaseComponentProps {
+    categoryList?: PostCategory[]
+}
 
 const materialList = [
     {
@@ -22,7 +26,7 @@ const materialList = [
 
 ]
 
-export default async function HeaderMenu({categoryList, className, style}: HeaderProps & BaseComponentProps) {
+export default async function HeaderMenu({categoryList, className, style}: HeaderMenuProps) {
 
     return (
         <NavigationMenu viewport={false} style={style} className={className}>
@@ -52,7 +56,7 @@ export default async function HeaderMenu({categoryList, className, style}: Heade
                         className={'text-white hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>记录</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         {
-                            categoryList.map((item, index) => (
+                            categoryList && categoryList.map((item, index) => (
                                 <NavigationMenuLink key={index} asChild>
                                     <Link className={'text-nowrap'}
                                           href={`/blog/article/list?cId=${item.id}`}>{item.name}</Link>

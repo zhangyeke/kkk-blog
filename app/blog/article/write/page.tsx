@@ -1,17 +1,13 @@
 "use client"
 import React from "react"
-import {Drawer} from "@/components/k-view";
+import {ArticleForm} from "@/components/ArticleForm";
 
 export default function Page() {
-
     return (
-        <Drawer
-            title={'写文章'}
-            footer={null}
-            open={true}
-            direction={'right'}
-            aria-hidden={open}
-        >
-        </Drawer>
+        <div className={'py-10 bg-[url(/images/editor_article_bg.jpeg)] bg-cover bg-center'}>
+            <div className={'container  bg-background p-5 rounded-lg shadow-lg '}>
+                <ArticleForm/>
+            </div>
+        </div>
     )
 }

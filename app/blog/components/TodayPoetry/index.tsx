@@ -1,21 +1,19 @@
 import {
     Card,
-    CardAction,
     CardContent,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
 import {getTodayPoem} from "@/service/poem";
 
+// 博客首页今日诗词展示组件
 export default async function TodayPoetry() {
 
     const {data: poem} = await getTodayPoem()
 
-    console.log(poem, "今日诗词")
-
     return (
-        <Card className="w-full mt-4 hover:shadow-lg">
-            <CardHeader className={'items-center'}>
+        <Card className="w-full mt-4 max-h-[400px] no-scrollbar overflow-y-auto hover:shadow-lg bg-left bg-[url(/images/shici_bg.jpg)] bg-cover">
+            <CardHeader className={'items-center border-solid border-b-1 border-border pb-2'}>
                 <CardTitle className={'flex items-center'}>
                     <img alt={'今日诗词'} className={'w-5 mr-1'} src={'/images/shici.png'}/>
                     <span>今日诗词</span>

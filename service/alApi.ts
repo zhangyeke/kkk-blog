@@ -1,6 +1,6 @@
 "use server"
 import {env} from "env.mjs"
-import {Saying, SayingResource} from "@/types/alApi";
+import {Saying} from "@/types/alApi";
 
 /*
  * @Author: EDY
@@ -11,7 +11,7 @@ import {Saying, SayingResource} from "@/types/alApi";
  */
 export async function getSaying() {
     try {
-        const res = await fetch(`https://v1.hitokoto.cn?encode=json`, {
+        const res = await fetch(`${env.AL_API_URL}?encode=json`, {
             method: "get",
             headers: {
                 'Content-Type': 'application/json', // 告诉服务器我们发送的是 JSON 格式数据

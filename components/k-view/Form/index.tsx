@@ -5,7 +5,7 @@ import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage, Form as ShadForm} from "@/components/ui/form";
 import {Control} from "./Control";
-
+/*弃用状态*/
 export interface FormItem {
     prop: string;
     label?: React.ReactNode;
@@ -66,7 +66,6 @@ export function Form({items, formResolver, defaultValues, children, ref}: FormPr
                             control={form.control}
                             name={item.prop}
                             render={({field}) => {
-                                console.log("这额", field,form.control)
                                 return (
                                     <FormItem>
                                         <FormLabel>{item.label}</FormLabel>

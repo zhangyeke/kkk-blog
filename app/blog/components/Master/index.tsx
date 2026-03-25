@@ -3,7 +3,7 @@ import {GradientTransition, Image} from "@/components/k-view"
 import {findUniqueUser} from "@/service/user";
 import WriteArticleButton from "./WriteArticleButton";
 
-
+// 博主信息展示组件
 export default async function Master() {
 
     const user = await findUniqueUser({

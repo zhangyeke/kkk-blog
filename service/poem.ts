@@ -1,9 +1,10 @@
 "use server";
+import {env} from "env.mjs"
 import Request from "@/lib/Request";
 import {PoemResponse} from "@/types/Poem";
 
 const http = new Request({
-    baseUrl: 'https://v2.jinrishici.com',
+    baseUrl: env.POEM_API_URL,
     method: "GET",
     headers: {
         "Content-Type": "application/json",

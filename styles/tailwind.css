@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 
+@plugin "@tailwindcss/typography";
 /*
   ---break---
 */
@@ -129,6 +130,26 @@
 /*
   ---break---
 */
+/*markdown编辑器样式*/
+.mdxeditor.custom-editor {
+    --basePageBg: var(--background);
+    --accentSolidHover: var(--color-primary);
+
+}
+
+.mdxeditor.custom-editor .mdxeditor-toolbar {
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+
+.mdxeditor.custom-editor.mdxeditor-popup-container {
+    h2 {
+        font-size: 0;
+    }
+
+
+}
+
 
 @layer base {
     ::selection {
@@ -142,6 +163,56 @@
     html, body {
         @apply h-full;
     }
+
+    /*markdown编辑器样式*/
+    .mdxeditor.custom-editor {
+
+        input[type="file"]::file-selector-button {
+            @apply mr-4 py-2 px-4 rounded-md border-0 text-sm font-medium bg-primary text-white hover:bg-primary/50 cursor-pointer;
+        }
+
+        blockquote {
+            font-weight: 500;
+            font-style: italic;
+            border-left-width: .25rem;
+            border-left-color: var(--color-primary);
+            quotes: "\201C" "\201D" "\2018" "\2019";
+            margin-bottom: 1rem;
+            padding-left: .5rem;
+        }
+
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        ul {
+            list-style-type: disc;
+        }
+
+        li {
+            display: list-item;
+
+        }
+
+        ol {
+            list-style-type: decimal;
+
+        }
+
+        h1 {
+            @apply text-4xl font-bold mt-8 mb-4 block;
+        }
+
+        h2 {
+            @apply text-3xl font-semibold mt-6 mb-3 block;
+        }
+
+    }
+
+
 }
 
 @layer utilities {
@@ -164,7 +235,16 @@
     .container {
         @apply w-[1200px] mx-auto;
     }
+    /* 隐藏 Chrome, Safari 和 Opera 的滚动条 */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
 
+    /* 隐藏 IE, Edge 和 Firefox 的滚动条 */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
 
 }
 
@@ -256,11 +336,15 @@
         }
     }
 }
+
+.dark .rc-color-picker-panel {
+    @apply bg-primary/30;
+}
+
 .k-icon svg {
     width: inherit;
     height: inherit;
 }
 
-.dark .rc-color-picker-panel {
-    @apply bg-primary/30;
-}
+
+/*markdown编辑器样式*/

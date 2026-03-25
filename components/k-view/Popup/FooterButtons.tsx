@@ -20,22 +20,24 @@ export function PopupClose({type, children}: Pick<FooterButtonsProps, 'type'> & 
                 {children}
             </DialogClose>
         )
-    } else {
+    }
+
+    if (type === 'drawer') {
         return (
             <DrawerClose asChild>
                 {children}
             </DrawerClose>
         )
     }
-
+    return (<>{children}</>)
 }
 
 export function FooterButtons(props: FooterButtonsProps) {
-    const {type = 'dialog', cancelText = '取消', confirmText = '确定', style, className, onCancel, onConfirm} = props;
+    const {type, cancelText = '取消', confirmText = '确定', style, className, onCancel, onConfirm} = props;
     return (
         <div style={style} className={cn('flex items-center justify-end gap-x-4 w-full py-4', className)}>
             <PopupClose type={type}>
-                <Button type={'button'} variant="outline"  onClick={onCancel}>{cancelText}</Button>
+                <Button type={'button'} variant="outline" onClick={onCancel}>{cancelText}</Button>
             </PopupClose>
             <Button type={'button'} onClick={onConfirm}>{confirmText}</Button>
         </div>

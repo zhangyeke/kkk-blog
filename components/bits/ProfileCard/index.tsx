@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import './ProfileCard.css';
 
 const DEFAULT_BEHIND_GRADIENT =
@@ -241,7 +241,7 @@ const ProfileCardComponent = ({
             '--grain': grainUrl ? `url(${grainUrl})` : 'none',
             '--behind-gradient': showBehindGradient ? (behindGradient ?? DEFAULT_BEHIND_GRADIENT) : 'none',
             '--inner-gradient': innerGradient ?? DEFAULT_INNER_GRADIENT
-        }),
+        } as Record<string, string>),
         [iconUrl, grainUrl, showBehindGradient, behindGradient, innerGradient]
     );
 
@@ -250,7 +250,7 @@ const ProfileCardComponent = ({
     }, [onContactClick]);
 
     return (
-        <div ref={wrapRef} className={`pc-card-wrapper ${className}`.trim()} style={cardStyle}>
+        <div ref={wrapRef} className={`pc-card-wrapper ${className}`} style={cardStyle}>
             <section ref={cardRef} className="pc-card">
                 <div className="pc-inside">
                     <div className="pc-shine" />

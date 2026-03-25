@@ -7,8 +7,12 @@ export const env = createEnv({
             .enum(["true", "false"])
             .optional()
             .transform((value) => value === "true"),
-        AL_API_TOKEN: z.string(),
-        AL_API_URL:z.string().url(),
+        MATERIAL_API_TOKEN: z.string(),
+        MATERIAL_API_URL: z.string().url(),
+        IMGBB_API_TOKEN: z.string(),
+        IMGBB_API_URL: z.string().url(),
+        AL_API_URL: z.string().url(),
+        POEM_API_URL: z.string().url(),
         // API_URL: z.string().url(),
         // REQUEST_URL: z.string(),
     },
@@ -17,7 +21,8 @@ export const env = createEnv({
         NEXT_PUBLIC_ENV: z.enum(["development", "production"]),
         NEXT_PUBLIC_API_URL: z.string(),
         NEXT_PUBLIC_REQUEST_URL: z.string(),
-        NEXT_PUBLIC_STORAGE_NAME: z.string()
+        NEXT_PUBLIC_STORAGE_NAME: z.string(),
+        NEXT_PUBLIC_IMG_UPLOAD_LIMIT: z.string()
     },
     runtimeEnv: {
         // 运行时环境变量（自动从process.env读取）
@@ -25,12 +30,17 @@ export const env = createEnv({
         REQUEST_URL: process.env.REQUEST_URL,
         API_URL: process.env.API_URL,
         ANALYZE: process.env.ANALYZE,
-        AL_API_TOKEN:process.env.AL_API_TOKEN,
-        AL_API_URL:process.env.AL_API_URL,
+        MATERIAL_API_TOKEN: process.env.MATERIAL_API_TOKEN,
+        MATERIAL_API_URL: process.env.MATERIAL_API_URL,
+        AL_API_URL: process.env.AL_API_URL,
+        POEM_API_URL: process.env.POEM_API_URL,
+        IMGBB_API_TOKEN: process.env.IMGBB_API_TOKEN,
+        IMGBB_API_URL: process.env.IMGBB_API_URL,
         // 客户端变量
         NEXT_PUBLIC_ENV: process.env.NODE_ENV, // 通常客户端环境与服务器一致
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
         NEXT_PUBLIC_REQUEST_URL: process.env.NEXT_PUBLIC_REQUEST_URL,
         NEXT_PUBLIC_STORAGE_NAME: process.env.NEXT_PUBLIC_STORAGE_NAME,
+        NEXT_PUBLIC_IMG_UPLOAD_LIMIT: process.env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT,
     },
 })

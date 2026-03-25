@@ -8,7 +8,7 @@ import {hex2rgb} from "@/lib/color";
 export default function Default() {
     const {themes} = useAppStore(state => state)
     return (
-        <footer className={'relative rounded-tr-[24px] rounded-tl-[24px] overflow-hidden shadow-lg shadow-gray-500'}>
+        <footer className={'w-full relative rounded-tr-[24px] rounded-tl-[24px] overflow-hidden shadow-lg shadow-gray-500'}>
             <Squares
                 speed={0.2}
                 squareSize={40}

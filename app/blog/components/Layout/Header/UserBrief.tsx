@@ -75,7 +75,7 @@ export function UserBrief({session}: UserBriefProps) {
 
     const menuList = React.useRef([
         {label: "个人中心", icon: <UserRound/>, href: "/blog/user/me"},
-        {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/editor"},
+        {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/write"},
         {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>, href: "/blog/setting"},
     ])
     const user = session.user as User
@@ -111,7 +111,7 @@ export function UserBrief({session}: UserBriefProps) {
                     className={`${hasOpen && "delay-50 opacity-0"} ${notHovered && "animate-small-avatar-show"}`}
                 />
                 <Avatar
-                    className={`opacity-0 shadow-sm absolute top-0 left-0 ${
+                    className={`opacity-0 shadow-sm absolute z-[1000] top-0 left-0 ${
                         notHovered && "animate-avatar-offset-scale-reverse pointer-events-none"
                     } ${hasOpen && 'animate-avatar-offset-scale'} `}
                 />

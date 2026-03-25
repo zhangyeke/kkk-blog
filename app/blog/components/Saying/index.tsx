@@ -5,6 +5,7 @@ import {Smoky} from "@/components/k-view"
 import {getSaying} from "@/service/alApi";
 import {useAppStore} from "@/hooks";
 
+// 随机名言组件
 export default function Saying({className, style}: BaseComponentProps) {
     const [content, setContent] = React.useState("")
     const {theme} = useTheme()

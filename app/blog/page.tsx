@@ -25,8 +25,11 @@ export default async function Web() {
     return (
         <div>
             <div className={"relative"}>
-                <Banner<PhotoMaterial> list={bannerData.hits} imageKey={"largeImageURL"}
-                                       imageClass={'w-full h-[500px]'}/>
+                <Banner<PhotoMaterial>
+                    list={bannerData.hits}
+                    imageKey={"largeImageURL"}
+                    imageClass={'w-full h-[500px]'}
+                />
                 <WavyGroup className={"absolute bottom-0 w-full z-10"}/>
                 <Saying className={'absolute position-center z-100 w-fit break-keep text-xl py-2 px-4 rounded-full'}
                 />
