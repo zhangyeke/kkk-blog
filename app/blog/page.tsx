@@ -8,7 +8,6 @@ import Article from "./components/Article"
 import {getPostsByPage} from "@/service/post";
 import {getPostCategoryWithPosts} from "@/service/postCategory";
 import ScrollElement from "@/components/scroll-animation";
-import {auth} from "@/lib/auth";
 
 export const metadata: Metadata = {
     title: GLOBAL_TITLE
@@ -16,8 +15,6 @@ export const metadata: Metadata = {
 
 
 export default async function Web() {
-    const session = await auth()
-    console.log("还有东西吗", session)
 
     const postCategory = await getPostCategoryWithPosts();
     const posts = await getPostsByPage({
@@ -33,11 +30,7 @@ export default async function Web() {
 
     return (
         <div>
-
-            <Suspense className={'w-full h-[500px]'}>
-                <HomeHedaer/>
-            </Suspense>
-
+            <HomeHedaer/>
 
             <div className={'container flex py-4'}>
                 <aside className={'w-[320px]'}>
@@ -58,7 +51,7 @@ export default async function Web() {
                             <TodayPoetry className={'mt-4'}/>
                         </ScrollElement>
                     </Suspense>
-                    <Suspense>
+                    <Suspense className={'w-full h-[300px]'}>
                         <ScrollElement {...scrollElementProps}>
                             <Article.HotArticles className={'mt-4'}/>
                         </ScrollElement>

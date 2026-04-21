@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 // 服务端页面属性
 interface PageSearchParams<T = Record<string, unknown>> {
     searchParams: Promise<T>;
@@ -43,3 +44,9 @@ interface StyleProperties extends React.CSSProperties {
 }
 
 type AnyObject = Record<string, any>
+
+type EventValue<T> = {
+    target: {
+        value: T
+    }
+}

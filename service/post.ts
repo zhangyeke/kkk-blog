@@ -1,13 +1,14 @@
 'use server';
 import {merge} from "lodash"
+import {cacheTag, revalidatePath,updateTag} from "next/cache";
 import {Prisma} from '@prisma/client'
 import prisma from "@/lib/prisma";
 import {addPostParams, PostWithUser, postWithUserInclude} from "@/types/post";
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 import {checkAuth, safeAction} from "@/service/auth";
-import {revalidatePath} from 'next/cache'
 import {addPostSchema} from "@/validators/post";
 import {getPlainText} from "@/lib/utils";
+import {after} from "next/server";
 
 // --- CREATE (新增) ---
 export async function createPost(data: addPostParams) {
@@ -23,7 +24,8 @@ export async function createPost(data: addPostParams) {
                 userId: user.id || ''
             }
         });
-        revalidatePath('/blog');
+
+        updateTag('action-postList')
         return backSuccessMessage("创建文章成功", post);
     }, "创建文章失败");
 
@@ -32,6 +34,8 @@ export async function createPost(data: addPostParams) {
 // --- READ (查询) ---
 // 获取所有文章
 export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
+    "use cache"
+    cacheTag('action-postList')
     try {
         const posts = await prisma.post.findMany({
             include: postWithUserInclude,
@@ -59,6 +63,7 @@ export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
 
 /*分页查询文章*/
 export async function getPostsByPage(params: Prisma.PostFindManyArgs & Paging) {
+
     try {
         const {page, pageSize, ...data} = params
 
@@ -92,19 +97,35 @@ export async function getPostsByPage(params: Prisma.PostFindManyArgs & Paging) {
 }
 
 
-// 根据 ID 获取单篇文章
-export async function getPostById(id: number) {
+// --- UPDATE (更新) ---
+export async function updatePost(id: number, params: Prisma.PostUpdateInput) {
     try {
         const post = await prisma.post.update({
             where: {id},
-            data: {
-                pv: {
-                    increment: 1 // 原子自增 1
-                }
-            },
+            data: params
+        });
+        updateTag('action-postList')
+        return backSuccessMessage('更新文章成功', post)
+    } catch {
+        return backFailMessage('更新文章失败')
+    }
+}
+
+
+// 根据 ID 获取单篇文章
+export async function getPostById(id: number) {
+    try {
+        const post = await prisma.post.findUnique({
+            where: {id},
             include: postWithUserInclude // 依然可以直接包含关联数据
         }) as PostWithUser;
-        // revalidatePath('/blog');
+
+        after(async () => {
+            await updatePost(id, {
+                pv: {increment: 1}
+            })
+            updateTag('action-userStatisticsInfo')
+        });
         return backSuccessMessage('获取文章成功', post)
     } catch {
         return backFailMessage('文章不存在', null)
@@ -112,10 +133,6 @@ export async function getPostById(id: number) {
 
 }
 
-// --- UPDATE (更新) ---
-export async function updatePost(id: string, data: { title?: string, content?: string }) {
-
-}
 
 // --- DELETE (删除) ---
 export async function deletePost(id: string) {

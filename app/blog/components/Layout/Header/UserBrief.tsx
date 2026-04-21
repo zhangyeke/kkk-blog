@@ -1,5 +1,7 @@
 "use client"
 import React from "react";
+import {toast} from "sonner";
+
 import Link from "next/link";
 import {ChevronRight, LogOut, NotebookPen, Settings, UserRound} from "lucide-react";
 import {useHover} from "react-use";
@@ -11,8 +13,7 @@ import {Image} from "@/components/k-view";
 import {MenuItem} from "./MenuItem"
 import {Separator} from "@/components/ui/separator";
 import {User} from "@/types/user";
-import {toast} from "sonner";
-
+import {logout} from "@/service/auth"
 
 type Menu = {
     label: string;
@@ -28,10 +29,12 @@ export type PopoverMenuProps = {
 
 /*菜单弹窗内容*/
 export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuProps) {
+    const router = useRouter();
     const handleLogout = React.useCallback(async () => {
         await signOut({
             redirect: false
         })
+        router.refresh();
         toast.success("退出登录成功")
     }, [])
 
@@ -83,14 +86,13 @@ export function UserBrief() {
     const username = (user?.name || "kkk")
 
 
-
     const [isFirstHover, setIsFirstHover] = React.useState(false)
     const [isOpen, setIsOpen] = React.useState(false)
     const router = useRouter();
     const Avatar = React.useCallback(
         ({className}: BaseComponentProps) => (
             <Image
-                src={user?.avatar || ''}
+                src={user?.avatar || undefined}
                 className={cn("w-10 h-10 rounded-full", className)}
                 fallback={username.substring(0, 1)}
             />

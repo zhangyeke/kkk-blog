@@ -16,3 +16,5 @@ export {Empty, type EmptyProps} from "./Empty"
 export {Icon, type IconProps} from "./Icon"
 
 export {InfiniteScrollList, type InfiniteScrollListProps} from "./InfiniteScrollList"
+
+export {DatePicker, type DatePickerProps} from "./DatePicker"

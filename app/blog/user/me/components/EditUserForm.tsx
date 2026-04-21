@@ -1,8 +1,9 @@
 "use client"
 import {z} from "zod";
+import {useSession} from "next-auth/react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import React, {ChangeEvent, useCallback, useMemo, useState} from "react"
+import React, {ChangeEvent, useCallback, useEffect, useMemo, useState} from "react"
 import {toast} from "sonner";
 import {env} from "env.mjs"
 import {updateUserSchema} from "@/validators/user";
@@ -15,10 +16,15 @@ import {
     Form as ShadForm,
 } from "@/components/ui/form"
 import {Input} from "@/components/ui/input";
-import {FixSpin, Image} from "@/components/k-view"
+import {DatePicker, FixSpin, Image} from "@/components/k-view"
 import {Button} from "@/components/ui/button";
-import {useSession} from "next-auth/react";
 import {uploadImagePromise} from "@/lib/utils";
+import {Label} from "@/components/ui/label"
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {Calendar, CalendarIcon} from "lucide-react";
+import {PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {Popover} from "radix-ui";
+import {dateFormat} from "@/lib/date";
 
 
 type UpdateUserSchema = z.infer<typeof updateUserSchema>
@@ -32,6 +38,7 @@ export default function EditUserForm(props: EditUserFormProps) {
     const {defaultValues} = props;
     const {update} = useSession()
 
+
     const [pending, setPending] = useState(false)
     const [uploadPending, setUploadPending] = useState(false)
 
@@ -44,7 +51,11 @@ export default function EditUserForm(props: EditUserFormProps) {
     const watchValues = useMemo(() => form.getValues(), [form.getValues])
 
 
-    async function onSubmit(data: UpdateUserSchema) {
+    useEffect(() => {
+        console.log("值发生了更改", watchValues)
+    }, [watchValues])
+
+    const onSubmit = useCallback(async (data: UpdateUserSchema) => {
         try {
             setPending(true)
             await update(data)
@@ -54,8 +65,7 @@ export default function EditUserForm(props: EditUserFormProps) {
         } finally {
             setPending(false)
         }
-
-    }
+    }, [])
 
     const handleFileChange = useCallback(
         (event: ChangeEvent<HTMLInputElement>, onChange: (t: { target: { value: string } }) => void) => {
@@ -102,7 +112,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                     name={'avatar'}
                     render={({field}) => {
                         return (
-                            <FormItem className={'flex justify-center'}>
+                            <FormItem className={'flex items-center flex-col'}>
                                 <FormControl>
                                     <div
                                         className={'group relative overflow-hidden border border-solid border-input rounded-full '}
@@ -138,11 +148,13 @@ export default function EditUserForm(props: EditUserFormProps) {
                     name={'name'}
                     render={({field}) => {
                         return (
-                            <FormItem className={'flex items-center'}>
-                                <FormLabel>昵称：</FormLabel>
-                                <FormControl className={'flex-1'}>
-                                    <Input {...field}/>
-                                </FormControl>
+                            <FormItem>
+                                <div className={'flex items-center'}>
+                                    <FormLabel>昵称：</FormLabel>
+                                    <FormControl className={'flex-1'}>
+                                        <Input {...field} />
+                                    </FormControl>
+                                </div>
                                 <FormMessage/>
                             </FormItem>
                         )
@@ -153,16 +165,76 @@ export default function EditUserForm(props: EditUserFormProps) {
                     name={'email'}
                     render={({field}) => {
                         return (
-                            <FormItem className={'flex items-center'}>
-                                <FormLabel>邮箱：</FormLabel>
-                                <FormControl className={'flex-1'}>
-                                    <span className={'text-gray-500'}>{field.value}</span>
-                                </FormControl>
+                            <FormItem>
+                                <div className={'flex items-center'}>
+                                    < FormLabel> 邮箱：</FormLabel>
+                                    <FormControl className={'flex-1'}>
+                                        <span className={'text-gray-500'}>{field.value}</span>
+                                    </FormControl>
+                                </div>
                                 <FormMessage/>
                             </FormItem>
                         )
                     }}
                 />
+                <FormField
+                    control={form.control}
+                    name={'gender'}
+                    render={({field}) => {
+                        return (
+                            <FormItem>
+                                <div className={'flex items-center'}>
+                                    <FormLabel>性别：</FormLabel>
+                                    <FormControl className={'flex-1'}>
+                                        <RadioGroup
+                                            defaultValue={String(field.value)}
+                                            className="w-fit flex items-center gap-x-2"
+                                            onChange={field.onChange}
+                                        >
+
+                                            <div className="flex items-center gap-3">
+                                                <RadioGroupItem value="1" id='1'/>
+                                                <FormLabel htmlFor="1">男</FormLabel>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <RadioGroupItem value="0" id='0'/>
+                                                <FormLabel htmlFor="0">女</FormLabel>
+                                            </div>
+                                        </RadioGroup>
+                                    </FormControl>
+
+                                </div>
+
+                                <FormMessage/>
+                            </FormItem>
+                        )
+                    }}
+                />
+
+                <FormField
+                    control={form.control}
+                    name={'birthday'}
+                    render={({field}) => {
+                        return (
+                            <FormItem>
+                                <div className={'flex items-center'}>
+                                    <FormLabel>出生日期：</FormLabel>
+                                    <FormControl >
+                                        <DatePicker
+                                            className={'w-fit'}
+                                            value={field.value}
+                                            placeholder={'请选择出生日期'}
+                                            onChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                </div>
+                                <FormMessage/>
+                            </FormItem>
+                        )
+                    }}
+                />
+
+
                 <div className={'mx-auto lg:w-1/4 mt-4'}>
                     <Button long={true} size={'lg'} loading={pending}>保存</Button>
                 </div>

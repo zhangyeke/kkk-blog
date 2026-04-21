@@ -48,7 +48,9 @@ model User {
   createdAt     DateTime   @default(now()) @db.Timestamp(6)
   updatedAt     DateTime   @default(now()) @updatedAt
   password      String?
-  age           Int?
+  // 生日，使用时间戳类型
+  birthday      DateTime?  @db.Timestamp(6)
+  // 性别
   gender        Int?
   accounts      Account[]
   favorites     Favorite[]

@@ -24,6 +24,7 @@ export async function proxy(request: NextRequest) {
     // response.headers.set('k-pathname', pathname)
     /*拦截需要登录才能访问的路由*/
     const session = await auth()
+    console.log("获取回话", session)
     const isProtected = protectedRoutes.some(route => {
         if (route instanceof RegExp) {
             return route.test(pathname)

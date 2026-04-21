@@ -1,9 +1,10 @@
 'use server';
+import {cacheTag} from "next/cache";
+
 import prisma from "@/lib/prisma"
 import {Prisma} from '@prisma/client'
 import {checkAuth, safeAction} from "@/service/auth";
-import {backSuccessMessage} from "@/lib/actionMessageBack";
-import {revalidatePath} from "next/cache";
+import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 import {updateUserSchema} from "@/validators/user";
 import {User} from "@/types/user";
 
@@ -15,6 +16,7 @@ export async function createUser(data: Prisma.UserCreateInput) {
     })
     return user
 }
+
 
 // --- READ (查询) ---
 // 获取所有
@@ -53,7 +55,9 @@ export async function getMeInfo() {
             select: {
                 avatar: true,
                 name: true,
-                email: true
+                email: true,
+                gender: true,
+                birthday: true
             }
         })
         return backSuccessMessage('获取用户信息成功', user)
@@ -92,6 +96,50 @@ export async function updateUser(params: Prisma.UserUpdateInput) {
 
         return backSuccessMessage('更新用户信息成功', user)
     }, '更新用户信息失败')
+}
+
+// 查询用户相关统计数据
+export async function userStatisticsInfo(id?: string) {
+    'use cache'
+    cacheTag('action-userStatisticsInfo')
+    try {
+
+        const [user, stats] = await Promise.all([
+            // 查询用户信息（排除密码）
+            prisma.user.findUnique({
+                where: {id},
+                omit: {
+                    password: true
+                }
+            }),
+
+            // 聚合查询：计算该用户发布的所有文章的统计数据
+            prisma.post.aggregate({
+                where: {
+                    userId: id,
+                    status: 1, // 建议只统计状态为“正常”的文章，如果是统计全量则去掉此条件
+                },
+                _count: {
+                    id: true, // 文章总数
+                },
+                _sum: {
+                    pv: true, // 所有文章 PV 总和
+                    favoriteCount: true, // 所有文章被收藏/点赞总和 (基于你 schema 中的冗余字段)
+                }
+            })
+        ]);
+        return backSuccessMessage('获取统计数据成功', {
+            ...user,
+            statistics: {
+                totalPosts: stats._count.id || 0,
+                totalPV: stats._sum.pv || 0,
+                totalFavorites: stats._sum.favoriteCount || 0,
+            }
+        })
+    } catch {
+        return backFailMessage('获取统计数据失败')
+    }
+
 }
 
 // --- DELETE (删除) ---

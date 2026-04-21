@@ -10,7 +10,7 @@ import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
  * @Description: 获取名言 https://developer.hitokoto.cn/sentence/
  * @Params:
  */
-export async function getSaying():Promise<BaseResource<Saying>> {
+export async function getSaying(): Promise<BaseResource<Saying>> {
     try {
         const res = await fetch(`${env.AL_API_URL}?encode=json`, {
             method: "get",
@@ -21,8 +21,7 @@ export async function getSaying():Promise<BaseResource<Saying>> {
         })
         const data = await res.json() as Saying
         return backSuccessMessage('名言获取成功', data)
-    } catch (err) {
-        console.log("名言获取失败", err)
+    } catch {
         return backFailMessage("名言获取失败")
     }
 
