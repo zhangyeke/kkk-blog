@@ -24,6 +24,7 @@ model Post {
   tags       String
   title      String
   content    String
+  /// 文章状态 0：下架 1：正常 2：草稿
   status     Int?          @default(1)
   userId     String       @db.Uuid
   user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // 服务端页面属性
 interface PageSearchParams<T = Record<string, unknown>> {
-    searchParams?: Promise<T>;
+    searchParams: Promise<T>;
 }
 
 interface PageParams<T = Record<string, unknown>> {
-    params?: Promise<T>;
+    params: Promise<T>;
 }
 
 // 页面容器
@@ -31,18 +32,14 @@ interface BaseResource<D = unknown> {
     data: D
 }
 
-// 请求返回资源
-interface ApiResource<D> extends BaseResource {
-    data: {
-        error?: Error;
-        data: D;
-        count?: number;
-        status: number;
-        statusText: string;
-    }
+interface Paging {
+    page: number;
+    pageSize: number
 }
 
 /* 自定义css变量 并包含基础的css样式*/
 interface StyleProperties extends React.CSSProperties {
     [key: string]: string
 }
+
+type AnyObject = Record<string, any>

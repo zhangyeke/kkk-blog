@@ -1,11 +1,11 @@
-import Spinner, {SpinnerProps} from "./Spinner";
+import {Spinner, SpinnerProps} from "./Spinner";
 
 export interface SpinProps extends SpinnerProps {
     fix?: boolean
 }
 
 
-export default function (props: SpinProps) {
+export function FixSpin(props: SpinProps) {
     const {className, style, fix = true, text} = props
     return (
         <div

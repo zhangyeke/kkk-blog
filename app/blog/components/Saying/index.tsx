@@ -1,31 +1,39 @@
 "use client"
-import React from "react";
-import {useTheme} from "next-themes";
+import React, {useCallback} from "react";
 import {Smoky} from "@/components/k-view"
 import {getSaying} from "@/service/alApi";
-import {useAppStore} from "@/hooks";
 
 // 随机名言组件
 export default function Saying({className, style}: BaseComponentProps) {
     const [content, setContent] = React.useState("")
-    const {theme} = useTheme()
-    const {themes} = useAppStore(state => state)
-    const getData = async () => {
-        const res = await getSaying()
-        if (res && res.hitokoto) {
-            const {hitokoto, from_who} = res
+
+    const getData = React.useCallback(async () => {
+        const {data} = await getSaying()
+        if (data && data.hitokoto) {
+            const {hitokoto, from_who} = data
             setContent(`${hitokoto} --${from_who || '佚名'}`)
         }
-    }
+    }, [])
+
+    const handleSmokyEnd = useCallback(() => {
+        setContent('')
+        getData();
+    }, [getData, setContent])
 
     React.useEffect(() => {
         getData()
     }, [])
 
+    if (!content) return null
 
     return (
-        <Smoky className={`${className}`} style={style} delay={20} content={content}
-               color={theme === 'light' ? '#fff' : themes.primary}
-               onSmokyEnd={getData}/>
+        <Smoky
+            className={`${className}`}
+            style={style}
+            delay={10}
+            content={content}
+            color={'#FFC833'}
+            onSmokyEnd={handleSmokyEnd}
+        />
     )
 }

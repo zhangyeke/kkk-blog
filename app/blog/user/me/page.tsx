@@ -1,8 +1,25 @@
+import EditUserForm from "./components/EditUserForm"
+import {getMeInfo} from "@/service/user";
+
 export default async function MePage() {
+    const user = await getMeInfo()
+
+    if (!user.data) return
 
     return (
-        <div>
-            个人中心
+        <div
+            className={'flex-1 flex-center  bg-center bg-cover  random-bg-img dark:bg-none'}>
+            {/*<img src={''} className={'person-img h-screen w-full'}/>*/}
+            <div className={'bg-card/80 rounded-sm border border-solid border-input w-full lg:w-1/2 shadow-md'}>
+                <div className={'flex items-center py-4 px-6 border-b border-solid border-input text-primary text-sm'}>
+                    <i className={'h-4 w-1 bg-primary rounded-lg mr-1'}></i>
+                    <span>我的信息</span>
+                </div>
+
+                <div className={'py-4 px-6 '}>
+                    <EditUserForm defaultValues={user.data}/>
+                </div>
+            </div>
         </div>
     )
 }

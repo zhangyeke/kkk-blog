@@ -1,0 +1,16 @@
+
+
+.mask-bg {
+    mask: url(/images/mask.png);
+    mask-size: 3000% 100%;
+    animation: maskMove var(--duration) steps(29) forwards ;
+}
+
+@keyframes maskMove {
+    from {
+        mask-position: 0 0;
+    }
+    to {
+        mask-position: 100% 0;
+    }
+}

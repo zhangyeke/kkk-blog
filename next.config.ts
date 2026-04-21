@@ -9,6 +9,7 @@ const withMDX = createMDX({
 })
 
 const config: NextConfig = {
+    transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [
             {
@@ -17,6 +18,7 @@ const config: NextConfig = {
                 port: '',
                 pathname: '/**', // 允许该域名下的所有路径
             },
+
         ],
     },
     experimental: {

@@ -1,11 +1,14 @@
 import {Metadata} from "next"
-import {Banner, Suspense, WavyGroup} from "@/components/k-view";
-import {fetchPhotoWall} from "@/service/material";
-import {PhotoMaterial} from "@/types/material";
+import {Empty, Suspense} from "@/components/k-view";
 import {GLOBAL_TITLE} from "@/config/blog"
-import Saying from "@/app/blog/components/Saying";
-import Master from "@/app/blog/components/Master";
-import TodayPoetry from "@/app/blog/components/TodayPoetry";
+import Master from "./components/Master";
+import TodayPoetry from "./components/TodayPoetry";
+import HomeHedaer from "./components/HomeHeader";
+import Article from "./components/Article"
+import {getPostsByPage} from "@/service/post";
+import {getPostCategoryWithPosts} from "@/service/postCategory";
+import ScrollElement from "@/components/scroll-animation";
+import {auth} from "@/lib/auth";
 
 export const metadata: Metadata = {
     title: GLOBAL_TITLE
@@ -13,40 +16,93 @@ export const metadata: Metadata = {
 
 
 export default async function Web() {
+    const session = await auth()
+    console.log("还有东西吗", session)
 
-    const bannerData = await fetchPhotoWall({
-        per_page: 5,
-        min_width: 1920,
-        min_height: 500,
-        editors_choice: true,
-        category: "动漫"
+    const postCategory = await getPostCategoryWithPosts();
+    const posts = await getPostsByPage({
+        page: 1,
+        pageSize: 6,
+        orderBy: {createdAt: 'desc'}
     })
+
+    const scrollElementProps = {
+        viewport: {once: true, amount: 0.5, margin: '0px 0px 0px 0px'},
+        direction: 'left' as const
+    }
 
     return (
         <div>
-            <div className={"relative"}>
-                <Banner<PhotoMaterial>
-                    list={bannerData.hits}
-                    imageKey={"largeImageURL"}
-                    imageClass={'w-full h-[500px]'}
-                />
-                <WavyGroup className={"absolute bottom-0 w-full z-10"}/>
-                <Saying className={'absolute position-center z-100 w-fit break-keep text-xl py-2 px-4 rounded-full'}
-                />
 
-            </div>
-            <div className={'container flex mb-4'}>
+            <Suspense className={'w-full h-[500px]'}>
+                <HomeHedaer/>
+            </Suspense>
+
+
+            <div className={'container flex py-4'}>
                 <aside className={'w-[320px]'}>
+                    <ScrollElement {...scrollElementProps}>
+                        <Article.SearchBar className={'bg-card mb-4'}/>
+                    </ScrollElement>
+
+                    {/*作者信息组件*/}
                     <Suspense className={'w-full h-[330px]'}>
-                        <Master/>
+                        <ScrollElement {...scrollElementProps}>
+                            <Master/>
+                        </ScrollElement>
                     </Suspense>
 
+                    {/*博客首页今日诗词展示组件*/}
                     <Suspense className={'w-full h-[200px]'}>
-                        <TodayPoetry/>
+                        <ScrollElement {...scrollElementProps}>
+                            <TodayPoetry className={'mt-4'}/>
+                        </ScrollElement>
+                    </Suspense>
+                    <Suspense>
+                        <ScrollElement {...scrollElementProps}>
+                            <Article.HotArticles className={'mt-4'}/>
+                        </ScrollElement>
                     </Suspense>
                 </aside>
-                <section>
+                <section className={'ml-10 flex-1'}>
+                    <Article.HeadCategory name={'最新'}/>
+                    {
+                        posts.data.list.length > 0 ?
+                            <Article.List
+                                initialData={posts.data.list}
+                                className={'flex flex-wrap gap-4'}
+                                scrollProps={{
+                                    className: 'w-[32%]'
+                                }}
+                            />
+                            : <Empty/>
 
+                    }
+
+                    {
+                        postCategory.data.length > 0 && (
+                            postCategory.data.map(cate => (
+                                <div className={'mt-4'} key={cate.id}>
+                                    <Article.HeadCategory
+                                        href={`/blog/article/list?cid=${cate.id}`}
+                                        name={cate.name}
+                                        isMore={cate.posts.length > 0}
+                                    />
+                                    {
+                                        (cate.posts && cate.posts.length > 0) ?
+                                            <Article.List
+                                                initialData={cate.posts}
+                                                className={'flex flex-wrap gap-4'}
+                                                scrollProps={{
+                                                    className: 'w-[32%]'
+                                                }}
+                                            />
+                                            : <Empty/>
+                                    }
+                                </div>
+                            ))
+                        )
+                    }
                 </section>
 
             </div>

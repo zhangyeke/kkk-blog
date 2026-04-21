@@ -18,10 +18,10 @@ export interface SmokyProps extends BaseComponentProps {
 type SmokyTextProps = {
     enter: boolean;
     index: number
-} & Pick<SmokyProps, 'duration' | 'delay'> & ContainerProps
+} & Pick<SmokyProps, 'duration' | 'delay' | 'color'> & ContainerProps
 
 function SmokyText(props: SmokyTextProps) {
-    const {enter, index, duration, delay, color, children} = props;
+    const {enter, index, duration, delay, color = '#000', children} = props;
 
     const textStyle: StyleProperties = {
         '--color': color,
@@ -31,8 +31,13 @@ function SmokyText(props: SmokyTextProps) {
         animationDelay: `${enter ? 0 : delay}s`,
     }
 
-    return <span className={cn('inline-flex text-transparent', enter ? 'animate-fade-in' : 'animate-smoky')}
-                 style={textStyle} data-index={index}>{children}</span>
+    return (
+        <span
+            className={cn('inline-flex text-transparent', enter ? 'animate-fade-in' : 'animate-smoky')}
+            style={textStyle}
+            data-index={index}
+        >{children}</span>
+    )
 }
 
 export function Smoky(props: SmokyProps) {
@@ -50,13 +55,13 @@ export function Smoky(props: SmokyProps) {
     const [isEnter, setIsEnter] = React.useState(true);
 
     const handleAnimationEnd = (e: React.AnimationEvent) => {
-        let index = (e.target as HTMLElement).dataset.index as string;
+        const index = (e.target as HTMLElement).dataset.index as string;
 
         if (Number(index) >= texts!.length - 1) {
             if (isEnter) {
                 setIsEnter(false);
             } else {
-                onSmokyEnd && onSmokyEnd(texts!.length);
+                if (onSmokyEnd) onSmokyEnd(texts!.length);
                 setIsEnter(true);
             }
         }

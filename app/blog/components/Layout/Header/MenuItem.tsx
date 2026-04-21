@@ -3,7 +3,7 @@ import React from "react"
 import {cn} from "@/lib/utils";
 
 export type MenuItemProps = {
-    onClick: (e?: React.MouseEvent<HTMLDivElement>) => void
+    onClick?: (e?: React.MouseEvent<HTMLDivElement>) => void
 } & BaseComponentProps & ContainerProps
 
 export function MenuItem({children, onClick, className, style}: MenuItemProps) {

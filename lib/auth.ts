@@ -28,17 +28,14 @@ const config = {
                 }
             },
             async authorize(credentials) {
-                console.log("进来:", credentials)
                 if (credentials === null) return null
                 // 根据邮箱查询用户
                 const user = await getUserByEmail(credentials.email as string)
-                console.log("查询用户", user)
                 // 验证密码
                 if (user && user.password) {
                     // 明文密码与加密 密码比对
                     const isMatch = compareSync(credentials.password as string, user.password)
 
-                    console.log("是否一致", isMatch)
                     if (isMatch) {
                         return user
                     }
@@ -49,27 +46,46 @@ const config = {
 
     ],
     callbacks: {
-        async jwt({trigger, token, user}) {
+        async jwt({trigger, token, user, session}) {
             if (user) {
-                token.roles = user.roles
-                token.avatar = user.avatar
+                token = {
+                    ...token,
+                    ...user
+                }
+                // token.roles = user.roles
+                // token.avatar = user.avatar
+
                 /*截取邮箱前缀作为默认名称 */
                 if (user.name === 'NO_NAME' && user.email) {
                     token.name = user.email.split('@')[0]
                     /*更新用户名称*/
-                    await updateUser(user.id as string, {
+                    await updateUser({
                         name: token.name
                     })
+                }
+            }
 
+            if (trigger === "update" && session) {
+                await updateUser(session)
+                token = {
+                    ...token,
+                    ...session
                 }
             }
             return token
         },
         async session({session, user, token, trigger}) {
-            session.user.id = token.sub as string
-            session.user.roles = token.roles as string
-            session.user.name = token.name
-            session.user.avatar = token.avatar as string
+            const newUser = {
+                id: token.sub,
+                roles: token.roles,
+                name: token.name,
+                avatar: token.avatar
+            } as AnyObject
+
+            session.user = {
+                ...session.user,
+                ...newUser
+            }
             /*同步更新会话中的用户信息*/
             if (trigger === 'update') {
                 session.user.name = user.name
@@ -80,4 +96,5 @@ const config = {
 
 } satisfies NextAuthConfig;
 
-export const {handlers, auth, signOut, signIn} = NextAuth(config)
+
+export const {handlers, auth, signOut, signIn, unstable_update} = NextAuth(config)

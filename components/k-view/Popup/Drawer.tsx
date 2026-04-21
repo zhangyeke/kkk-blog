@@ -46,7 +46,7 @@ export function Drawer(props: DrawerProps) {
                 )
             }
 
-            <DrawerContent className={'z-[100]'}>
+            <DrawerContent className={'z-[1001]'}>
                 <DrawerHeader className={'border-b-1 border-solid border-gray-200'}>
                     <DrawerTitle className={'flex items-center justify-between'}>
                         <span>{title}</span>

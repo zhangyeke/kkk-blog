@@ -29,9 +29,9 @@ export default async function Master() {
 
     return (
         <GradientTransition
-            className={'flex-center flex-col w-full  py-4 px-8 rounded-lg text-white shadow-sm hover:shadow-lg transition-all'}>
+            className={'flex-center flex-col w-full  py-4 px-8 rounded-lg text-white shadow-sm hover:shadow-lg  transition-shadow duration-300'}>
 
-            <Image className={'size-30 rounded-full'} src={user.avatar as string} draggable={false}/>
+            <Image className={'size-30 rounded-full'} fallback={user.name} src={user.avatar as string} draggable={false}/>
 
             <div className={'text-3xl mt-3.5 font-bold'}>{user.name}</div>
 

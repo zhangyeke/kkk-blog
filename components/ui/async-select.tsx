@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useState} from "react";
-import {cloneDeep} from "lodash"
 import {Check, ChevronsUpDown, Loader2, Search} from "lucide-react";
 import {useDebounce} from "@/hooks/use-debounce";
 
@@ -7,7 +6,6 @@ import {cn} from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 import {
     Command,
-    CommandEmpty,
     CommandGroup,
     CommandItem,
     CommandList,
@@ -18,6 +16,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import {Input} from "@/components/ui/input";
+import {Empty} from "@/components/k-view/Empty";
 
 export interface Option {
     value: string;
@@ -100,6 +99,7 @@ export function AsyncSelect<T>({
     useEffect(() => {
         setMounted(true);
         setSelectedValue(value);
+        if (!value) setSelectedOption(null)
     }, [value]);
 
     useEffect(() => {
@@ -195,7 +195,7 @@ export function AsyncSelect<T>({
                         )}
                         {!loading && !error && options.length === 0 && (
                             notFound ||
-                            <CommandEmpty>{noResultsMessage ?? `No ${label.toLowerCase()} found.`}</CommandEmpty>
+                            <Empty type={'search'}/>
                         )}
                         <CommandGroup>
                             {options.map((option) => (

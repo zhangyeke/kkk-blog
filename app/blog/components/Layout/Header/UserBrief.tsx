@@ -1,18 +1,18 @@
 "use client"
 import React from "react";
-import {toast} from "sonner";
 import Link from "next/link";
 import {ChevronRight, LogOut, NotebookPen, Settings, UserRound} from "lucide-react";
 import {useHover} from "react-use";
-import {type Session} from "next-auth";
+import {useRouter} from "next/navigation";
+import {signOut, useSession} from "next-auth/react"
 import {cn} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Image} from "@/components/k-view";
 import {MenuItem} from "./MenuItem"
 import {Separator} from "@/components/ui/separator";
-import {logout} from "@/service/auth";
-import {User} from '@prisma/client'
-import {useRouter} from "next/navigation";
+import {User} from "@/types/user";
+import {toast} from "sonner";
+
 
 type Menu = {
     label: string;
@@ -28,12 +28,12 @@ export type PopoverMenuProps = {
 
 /*菜单弹窗内容*/
 export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuProps) {
-
-
-    async function handleLogout() {
-        await logout()
+    const handleLogout = React.useCallback(async () => {
+        await signOut({
+            redirect: false
+        })
         toast.success("退出登录成功")
-    }
+    }, [])
 
     return (
         <>
@@ -41,8 +41,11 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
             <div className={'mt-2'}>
                 {
                     menuList.map((item, index) => (
-                        <MenuItem key={index} className={'group px-4 py-2 hover:bg-primary/30'}
-                                  onClick={() => onMenuClick(item)}>
+                        <MenuItem
+                            key={index}
+                            className={'group px-4 py-2 hover:bg-primary/30'}
+                            onClick={() => onMenuClick(item)}
+                        >
                             <i className={'size-4.5 k-icon'}>{item.icon}</i>
                             <span className={'flex-1'}>{item.label}</span>
                             <ChevronRight className={'size-3.5'}/>
@@ -51,36 +54,35 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
                 }
             </div>
             <Separator/>
-            <MenuItem className={'px-4 py-2 hover:bg-primary/30'} onClick={handleLogout}>
+            <MenuItem className={' hover:bg-primary/30 flex items-center gap-x-2 size-full px-4 py-2 cursor-pointer'}
+                      onClick={handleLogout}>
                 <LogOut className={'size-4.5'}/>
                 退出登录
+                {/*<form action={logout} className={'size-full'}>*/}
+                {/*    <button type={'submit'}*/}
+                {/*            className={'flex items-center gap-x-2 size-full px-4 py-2 cursor-pointer border-none outline-none'}>*/}
+                {/*        <LogOut className={'size-4.5'}/>*/}
+                {/*        退出登录*/}
+                {/*    </button>*/}
+                {/*</form>*/}
             </MenuItem>
         </>
     )
 }
 
 
-export type UserBriefProps = {
-    session: Session | null
-}
-
-export function UserBrief({session}: UserBriefProps) {
-    if (!session) {
-        return (
-            <Link href={"/login"}>
-                <Image className={"w-10 h-10 rounded-full"} fallback={"登录"}/>
-            </Link>
-        )
-    }
+export function UserBrief() {
+    const {data} = useSession();
 
     const menuList = React.useRef([
         {label: "个人中心", icon: <UserRound/>, href: "/blog/user/me"},
         {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/write"},
         {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>, href: "/blog/setting"},
     ])
-    const user = session.user as User
-    const username = (user?.name || "kkk").substring(0, 1)
-    const avatar = user?.avatar || ''
+    const user = React.useMemo(() => data?.user as User, [data])
+    const username = (user?.name || "kkk")
+
+
 
     const [isFirstHover, setIsFirstHover] = React.useState(false)
     const [isOpen, setIsOpen] = React.useState(false)
@@ -88,15 +90,15 @@ export function UserBrief({session}: UserBriefProps) {
     const Avatar = React.useCallback(
         ({className}: BaseComponentProps) => (
             <Image
-                src={avatar}
+                src={user?.avatar || ''}
                 className={cn("w-10 h-10 rounded-full", className)}
-                fallback={username}
+                fallback={username.substring(0, 1)}
             />
         ),
-        [avatar, username]
+        [user?.avatar, user?.name]
     )
 
-    const avatarElement = (hovered: boolean) => {
+    const avatarElement = React.useCallback((hovered: boolean) => {
         if (hovered && !isFirstHover) setIsFirstHover(true)
         if (hovered && !isOpen) setIsOpen(true)
 
@@ -111,18 +113,26 @@ export function UserBrief({session}: UserBriefProps) {
                     className={`${hasOpen && "delay-50 opacity-0"} ${notHovered && "animate-small-avatar-show"}`}
                 />
                 <Avatar
-                    className={`opacity-0 shadow-sm absolute z-[1000] top-0 left-0 ${
+                    className={`opacity-0 shadow-sm absolute z-[100] top-0 left-0 ${
                         notHovered && "animate-avatar-offset-scale-reverse pointer-events-none"
                     } ${hasOpen && 'animate-avatar-offset-scale'} `}
                 />
             </Link>
         )
-    }
+    }, [isFirstHover, isOpen, Avatar])
 
     const [hoverable] = useHover(avatarElement)
 
-    function handleMenuClick(item: Menu) {
+    const handleMenuClick = React.useCallback((item: Menu) => {
         if (item.href) router.push(item.href)
+    }, [])
+
+    if (!data) {
+        return (
+            <Link href={"/login"}>
+                <Image className={"size-10 rounded-full"} fallback={"登录"}/>
+            </Link>
+        )
     }
 
     return (

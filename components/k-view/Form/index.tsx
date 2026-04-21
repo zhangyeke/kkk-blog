@@ -1,76 +1,89 @@
 "use client"
-import React from "react"
-import {FieldValues, useForm, UseFormHandleSubmit} from "react-hook-form";
-import {z} from "zod";
+import React, {useMemo} from "react"
+import {FieldValues, useForm, UseFormReturn} from "react-hook-form";
+import {ZodEffects, ZodObject} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {FormControl, FormField, FormItem, FormLabel, FormMessage, Form as ShadForm} from "@/components/ui/form";
-import {Control} from "./Control";
-/*弃用状态*/
-export interface FormItem {
-    prop: string;
-    label?: React.ReactNode;
-    control?: React.ReactNode;
-    controlProps?: object;
-    defaultValue?: string | number | boolean | object | unknown[];
-}
+import {Control, FieldComponentsType} from "./components/Control";
+import {AutoFormProps} from '@autoform/react';
+import {ZodProvider} from "@autoform/zod";
+import {Button} from "@/components/ui/button";
+import {CustomControlProps} from "./type";
 
-export interface FormInstance<T extends FieldValues = FieldValues> {
-    submit: UseFormHandleSubmit<T>,
-    reset: () => void,
-    resetField: (name: string) => void,
-}
 
-export interface FormProps {
-    items: FormItem[]
-    formResolver: ReturnType<typeof z.object>
-    defaultValues?: Record<string, FormItem['defaultValue']>;
+export type FormInstance = UseFormReturn
+
+export interface FormProps extends Partial<Omit<AutoFormProps<FieldValues>, 'onFormInit' | 'schema' | 'formComponents' | 'uiComponents'>> {
+    schema: ZodEffects<ZodObject<FieldValues>> | ZodObject<FieldValues>
+    formComponents?: {
+        [key: string]: (props: CustomControlProps) => React.ReactNode
+    }
+    onSubmit?: (v: FieldValues) => void
     ref?: React.Ref<FormInstance>
 }
 
-function getFormDefaultValues(items: FormItem[], defaultValues?: FormProps['defaultValues']) {
-    const values: FormProps['defaultValues'] = {};
-    items.forEach(item => {
-        let value: FormItem['defaultValue'];
-        if (item.defaultValue) {
-            value = item.defaultValue
-        } else {
-            value = defaultValues ? defaultValues[item.prop] : undefined
-        }
-        values[item.prop] = value
-    });
+// export type DefaultValues<T extends FieldValues> = FormProps<T>['defaultValues']
 
-    return values
+
+function getFieldDefaultValue(key: FieldComponentsType) {
+    switch (key) {
+/*        case 'dateRange':{
+            return []
+        }*/
+        default: {
+            return ""
+        }
+    }
+
 }
 
-export function Form({items, formResolver, defaultValues, children, ref}: FormProps & ContainerProps) {
+
+export function Form(props: FormProps) {
+    const {schema, defaultValues, withSubmit = true, formComponents, ref, children, onSubmit} = props
+    const {fields} = useMemo(() => {
+        const zodProvider = new ZodProvider(schema)
+        return zodProvider.parseSchema()
+    }, [schema])
 
     const form = useForm({
-        resolver: zodResolver(formResolver),
-        defaultValues: getFormDefaultValues(items, defaultValues)
+        resolver: zodResolver(schema),
+        defaultValues: fields.reduce((acc, item) => {
+            // 将 item.key 作为键，根据逻辑计算对应的值
+            acc[item.key] = defaultValues
+                ? defaultValues[item.key]
+                : getFieldDefaultValue(item.key as FieldComponentsType);
+
+            return acc;
+        }, {} as FieldValues)
+
     })
 
-    React.useImperativeHandle(ref, () => ({
-        submit: form.handleSubmit,
-        reset: form.reset,
-        resetField: form.resetField,
-    }))
+
+    React.useImperativeHandle(ref, () => form)
 
 
     return (
         <ShadForm {...form}>
             <form className="space-y-4 px-6">
                 {
-                    items.map((item) => (
+                    fields.map((item) => (
                         <FormField
-                            key={item.prop}
+                            key={item.key}
                             control={form.control}
-                            name={item.prop}
+                            name={item.key}
                             render={({field}) => {
                                 return (
                                     <FormItem>
-                                        <FormLabel>{item.label}</FormLabel>
+                                        <div className={'flex'}>
+                                            {item.required && <span className="text-destructive">*  </span>}
+                                            <FormLabel>{item.fieldConfig?.label}</FormLabel>
+                                        </div>
                                         <FormControl>
-                                            <Control type={item.control} attrs={{...item.controlProps, ...field}}/>
+                                            <Control
+                                                formComponents={formComponents}
+                                                type={item.type}
+                                                attrs={{label: item.fieldConfig?.label, ...item.fieldConfig?.inputProps, ...field}}
+                                            />
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>
@@ -80,6 +93,11 @@ export function Form({items, formResolver, defaultValues, children, ref}: FormPr
                     ))
                 }
                 {children}
+                {(withSubmit) && <Button type={'button'} onClick={() => {
+                    form.handleSubmit((v) => {
+                        if (onSubmit) onSubmit(v)
+                    })()
+                }}>提交</Button>}
             </form>
         </ShadForm>
     )

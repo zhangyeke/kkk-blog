@@ -33,7 +33,7 @@ import {
     StrikeThroughSupSubToggles,
     tablePlugin,
     thematicBreakPlugin,
-    toolbarPlugin,
+
     UndoRedo
 } from '@mdxeditor/editor'
 import {uploadImagePromise} from "@/lib/utils";
@@ -263,6 +263,75 @@ function whenInAdmonition(editorInFocus: EditorInFocus | null) {
     return ['note', 'tip', 'danger', 'info', 'caution'].includes((node as DirectiveNode).getMdastNode().name)
 }
 
+export const toolbarConfig = {
+    toolbarContents: () => (
+        <ConditionalContents
+            options={[
+                {
+                    when: (editor) => editor?.editorType === 'codeblock',
+                    contents: () => <ChangeCodeMirrorLanguage/>
+                },
+                {when: (editor) => editor?.editorType === 'sandpack', contents: () => <ShowSandpackInfo/>},
+                {
+                    fallback: () => (
+                        <>
+                            <UndoRedo/>
+                            <Separator/>
+                            <BoldItalicUnderlineToggles/>
+                            <CodeToggle/>
+                            <HighlightToggle/>
+                            <Separator/>
+                            <StrikeThroughSupSubToggles/>
+                            <Separator/>
+                            <ListsToggle/>
+                            <Separator/>
+                            <ConditionalContents
+                                options={[{
+                                    when: whenInAdmonition,
+                                    contents: () => <ChangeAdmonitionType/>
+                                }, {fallback: () => <BlockTypeSelect/>}]}
+                            />
+                            <Separator/>
+
+                            <CreateLink/>
+                            <InsertImage/>
+
+                            <Separator/>
+
+                            <InsertTable/>
+                            <InsertThematicBreak/>
+
+                            <Separator/>
+                            <InsertCodeBlock/>
+                            <InsertSandpack/>
+{/*                            <DiffSourceToggleWrapper>
+                                <UndoRedo />
+                            </DiffSourceToggleWrapper>
+                            <InsertSandpack/>*/}
+
+                            <ConditionalContents
+                                options={[
+                                    {
+                                        when: (editorInFocus) => !whenInAdmonition(editorInFocus),
+                                        contents: () => (
+                                            <>
+                                                <Separator/>
+                                                <InsertAdmonition/>
+                                            </>
+                                        )
+                                    }
+                                ]}
+                            />
+                        </>
+                    )
+                }
+            ]}
+        />
+
+
+    )
+}
+
 
 export const ALL_PLUGINS = [
 
@@ -296,70 +365,11 @@ export const ALL_PLUGINS = [
             AdmonitionDirectiveDescriptor
         ]
     }),
-    diffSourcePlugin({viewMode: 'rich-text', diffMarkdown: 'boo'}),
-    markdownShortcutPlugin(),
-    toolbarPlugin({
-        toolbarContents: () => (
-            <ConditionalContents
-                options={[
-                    {
-                        when: (editor) => editor?.editorType === 'codeblock',
-                        contents: () => <ChangeCodeMirrorLanguage/>
-                    },
-                    {when: (editor) => editor?.editorType === 'sandpack', contents: () => <ShowSandpackInfo/>},
-                    {
-                        fallback: () => (
-                            <>
-                                <UndoRedo/>
-                                <Separator/>
-                                <BoldItalicUnderlineToggles/>
-                                <CodeToggle/>
-                                <HighlightToggle/>
-                                <Separator/>
-                                <StrikeThroughSupSubToggles/>
-                                <Separator/>
-                                <ListsToggle/>
-                                <Separator/>
-                                <ConditionalContents
-                                    options={[{
-                                        when: whenInAdmonition,
-                                        contents: () => <ChangeAdmonitionType/>
-                                    }, {fallback: () => <BlockTypeSelect/>}]}
-                                />
-                                <Separator/>
-
-                                <CreateLink/>
-                                <InsertImage/>
-
-                                <Separator/>
-
-                                <InsertTable/>
-                                <InsertThematicBreak/>
-
-                                <Separator/>
-                                <InsertCodeBlock/>
-                                <InsertSandpack/>
-                                <ConditionalContents
-                                    options={[
-                                        {
-                                            when: (editorInFocus) => !whenInAdmonition(editorInFocus),
-                                            contents: () => (
-                                                <>
-                                                    <Separator/>
-                                                    <InsertAdmonition/>
-                                                </>
-                                            )
-                                        }
-                                    ]}
-                                />
-                            </>
-                        )
-                    }
-                ]}
-            />
-
-
-        )
+    diffSourcePlugin({
+        diffMarkdown: 'boo',
+        viewMode: 'rich-text',
+        readOnlyDiff: true
     }),
+    markdownShortcutPlugin(),
 
 ]

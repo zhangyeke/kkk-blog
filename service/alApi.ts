@@ -1,6 +1,7 @@
 "use server"
 import {env} from "env.mjs"
 import {Saying} from "@/types/alApi";
+import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 
 /*
  * @Author: EDY
@@ -9,7 +10,7 @@ import {Saying} from "@/types/alApi";
  * @Description: 获取名言 https://developer.hitokoto.cn/sentence/
  * @Params:
  */
-export async function getSaying() {
+export async function getSaying():Promise<BaseResource<Saying>> {
     try {
         const res = await fetch(`${env.AL_API_URL}?encode=json`, {
             method: "get",
@@ -18,9 +19,11 @@ export async function getSaying() {
                 'Accept': 'application/json' // 可选：告诉服务器我们期望接收 JSON 格式数据
             },
         })
-        return await res.json() as Saying
+        const data = await res.json() as Saying
+        return backSuccessMessage('名言获取成功', data)
     } catch (err) {
         console.log("名言获取失败", err)
+        return backFailMessage("名言获取失败")
     }
 
 }

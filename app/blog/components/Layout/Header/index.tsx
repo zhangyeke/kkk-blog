@@ -1,5 +1,3 @@
-
-import {PostCategory} from "@/types/postCategory";
 import LeftNavigationMenu from "./LeftNavigationMenu";
 import RightNavigation from "./RightNavigation";
 import Logo from "./Logo";

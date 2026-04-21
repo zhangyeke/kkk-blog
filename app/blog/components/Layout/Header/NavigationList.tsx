@@ -35,7 +35,7 @@ export function NavigationList() {
 
 
     return (
-        <div className={'flex items-center gap-x-4 text-white text-sm '}>
+        <div className={'flex items-center gap-x-4 text-sm '}>
             {
                 HEADER_NAVIGATION_LIST.map((item, index) => (
                     <NavigationItem onClick={() => router.push(item.href)} key={index}>

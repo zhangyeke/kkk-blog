@@ -17,12 +17,13 @@ export async function uploadImage(params: FormData) {
         if (data.code && data.code === 200) {
             return data.data
         } else {
+
             return Promise.reject(new Error('图片上传失败'))
         }
 
 
     } catch (err) {
-        console.log("图片上传失败", err)
+        console.error("图片上传失败", err)
     }
 
 }

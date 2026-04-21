@@ -22,7 +22,9 @@ export const env = createEnv({
         NEXT_PUBLIC_API_URL: z.string(),
         NEXT_PUBLIC_REQUEST_URL: z.string(),
         NEXT_PUBLIC_STORAGE_NAME: z.string(),
-        NEXT_PUBLIC_IMG_UPLOAD_LIMIT: z.string()
+        NEXT_PUBLIC_IMG_UPLOAD_LIMIT: z.string(),
+        NEXT_PUBLIC_RANDOM_IMAGE_URL_1: z.string(),
+        NEXT_PUBLIC_RANDOM_IMAGE_URL_2: z.string(),
     },
     runtimeEnv: {
         // 运行时环境变量（自动从process.env读取）
@@ -42,5 +44,7 @@ export const env = createEnv({
         NEXT_PUBLIC_REQUEST_URL: process.env.NEXT_PUBLIC_REQUEST_URL,
         NEXT_PUBLIC_STORAGE_NAME: process.env.NEXT_PUBLIC_STORAGE_NAME,
         NEXT_PUBLIC_IMG_UPLOAD_LIMIT: process.env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT,
+        NEXT_PUBLIC_RANDOM_IMAGE_URL_1: process.env.NEXT_PUBLIC_RANDOM_IMAGE_URL_1,
+        NEXT_PUBLIC_RANDOM_IMAGE_URL_2: process.env.NEXT_PUBLIC_RANDOM_IMAGE_URL_2,
     },
 })

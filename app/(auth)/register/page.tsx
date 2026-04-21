@@ -1,4 +1,4 @@
-import {RegisterForm} from "@/components/AuthForm";
+import RegisterForm from "../components/RegisterForm";
 import {Metadata} from "next";
 import {auth} from "@/lib/auth";
 import {redirect} from "next/navigation";

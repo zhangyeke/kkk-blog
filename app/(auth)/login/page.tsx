@@ -1,7 +1,7 @@
 import {redirect} from "next/navigation"
-import {auth} from "@/lib/auth"
-import {LoginForm} from "@/components/AuthForm";
 import {Metadata} from "next";
+import {auth} from "@/lib/auth"
+import LoginForm from "../components/LoginForm";
 
 export const metadata: Metadata = {
     title: '登录'

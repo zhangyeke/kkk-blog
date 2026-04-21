@@ -34,12 +34,12 @@ export default async function HeaderMenu({categoryList, className, style}: Heade
 
                 <NavigationMenuItem>
                     <NavigationMenuLink asChild>
-                        <Link href={"/"} className={'hover:text-primary flex-center text-white'}>首页</Link>
+                        <Link href={"/"} className={'hover:text-primary flex-center '}>首页</Link>
                     </NavigationMenuLink>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger
-                        className={'text-white hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>素材</NavigationMenuTrigger>
+                        className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>素材</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         {
                             materialList.map((item, index) => (
@@ -53,7 +53,7 @@ export default async function HeaderMenu({categoryList, className, style}: Heade
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger
-                        className={'text-white hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>记录</NavigationMenuTrigger>
+                        className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>记录</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         {
                             categoryList && categoryList.map((item, index) => (

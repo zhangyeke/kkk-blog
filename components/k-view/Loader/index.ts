@@ -1,3 +1,4 @@
-export {default as Spinner} from "./Spinner"
-export {default as Suspense} from "./Suspense"
-export {default as FixSpin} from "./FixSpin"
+export {Spinner} from "./Spinner"
+export {Suspense} from "./Suspense"
+export {FixSpin} from "./FixSpin"
+export {Hamster} from "./Hamster"

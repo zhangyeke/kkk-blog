@@ -2,28 +2,12 @@
 import React, {useState} from 'react';
 import {useTheme} from "next-themes";
 import {cn} from "@/lib/utils";
-import {useClientMounted} from "@/hooks";
-import {Skeleton} from "@/components/ui/skeleton";
 import {LeftTree} from "./LeftTree";
 import {RightTree, RightTreeTwo} from "./RightTree";
 import {Star} from "./Star";
 import styles from "./darkSwitch.module.css"
-
-const getCssVar = (mode: string) => {
-    const isDark = mode === 'dark';
-    return {
-        "--opacity": `${isDark ? 0 : 1}`,
-        "--from-bgcolor": `${isDark ? "#b993d4" : "#e75f7a"}`,
-        "--to-bgcolor": `${isDark ? "#e6e0ed" : "#ffb168"}`,
-        "--btn-color": `${isDark ? "rgba(242, 198, 160, 0.6)" : "rgb(108 82 140 / 70%)"}`,
-        "--translate-x": `${isDark ? 0 : "200%"}`,
-        "--tree-color": `${isDark ? "#4c508b" : "#78177b"}`,
-        "--trunk": "#3b3853",
-        "--left-hill": `${isDark ? "#5c6090" : "#602291"}`,
-        "--right-hill": `${isDark ? "#4b4f85" : "#511a7f"}`,
-        "--sun-translate-y": `${isDark ? "2rem" : "1.25rem"}`,
-    }
-}
+import {Skeleton} from "@/components/ui/skeleton";
+import {useClientMounted} from "@/hooks";
 
 
 type TinySpotProps = {
@@ -43,7 +27,11 @@ const SwitchButton = ({onTransitionEnd}: { onTransitionEnd: () => void }) => {
     return (
         <div
             className="absolute z-20 w-8 h-full rounded-full bg-[var(--btn-color)] overflow-hidden transition-all duration-[800ms] ease-in transform translate-x-[var(--translate-x)] backdrop-blur-[0.5rem]"
-            onTransitionEnd={onTransitionEnd}
+            onTransitionEnd={(e) => {
+                if (e.propertyName === 'translate') {
+                    onTransitionEnd();
+                }
+            }}
         ></div>
     );
 };

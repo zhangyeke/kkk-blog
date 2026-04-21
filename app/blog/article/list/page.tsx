@@ -1,8 +1,15 @@
-export default async function Page() {
+import {getPostCategoryList} from "@/service/postCategory"
+import PageContainer, {type PageContainerProps} from "./PageContainer"
+
+export default async function Page({searchParams}: PageSearchParams<PageContainerProps['defaultParams']>) {
+    const category = await getPostCategoryList()
+
+    const routeParams = await searchParams
 
     return (
-        <div>
-            文章搜索
-        </div>
+        <PageContainer
+            defaultParams={routeParams}
+            categoryList={category.data}
+        />
     )
 }

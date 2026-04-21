@@ -1,8 +1,9 @@
-import {devtools, persist} from 'zustand/middleware'
-import {StoreCreator} from "../utils";
-import {setDeepValue} from "@/lib/utils";
+import {env} from "env.mjs"
 
-const myMiddlewares = (f) => devtools(persist(f, {name: 'bearStore'}))
+import {setDeepValue} from "@/lib/utils";
+import {StoreCreator} from "../utils";
+
+// const myMiddlewares = (f) => devtools(persist(f, {name: 'bearStore'}))
 
 export type Themes = {
     primary: string
@@ -10,10 +11,16 @@ export type Themes = {
 
 export interface SystemSliceState {
     themes: Themes
+    /*鼠标轨迹动画*/
+    trackMouse: boolean
+    /*首页轮播图*/
+    homeBanners: string[]
 }
 
 export interface SystemSliceAction {
     updateThemes: (value: Themes | string, key?: keyof Themes) => void
+    updateTrackMouseStatus: (value: boolean) => void
+    updateHomeBanners: (values: string[]) => void
     reset: () => void
 }
 
@@ -21,7 +28,19 @@ export type SystemSlice = SystemSliceState & SystemSliceAction
 
 export const useSystemSlice: StoreCreator<SystemSlice> = (set, get, store) => ({
     themes: {
-        primary: "#e6c99f"
+        primary: "#e6c99f",
+    },
+    trackMouse: true,
+    homeBanners: [`${env.NEXT_PUBLIC_RANDOM_IMAGE_URL_1}/web?type=file`, env.NEXT_PUBLIC_RANDOM_IMAGE_URL_2],
+    updateTrackMouseStatus: (value: boolean) => {
+        set(state => {
+            state.trackMouse = value
+        })
+    },
+    updateHomeBanners: (newBanners) => {
+        set(state => {
+            state.homeBanners = newBanners
+        })
     },
     /*更新主题*/
     updateThemes: (value, key) => {

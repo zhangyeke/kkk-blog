@@ -1,4 +1,4 @@
-// 头部组件显示黑名单
+// 头部组件隐藏黑名单
 export const HEADER_BLACKS = ['login']
 
 /*头部固定路由白名单*/

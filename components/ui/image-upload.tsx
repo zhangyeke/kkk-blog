@@ -10,10 +10,10 @@ import {FixSpin} from "@/components/k-view";
 
 interface ImageUploadProps extends BaseComponentProps {
     onUpload?: (url: string) => void;
-    defaultValue?: string;
+    value?: string;
 }
 
-export function ImageUpload({className, defaultValue, style, onUpload}: ImageUploadProps) {
+export function ImageUpload({className, value, style, onUpload}: ImageUploadProps) {
     const {
         pending,
         previewUrl,
@@ -24,7 +24,7 @@ export function ImageUpload({className, defaultValue, style, onUpload}: ImageUpl
         handleRemove,
     } = useImageUpload({
         onUpload,
-        defaultValue
+        value
     })
 
     const [isDragging, setIsDragging] = useState(false)

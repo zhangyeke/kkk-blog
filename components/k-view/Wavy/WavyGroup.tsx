@@ -7,6 +7,7 @@ import {useTheme} from "next-themes";
 import {useAppStore, useClientMounted} from "@/hooks";
 import {color2dark} from "@/lib/color";
 
+
 export interface WavyGroupProps extends BaseComponentProps {
     waveColor?: string;
     waveNumber?: number
@@ -42,3 +43,5 @@ export function WavyGroup(props: WavyGroupProps) {
         </div>
     )
 }
+
+export default WavyGroup

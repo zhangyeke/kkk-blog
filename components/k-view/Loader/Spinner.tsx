@@ -5,7 +5,7 @@ export interface SpinnerProps extends BaseComponentProps {
     text?: string
 }
 
-const Spinner = ({text, className, style}: SpinnerProps) => {
+export const Spinner = ({text, className, style}: SpinnerProps) => {
     return (
         <div className={'flex-center flex-col text-primary'}>
             <Loader
@@ -19,4 +19,3 @@ const Spinner = ({text, className, style}: SpinnerProps) => {
     );
 };
 
-export default Spinner;

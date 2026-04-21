@@ -6,7 +6,7 @@ import type {AppStore} from "@/store";
 
 export {useDebounce} from "./use-debounce"
 export {useImageUpload} from "./use-image-upload"
-export {useAutoFormSubmit, useAutoFormCustomSubmit} from "./useAutoFormSubmit"
+export {useCustomFormSubmit} from "./useAutoFormSubmit"
 
 export function useClientMounted() {
     const [mounted, setMounted] = useState(false)

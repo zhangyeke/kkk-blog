@@ -1,12 +1,14 @@
 import {type ClassValue, clsx} from "clsx"
 import qs from "qs"
+import {remark} from 'remark'
+import strip from 'strip-markdown'
 import {toast} from "sonner";
-
 import {twMerge} from "tailwind-merge"
 import {get, set} from "lodash"
 import {uploadImage} from "@/service/fileUpload";
 import {env} from "@/env.mjs";
 import {backImagePayloadLargeMessage} from "@/lib/actionMessageBack";
+import {isNumber} from "./validator";
 
 /*
  * @Author: EDY
@@ -96,7 +98,7 @@ export function uploadImagePromise(image: File, isToast = true) {
             if (image.size > MAX_SIZE) {
                 const str = `图片大小超过限制，最大可上传 ${env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}`;
                 if (isToast) toast.error(str)
-                reject(backImagePayloadLargeMessage)
+                reject(backImagePayloadLargeMessage(str))
                 return
             }
             try {
@@ -140,4 +142,20 @@ export const isStringNumber = <V>(value: V): boolean => {
  */
 export function str2num<V>(v: V) {
     return isStringNumber(v) ? Number(v) : v
+}
+
+// 添加单位
+export const addUnit = (num: number | string, unit = "px") => {
+    if (typeof num === 'string') return num;
+    return isNumber(num) ? `${num}${unit}` : '';
+}
+
+/*获取纯文本的markdown内容*/
+
+export async function getPlainText(content: string, length: number = 150) {
+    const file = await remark()
+        .use(strip) // 核心插件：去除所有 Markdown 格式
+        .process(content)
+
+    return String(file).trim().slice(0, length) + (content.length > length ? '...' : '')
 }
