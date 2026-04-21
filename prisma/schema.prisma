@@ -1,13 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  // output   = "./generated/client"
 }
 
 datasource db {
@@ -16,19 +9,22 @@ datasource db {
 }
 
 model Post {
-  id         Int          @id @default(autoincrement())
-  category   PostCategory @relation(fields: [categoryId], references: [id])
-  categoryId Int
-  pv         Int?          @default(0)
-  cover      String
-  tags       String
-  title      String
-  content    String
+  id            Int          @id @default(autoincrement())
+  categoryId    Int
+  pv            Int?         @default(0)
+  cover         String
+  tags          String
+  title         String
+  content       String
   /// 文章状态 0：下架 1：正常 2：草稿
-  status     Int?          @default(1)
-  userId     String       @db.Uuid
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime?     @default(now()) @db.Timestamp(6)
+  status        Int?         @default(1)
+  createdAt     DateTime?    @default(now()) @db.Timestamp(6)
+  userId        String       @db.Uuid
+  favoriteCount Int          @default(0)
+  updatedAt     DateTime     @default(now()) @updatedAt
+  favorites     Favorite[]
+  category      PostCategory @relation(fields: [categoryId], references: [id])
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PostCategory {
@@ -36,31 +32,42 @@ model PostCategory {
   name      String
   icon      String?
   status    Int      @default(1)
-  posts     Post[]
   createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt
+  posts     Post[]
 }
 
-// 用户表
 model User {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String    @default("NO_NAME")
-  email         String    @unique(map: "user_email_idx")
-  emailVerified DateTime? @default(now()) @db.Timestamp(6)
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String     @default("NO_NAME")
+  email         String     @unique(map: "user_email_idx")
+  emailVerified DateTime?  @default(now()) @db.Timestamp(6)
   avatar        String?
+  roles         String     @default("user")
+  address       Json?      @db.Json
+  createdAt     DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime   @default(now()) @updatedAt
   password      String?
-  roles         String    @default("user")
-  address       Json?     @db.Json
-
-  createdAt DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt DateTime  @updatedAt
-  accounts   Account[]
-  session   Session[]
-  posts      Post[]
+  age           Int?
+  gender        Int?
+  accounts      Account[]
+  favorites     Favorite[]
+  posts         Post[]
+  session       Session[]
 }
 
-// 第三方登录账户
+model Favorite {
+  userId    String   @db.Uuid
+  postId    Int
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
 model Account {
-  userId            String  @db.Uuid
+  userId            String   @db.Uuid
   type              String
   provider          String
   providerAccountId String
@@ -71,24 +78,18 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime @default(now()) @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
 
-// 会话令牌
 model Session {
   sessionToken String   @id
   userId       String   @db.Uuid
   expires      DateTime @db.Timestamp(6)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
