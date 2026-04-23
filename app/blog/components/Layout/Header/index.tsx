@@ -3,7 +3,6 @@ import RightNavigation from "./RightNavigation";
 import Logo from "./Logo";
 import Header from "./Header";
 import {getPostCategoryList} from "@/service/postCategory";
-import {Suspense} from "@/components/k-view"
 
 
 
@@ -14,9 +13,7 @@ export default async function HeaderContainer() {
         <Header>
             <div className={'flex flex-items'}>
                 <Logo/>
-                <Suspense>
-                    <LeftNavigationMenu categoryList={categoryRes.data} className={'ml-4'}/>
-                </Suspense>
+                <LeftNavigationMenu categoryList={categoryRes.data} className={'ml-4'}/>
             </div>
             <RightNavigation/>
         </Header>

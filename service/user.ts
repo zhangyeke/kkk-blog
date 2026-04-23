@@ -1,9 +1,8 @@
 'use server';
-import {cacheTag} from "next/cache";
-
+import {cacheTag, updateTag} from "next/cache";
 import prisma from "@/lib/prisma"
 import {Prisma} from '@prisma/client'
-import {checkAuth, safeAction} from "@/service/auth";
+import {checkAuth} from "@/service/auth";
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 import {updateUserSchema} from "@/validators/user";
 import {User} from "@/types/user";
@@ -45,7 +44,7 @@ export async function getUserById(id: string) {
 
 /*获取自己的用户信息*/
 export async function getMeInfo() {
-    return safeAction(async () => {
+    try {
         // 1. 获取当前会话，验证权限
         const session = await checkAuth();
         const user = await prisma.user.findUnique({
@@ -61,7 +60,10 @@ export async function getMeInfo() {
             }
         })
         return backSuccessMessage('获取用户信息成功', user)
-    }, '获取用户信息失败')
+    } catch {
+        return backFailMessage('获取用户信息失败')
+    }
+
 }
 
 
@@ -79,8 +81,7 @@ export async function getUserByEmail(email: string) {
 
 // --- UPDATE (更新) ---
 export async function updateUser(params: Prisma.UserUpdateInput) {
-
-    return safeAction(async () => {
+    try {
         const data = updateUserSchema.parse(params)
         // // 1. 获取当前会话，验证权限
         const session = await checkAuth();
@@ -93,9 +94,12 @@ export async function updateUser(params: Prisma.UserUpdateInput) {
             },
             data
         })
-
+        updateTag('action-userStatisticsInfo')
         return backSuccessMessage('更新用户信息成功', user)
-    }, '更新用户信息失败')
+    } catch (err) {
+        return backFailMessage('更新用户信息失败', err)
+    }
+
 }
 
 // 查询用户相关统计数据
@@ -105,13 +109,10 @@ export async function userStatisticsInfo(id?: string) {
     try {
 
         const [user, stats] = await Promise.all([
-            // 查询用户信息（排除密码）
-            prisma.user.findUnique({
-                where: {id},
-                omit: {
-                    password: true
-                }
+            findUniqueUser({
+                id
             }),
+            // 查询用户信息（排除密码）
 
             // 聚合查询：计算该用户发布的所有文章的统计数据
             prisma.post.aggregate({

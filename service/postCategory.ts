@@ -4,12 +4,15 @@ import prisma from '@/lib/prisma'
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 import {PostCategoryWithPosts} from "@/types/postCategory";
 import {postWithUserInclude} from "@/types/post";
+import {cacheTag} from "next/cache";
 
 export async function createPostCategory() {
 
 }
 
 export async function getPostCategoryList(params?: Prisma.PostCategoryWhereInput) {
+    "use cache"
+    cacheTag('action-postCategoryList')
     try {
         const where = params ? params : {}
         if (where?.name) {
@@ -22,9 +25,8 @@ export async function getPostCategoryList(params?: Prisma.PostCategoryWhereInput
             where,
         })
         return backSuccessMessage("获取分类列表成功", data)
-    } catch (err) {
-        console.log("获取分类列表失败", err)
-        return Promise.reject(backFailMessage("获取分类列表失败", []))
+    } catch {
+        return backFailMessage("获取分类列表失败", [])
     }
 
 }
@@ -32,7 +34,6 @@ export async function getPostCategoryList(params?: Prisma.PostCategoryWhereInput
 /*获取文章分类以及关联的所有文章*/
 export async function getPostCategoryWithPosts(params?: Prisma.PostCategoryFindManyArgs) {
     try {
-
         const data = await prisma.postCategory.findMany({
             include: {
                 posts: {
@@ -46,9 +47,8 @@ export async function getPostCategoryWithPosts(params?: Prisma.PostCategoryFindM
             ...params
         }) as PostCategoryWithPosts[]
         return backSuccessMessage("获取分类列表成功", data)
-    } catch (err) {
-        console.log("获取分类列表失败", err)
-        return Promise.reject(backFailMessage("获取分类列表失败", []))
+    } catch {
+        return backFailMessage("获取分类列表失败", [])
     }
 
 }

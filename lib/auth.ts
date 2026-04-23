@@ -66,10 +66,10 @@ const config = {
             }
 
             if (trigger === "update" && session) {
-                await updateUser(session)
+                await updateUser(session.user)
                 token = {
                     ...token,
-                    ...session
+                    ...session.user
                 }
             }
             return token

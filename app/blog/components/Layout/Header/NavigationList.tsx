@@ -8,7 +8,7 @@ export const HEADER_NAVIGATION_LIST = [
     {
         name: "收藏",
         icon: <Star className={'size-[inherit]'}/>,
-        href: "/blog/user/collect"
+        href: "/blog/me/favorite"
     },
     {
         name: "后台管理",

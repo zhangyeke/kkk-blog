@@ -12,7 +12,7 @@ const statistics = [
         key: 'totalPosts'
     },
     {
-        title: "收藏夹",
+        title: "收藏数",
         key: 'totalFavorites'
     },
     {
@@ -24,6 +24,7 @@ const statistics = [
 // 博主信息展示组件
 export default async function Master() {
     const session = await auth()
+
     let user;
     if (session && session.user) {
         user = await userStatisticsInfo(session.user.id)
@@ -33,10 +34,9 @@ export default async function Master() {
             roles: "superAdmin"
         })
         user = await userStatisticsInfo(up?.id)
-
     }
 
-    if (!user) return null;
+    if (!(user && user.data)) return null;
 
     return (
         <GradientTransition

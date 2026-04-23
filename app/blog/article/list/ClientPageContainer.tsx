@@ -19,7 +19,7 @@ export type PageContainerProps = {
 }
 
 
-export default function PageContainer({categoryList, defaultParams}: PageContainerProps) {
+export default function ClientPageContainer({categoryList, defaultParams}: PageContainerProps) {
 
     const [cate, setCate] = useState(parseInt(defaultParams?.cid || '0'))
     const defaultSearchParams = {

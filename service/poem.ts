@@ -22,15 +22,19 @@ export async function getPoemToken() {
 
 // 获取今日诗词
 export async function getTodayPoem() {
-    const tokenRes = await getPoemToken()
-    const token = tokenRes.data
-    return await http.get<PoemResponse>(`/sentence`, {
-        headers: {
-            "X-User-Token": token
-        },
-        next: {
-            revalidate: 44640,
-        },
-    });
+    try {
+        const tokenRes = await getPoemToken()
+        const token = tokenRes.data
+        return await http.get<PoemResponse>(`/sentence`, {
+            headers: {
+                "X-User-Token": token
+            },
+            next: {
+                revalidate: 44640,
+            },
+        });
+    } catch {
+        return null
+    }
 
 }

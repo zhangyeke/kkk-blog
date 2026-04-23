@@ -45,7 +45,7 @@ function MessageDisplay() {
         <div className="flex gap-6 mt-8">
           <button
             onClick={() => navigate.push("/")}
-            className="bg-black text-white hover:bg-gray-900 transition-all duration-300 ease-in-out px-6 py-2 h-auto text-base font-medium flex items-center gap-2 hover:scale-105"
+            className="cursor-pointer bg-black text-white hover:bg-gray-900 transition-all duration-300 ease-in-out px-6 py-2 h-auto text-base font-medium flex items-center gap-2 hover:scale-105"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -210,7 +210,7 @@ interface Circulo {
 
 function CircleAnimation() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const requestIdRef = useRef<number>();
+  const requestIdRef = useRef<number>(0);
   const timerRef = useRef(0);
   const circulosRef = useRef<Circulo[]>([]);
 

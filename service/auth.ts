@@ -1,8 +1,9 @@
 "use server"
 import {isRedirectError} from "next/dist/client/components/redirect-error";
+import {updateTag} from "next/cache"
 import {hashSync} from "bcrypt-ts-edge";
 import {loginSchema, registerSchema} from "@/validators/auth"
-import {auth, signIn, signOut} from "@/lib/auth"
+import {auth, signIn, signOut, unstable_update} from "@/lib/auth"
 import {
     ActionError,
     AUTH_FAIL_CODE,
@@ -12,9 +13,33 @@ import {
 } from "@/lib/actionMessageBack"
 import {LoginParams, RegisterParams} from "@/types/ahth";
 import {createUser, getUserByEmail} from "@/service/user";
+import {Session} from "next-auth";
 
 
-/*登录--弃用中  统一在客户端调用*/
+export async function safeAction<T>(actionFn: () => Promise<T>, failMessage = '操作失败请稍后再试') {
+    try {
+        return await actionFn();
+    } catch (err) {
+        // 统一拦截处理
+        if (err instanceof ActionError) {
+            return backAuthFailMessage("认证失败，请重新登录");
+        }
+
+        return backFailMessage(failMessage, err);
+    }
+}
+
+export async function updateAuth(data: Session['user']) {
+    return safeAction(async () => {
+        await unstable_update({
+            user: data
+        })
+        return backSuccessMessage('更新成功')
+    }, '更新失败')
+}
+
+
+/*登录*/
 export async function login(formData: LoginParams) {
     try {
         const user = loginSchema.parse(formData)
@@ -39,7 +64,7 @@ export async function emailPlagiarismCheck(email: string) {
     return !!user
 }
 
-/*退出登录--弃用中  统一在客户端调用*/
+/*退出登录*/
 export async function logout() {
     // try {
     //     await signOut({
@@ -49,10 +74,12 @@ export async function logout() {
     // } catch (err) {
     //     return backFailMessage("退出登录失败")
     // }
+
     await signOut()
+    updateTag('action-userStatisticsInfo')
 }
 
-/*注册--弃用中  统一在客户端调用*/
+/*注册*/
 export async function register(formData: RegisterParams) {
     try {
 
@@ -61,7 +88,7 @@ export async function register(formData: RegisterParams) {
         const isExisted = await emailPlagiarismCheck(user.email);
 
         if (isExisted) {
-            return backFailMessage("该邮箱已被注册") // 手动返回业务错误
+            return backFailMessage("该邮箱已被注册")// 手动返回业务错误
         }
 
         const originPwd = user.password
@@ -97,19 +124,4 @@ export async function checkAuth() {
 
     // 校验成功，返回用户信息
     return session.user;
-}
-
-export async function safeAction<T>(actionFn: () => Promise<T>, failMessage = '操作失败请稍后再试') {
-    try {
-        return await actionFn();
-    } catch (err) {
-        // 统一拦截处理
-        if (err instanceof ActionError) {
-            return backAuthFailMessage("认证失败，请重新登录");
-        }
-
-        // 统一处理数据库或其他未知错误
-        console.error("Server Action Error:", err);
-        return backFailMessage(failMessage);
-    }
 }

@@ -1,5 +1,5 @@
 "use client"
-import React, {ReactNode, useEffect, useMemo, useRef, useState} from "react"
+import React, {ReactNode, Ref, useEffect, useImperativeHandle, useMemo, useRef, useState} from "react"
 import {useAsyncFn, useIntersection} from "react-use";
 import {addUnit, cn} from "@/lib/utils";
 import {AlertCircle,} from "lucide-react";
@@ -7,6 +7,10 @@ import {Button} from "@/components/ui/button";
 import {Spinner} from "../Loader/Spinner";
 import {Empty} from "../Empty";
 
+
+export type InfiniteScrollListInstance<T> = {
+    updateItems: React.Dispatch<React.SetStateAction<T[]>>
+}
 
 export interface InfiniteScrollListProps<D, > extends BaseComponentProps {
     initialData?: D[]
@@ -20,12 +24,14 @@ export interface InfiniteScrollListProps<D, > extends BaseComponentProps {
         currentPage: number,
     }>>
     enabledScrollLoad?: boolean; // 是否启用无限滚动
+    ref?: React.Ref<InfiniteScrollListInstance<D>>
 }
 
 /**
  * 封装的无限滚动列表组件
  */
 export const InfiniteScrollList = <T, >({
+                                            ref,
                                             fetchData,
                                             renderItem,
                                             apiParams,
@@ -36,6 +42,8 @@ export const InfiniteScrollList = <T, >({
                                             enabledScrollLoad = true,
                                             initialData = []
                                         }: InfiniteScrollListProps<T>) => {
+    /*是否完成了一次加载*/
+    const isCompleteFirstLoad = useRef(false)
     const [items, setItems] = useState<T[]>(initialData);
     const [paging, setPaging] = useState({
         page: 1,
@@ -56,9 +64,6 @@ export const InfiniteScrollList = <T, >({
     const memoParams = useMemo(() => (apiParams || {}), [paramsStr]);
     // 使用 useRef 保存最新的 fetchData 引用，避免其变化导致 useAsyncFn 重新生成
     const fetchDataRef = useRef(fetchData);
-    useEffect(() => {
-        fetchDataRef.current = fetchData;
-    }, [fetchData]);
 
     // 2. 核心加载函数
     const [state, loadMore] = useAsyncFn(async (currentPage: number, size: number, params: AnyObject) => {
@@ -72,7 +77,7 @@ export const InfiniteScrollList = <T, >({
                 pageSize: size,
                 ...params
             });
-
+            isCompleteFirstLoad.current = true
             const {list: newItems, totalPages} = response.data;
 
             if (currentPage === 1) {
@@ -93,6 +98,16 @@ export const InfiniteScrollList = <T, >({
             throw error;
         }
     }, [hasMore, enabledScrollLoad]); // 删除了 fetchData 依赖，改用 Ref 访问
+
+    useImperativeHandle(ref, () => ({
+        updateItems: setItems
+    }))
+
+
+    useEffect(() => {
+        fetchDataRef.current = fetchData;
+    }, [fetchData]);
+
 
     // 3. 仅在参数内容 (paramsStr) 变化时执行重置
     // 核心修复：这个 Effect 不再依赖 loadMore 引用，只依赖内容字符串
@@ -141,7 +156,7 @@ export const InfiniteScrollList = <T, >({
             </div>
 
             {
-                (!state.loading && items.length <= 0) && <Empty/>
+                (!state.loading && items.length <= 0 && isCompleteFirstLoad.current) && <Empty/>
             }
 
             {enabledScrollLoad && (

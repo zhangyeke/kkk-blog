@@ -13,10 +13,24 @@ export function Image(props: ImageProps) {
     const [status, setStatus] = React.useState('loading')
 
     const Fallback = React.useCallback(() => {
-        if (fallback) return <AvatarFallback>{fallback}</AvatarFallback>
+        if (fallback) {
+            return (
+                <span
+                    className={'flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs'}>{fallback}</span>
+            )
+        }
 
         return <AvatarImage className={'size-full'} src={'/images/placeholder/image_error.png'} alt={"加载失败"}/>
     }, [fallback])
+
+    if (!imageProps.src) {
+        return (
+            <Avatar className={className}>
+                <Fallback/>
+            </Avatar>
+        )
+    }
+
     return (
         <Avatar className={className}>
             <AvatarImage

@@ -6,14 +6,21 @@ import ws from 'ws';
 neonConfig.webSocketConstructor = ws;
 
 declare global {
-    let prisma: PrismaClient | undefined;
+    var prisma: PrismaClient | undefined;
 }
 
-const connectionString = `${process.env.DATABASE_URL}`;
-//
-// const pool = new Pool({ connectionString });
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+    throw new Error('DATABASE_URL is not defined');
+}
+
 const adapter = new PrismaNeon({connectionString});
-const prisma = new PrismaClient({adapter});
 
+const prisma = global.prisma ?? new PrismaClient({adapter});
 
-export default prisma
+if (process.env.NODE_ENV !== 'production') {
+    global.prisma = prisma;
+}
+
+export default prisma;

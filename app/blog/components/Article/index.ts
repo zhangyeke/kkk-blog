@@ -5,6 +5,7 @@ import HeadCategory from "./HeadCategory";
 import HotArticles from "./HotArticles";
 import {Tag} from "./Tag"
 import SearchBar from "./SearchBar";
+import {CollectButton} from "./CollectButton";
 
 
 export default {
@@ -14,5 +15,6 @@ export default {
     Tag,
     List,
     HotArticles,
-    SearchBar
+    SearchBar,
+    CollectButton
 }

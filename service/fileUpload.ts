@@ -1,6 +1,7 @@
 "use server"
 import {env} from "env.mjs"
 import {UploadImageResponse} from "@/types/file";
+import {backSuccessMessage} from "@/lib/actionMessageBack";
 
 export async function uploadImage(params: FormData) {
     try {
@@ -17,13 +18,10 @@ export async function uploadImage(params: FormData) {
         if (data.code && data.code === 200) {
             return data.data
         } else {
-
             return Promise.reject(new Error('图片上传失败'))
         }
-
-
-    } catch (err) {
-        console.error("图片上传失败", err)
+    } catch {
+        return Promise.reject(new Error('图片上传失败'))
     }
 
 }

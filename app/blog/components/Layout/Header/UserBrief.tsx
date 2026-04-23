@@ -1,12 +1,10 @@
 "use client"
 import React from "react";
-import {toast} from "sonner";
-
+import {Session} from "next-auth"
 import Link from "next/link";
 import {ChevronRight, LogOut, NotebookPen, Settings, UserRound} from "lucide-react";
 import {useHover} from "react-use";
 import {useRouter} from "next/navigation";
-import {signOut, useSession} from "next-auth/react"
 import {cn} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Image} from "@/components/k-view";
@@ -29,14 +27,7 @@ export type PopoverMenuProps = {
 
 /*菜单弹窗内容*/
 export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuProps) {
-    const router = useRouter();
-    const handleLogout = React.useCallback(async () => {
-        await signOut({
-            redirect: false
-        })
-        router.refresh();
-        toast.success("退出登录成功")
-    }, [])
+
 
     return (
         <>
@@ -57,32 +48,35 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
                 }
             </div>
             <Separator/>
-            <MenuItem className={' hover:bg-primary/30 flex items-center gap-x-2 size-full px-4 py-2 cursor-pointer'}
-                      onClick={handleLogout}>
-                <LogOut className={'size-4.5'}/>
-                退出登录
-                {/*<form action={logout} className={'size-full'}>*/}
-                {/*    <button type={'submit'}*/}
-                {/*            className={'flex items-center gap-x-2 size-full px-4 py-2 cursor-pointer border-none outline-none'}>*/}
-                {/*        <LogOut className={'size-4.5'}/>*/}
-                {/*        退出登录*/}
-                {/*    </button>*/}
-                {/*</form>*/}
+            <MenuItem
+                className={' hover:bg-primary/30'}
+            >
+                <form action={logout} className={'size-full'}>
+                    <button
+                        type={'submit'}
+                        className={'flex items-center gap-x-2 size-full px-4 py-2 cursor-pointer border-none outline-none'}
+                    >
+                        <LogOut className={'size-4.5'}/>
+                        退出登录
+                    </button>
+                </form>
             </MenuItem>
         </>
     )
 }
 
+export type UserBriefProps = {
+    session: Session | null
+}
 
-export function UserBrief() {
-    const {data} = useSession();
+export function UserBrief({session}: UserBriefProps) {
 
     const menuList = React.useRef([
-        {label: "个人中心", icon: <UserRound/>, href: "/blog/user/me"},
+        {label: "个人中心", icon: <UserRound/>, href: "/blog/me"},
         {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/write"},
         {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>, href: "/blog/setting"},
     ])
-    const user = React.useMemo(() => data?.user as User, [data])
+    const user = React.useMemo(() => session?.user as User, [session])
     const username = (user?.name || "kkk")
 
 
@@ -108,7 +102,7 @@ export function UserBrief() {
         const hasOpen = isOpen || hovered
         return (
             <Link
-                href={"/blog/user/me"}
+                href={"/blog/me"}
                 className={`relative`}
             >
                 <Avatar
@@ -129,13 +123,13 @@ export function UserBrief() {
         if (item.href) router.push(item.href)
     }, [])
 
-    if (!data) {
+/*    if (!user) {
         return (
             <Link href={"/login"}>
                 <Image className={"size-10 rounded-full"} fallback={"登录"}/>
             </Link>
         )
-    }
+    }*/
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>

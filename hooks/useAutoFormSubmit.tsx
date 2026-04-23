@@ -24,19 +24,22 @@ type SubmitOptions = {
 
 export function useCustomFormSubmit<P, T>(action: Action<P, T>, options?: SubmitOptions) {
     const formInstance = React.useRef<FormInstance>(null)
+    const isFinish = React.useRef(false) // 请求是否完毕 避免每次回页面 由于resData已经存在 每次useEffect都会执行
     const [resData, trigger, pending] = useActionState((state, payload) => actionFunctionWrapper(state, payload, action), null)
 
 
     const onSubmit = useCallback((params?: FieldValues) => {
+        isFinish.current = false
         formInstance.current?.handleSubmit(values => {
             startTransition(() => trigger({...values, ...params}))
         })()
     }, [trigger])
 
     useEffect(() => {
-        if (resData) {
+        if (resData && !isFinish.current) {
             const {code, message} = resData
             if (code === 200) {
+                isFinish.current = true
                 if (options?.isResetForm) {
                     formInstance.current?.reset()
                 }

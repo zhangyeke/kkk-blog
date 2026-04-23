@@ -15,6 +15,9 @@ export {Form, type FormProps, type FormInstance,} from "./Form"
 export {Empty, type EmptyProps} from "./Empty"
 export {Icon, type IconProps} from "./Icon"
 
-export {InfiniteScrollList, type InfiniteScrollListProps} from "./InfiniteScrollList"
+export {InfiniteScrollList, type InfiniteScrollListProps, type InfiniteScrollListInstance} from "./InfiniteScrollList"
 
 export {DatePicker, type DatePickerProps} from "./DatePicker"
+
+export {LikeButton, type LikeButtonProps} from "./LikeButton"
+export {LikeIcon, type LikeIconProps} from "./LikeButton/LikeIcon"

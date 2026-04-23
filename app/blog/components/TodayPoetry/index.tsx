@@ -17,10 +17,10 @@ export default async function TodayPoetry({className, style}: BaseComponentProps
     return (
         <Card
             style={style}
-            className={cn("w-full  max-h-[400px] no-scrollbar overflow-y-auto hover:shadow-lg bg-left bg-[url(/images/shici_bg.jpg)] bg-cover transition-shadow duration-300", className)}
+            className={cn("w-full relative  max-h-[400px] no-scrollbar overflow-y-auto hover:shadow-lg bg-left bg-[url(/images/shici_bg.jpg)] bg-cover transition-shadow duration-300", className)}
         >
-            <CardHeader className={'items-center border-solid border-b-1 border-border pb-2 dark:border-gray-200'}>
-                <CardTitle className={'flex items-center'}>
+            <CardHeader className={'sticky top-0 w-full border-solid border-b-1 border-border pb-2 dark:border-gray-200'}>
+                <CardTitle className={'flex items-center '}>
                     <img alt={'今日诗词'} className={'w-5 mr-1'} src={'/images/shici.png'}/>
                     <span>今日诗词</span>
                 </CardTitle>

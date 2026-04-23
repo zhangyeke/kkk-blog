@@ -1,5 +1,5 @@
 import {getPostCategoryList} from "@/service/postCategory"
-import PageContainer, {type PageContainerProps} from "./PageContainer"
+import ClientPageContainer, {type PageContainerProps} from "./ClientPageContainer"
 
 export default async function Page({searchParams}: PageSearchParams<PageContainerProps['defaultParams']>) {
     const category = await getPostCategoryList()
@@ -7,7 +7,7 @@ export default async function Page({searchParams}: PageSearchParams<PageContaine
     const routeParams = await searchParams
 
     return (
-        <PageContainer
+        <ClientPageContainer
             defaultParams={routeParams}
             categoryList={category.data}
         />
