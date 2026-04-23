@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
-import {Avatar, AvatarFallback, AvatarImage} from "../../ui/avatar";
 import {cn} from "@/lib/utils";
+import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {Skeleton} from "@/components/ui/skeleton"
 
 export type ImageProps = React.ComponentProps<typeof AvatarImage> & {
@@ -22,6 +22,7 @@ export function Image(props: ImageProps) {
 
         return <AvatarImage className={'size-full'} src={'/images/placeholder/image_error.png'} alt={"加载失败"}/>
     }, [fallback])
+
 
     if (!imageProps.src) {
         return (

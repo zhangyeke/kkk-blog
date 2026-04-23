@@ -10,23 +10,23 @@ import {cn} from "@/lib/utils";
 
 
 export default async function TodayPoetry({className, style}: BaseComponentProps) {
-
-    const {data: poem} = await getTodayPoem()
-
-
+    const res = await getTodayPoem()
+    if (!res) return null
+    const poem = res.data
     return (
         <Card
             style={style}
             className={cn("w-full relative  max-h-[400px] no-scrollbar overflow-y-auto hover:shadow-lg bg-left bg-[url(/images/shici_bg.jpg)] bg-cover transition-shadow duration-300", className)}
         >
-            <CardHeader className={'sticky top-0 w-full border-solid border-b-1 border-border pb-2 dark:border-gray-200'}>
+            <CardHeader
+                className={'sticky top-0 w-full border-solid border-b-1 border-border pb-2 dark:border-gray-200'}>
                 <CardTitle className={'flex items-center '}>
                     <img alt={'今日诗词'} className={'w-5 mr-1'} src={'/images/shici.png'}/>
                     <span>今日诗词</span>
                 </CardTitle>
 
             </CardHeader>
-            <CardContent className={'dark:text-gray-900'}>
+            <CardContent className={'dark:text-gray-900 px-5 '}>
                 <div className={'text-center font-bold text-lg'}>{poem.origin.title}</div>
                 <div className={'text-right text-gray-500 text-sm mb-1'}>--{poem.origin.author}</div>
 

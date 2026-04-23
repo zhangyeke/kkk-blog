@@ -154,7 +154,7 @@ export async function getPostById(id: number) {
             isFavorite
         } as PostWithFavorites & { isFavorite: boolean })
     } catch {
-        return backFailMessage('文章不存在', null)
+        return backFailMessage('文章不存在')
     }
 
 }

@@ -1,12 +1,11 @@
 import React, {useCallback, useState} from "react"
 import {env} from "env.mjs"
 import {ImagePlus, Trash2, Upload, X} from "lucide-react"
-import Image from "next/image"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {useImageUpload} from "@/hooks/use-image-upload"
 import {cn} from "@/lib/utils"
-import {FixSpin} from "@/components/k-view";
+import {FixSpin, Image} from "@/components/k-view";
 
 interface ImageUploadProps extends BaseComponentProps {
     onUpload?: (url: string) => void;
@@ -70,6 +69,7 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
             style={style}
             className={cn("relative w-full max-w-sm space-y-6 rounded-xl border border-border bg-card p-6 shadow-sm", className)}
         >
+
             <div className="space-y-2">
                 {/*<h3 className="text-lg font-medium">上传图片</h3>*/}
                 {/*<p className="text-sm text-muted-foreground">*/}
@@ -78,6 +78,11 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
                 <p className="text-sm text-muted-foreground">
                     最大可上传图片大小：{env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}
                 </p>
+                <Input
+                    value={previewUrl}
+                    placeholder={`输入已有的图片地址`}
+                    onChange={(e) => onUpload?.(e.target.value)}
+                />
             </div>
             {pending && <FixSpin text={'上传中...'}/>}
             <Input
@@ -116,9 +121,7 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
                         <Image
                             src={previewUrl}
                             alt="Preview"
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="size-full transition-transform duration-300 group-hover:scale-105"
                         />
                         <div
                             className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"/>

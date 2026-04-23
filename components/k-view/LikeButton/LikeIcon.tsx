@@ -38,12 +38,14 @@ export function LikeIcon(props: LikeIconProps) {
         [onChange] // 仅在 onChange 改变时重新生成
     );
     const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
-        // 1. 立即执行的部分（UI 相关，防止合成事件失效）
-        e.preventDefault();
-        e.stopPropagation();
+        if (onChange) {
+            // 1. 立即执行的部分（UI 相关，防止合成事件失效）
+            e.preventDefault();
+            e.stopPropagation();
 
-        // 2. 调用防抖后的逻辑
-        debouncedOnChange();
+            // 2. 调用防抖后的逻辑
+            debouncedOnChange();
+        }
     };
 
 

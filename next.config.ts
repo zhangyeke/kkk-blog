@@ -19,6 +19,12 @@ const config: NextConfig = {
                 port: '',
                 pathname: '/**', // 允许该域名下的所有路径
             },
+            {
+                protocol: 'https',
+                hostname: 'eo-img.loliapi.com',
+                port: '',
+                pathname: '/**', // 允许该域名下的所有路径
+            },
 
         ],
     },

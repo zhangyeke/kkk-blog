@@ -4,7 +4,7 @@ import {getPostCategoryList} from "@/service/postCategory";
 
 /*新增文章校验*/
 export const addPostSchema = z.object({
-    title: z.string().nonempty('标题不能为空').max(30, '标题长度不能超过30位').superRefine(
+    title: z.string().nonempty('标题不能为空').max(100, '标题长度不能超过100位').superRefine(
         fieldConfig({
             label: "标题",
             // description:"请输入标题",//用于在输入框下方添加提示信息
@@ -26,7 +26,7 @@ export const addPostSchema = z.object({
             }
         })
     ),
-    tags: z.string().nonempty('标签不能为空').superRefine(
+    tags: z.string().optional().superRefine(
         fieldConfig({
             label: "标签",
             description: "多个标签请用逗号隔开",
@@ -36,7 +36,7 @@ export const addPostSchema = z.object({
             }
         })
     ),
-    cover: z.string().nonempty('封面不能为空').url('封面必须是一个有效的URL地址').superRefine(
+    cover: z.string().url('封面必须是一个有效的URL地址').optional().superRefine(
         fieldConfig({
             label: "封面",
             fieldType: "imageUpload",
@@ -45,7 +45,7 @@ export const addPostSchema = z.object({
             }
         })
     ),
-    content: z.string().nonempty('内容不能为空').superRefine(
+    content: z.string().optional().superRefine(
         fieldConfig({
             label: "内容",
             fieldType: "markdown",

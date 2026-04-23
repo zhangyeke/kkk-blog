@@ -12,16 +12,15 @@ export default async function Page({params}: PageParams<{ id: number }>) {
     const {id} = await params
     const session = await auth();
     const {data: post} = await getPostById(Number(id))
-    const tags = post?.tags.split(',') || []
-
-
+    const tags = post?.tags?.split(',') || []
     if (!post) return notFound()
+
     return (
         <div>
             <div className={'relative h-[250px] flex flex-col pb-4'}>
-                <Image src={post.cover} className={'size-full absolute inset-0'}/>
-                <div className={'mt-auto relative z-10 w-3/4 mx-auto text-white'}>
-                    <h2 className={'text-base text-xl font-bold'}>{post.title}</h2>
+                <Image src={post.cover} className={'size-full absolute inset-0 filter blur-xs'}/>
+                <div className={'mt-auto relative z-10 w-3/4 mx-auto text-primary'}>
+                    <h2 className={' text-xl font-bold'}>{post.title}</h2>
                     <div className={'flex items-end mt-2'}>
                         <div className={'flex-1 flex items-center text-sm'}>
                             <Image

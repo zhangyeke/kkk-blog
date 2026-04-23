@@ -26,7 +26,7 @@ export default async function Web() {
             <HomeHedaer/>
 
             <div className={'container flex py-4'}>
-                <aside className={'w-1/3'}>
+                <aside className={'w-1/4'}>
                     <ScrollElement {...scrollElementProps}>
                         <Article.SearchBar className={'bg-card mb-4'}/>
                     </ScrollElement>

@@ -4,20 +4,21 @@ import {GradientTransition, Image} from "@/components/k-view"
 import {findUniqueUser, userStatisticsInfo} from "@/service/user";
 import WriteArticleButton from "./WriteArticleButton";
 import {auth} from "@/lib/auth";
+import Link from "next/link";
 
 
 const statistics = [
     {
         title: "文章",
-        key: 'totalPosts'
+        key: 'totalPosts',
     },
     {
-        title: "收藏数",
-        key: 'totalFavorites'
+        title: "被收藏数",
+        key: 'totalFavorites',
     },
     {
         title: "浏览量",
-        key: 'totalPV'
+        key: 'totalPV',
     }
 ]
 
@@ -42,19 +43,22 @@ export default async function Master() {
         <GradientTransition
             className={'flex-center flex-col w-full  py-4 px-8 rounded-lg text-white shadow-sm hover:shadow-lg  transition-shadow duration-300'}>
 
-            <Image
-                className={'size-30 rounded-full'}
-                fallback={user.data.name.substring(0, 1)}
-                src={user.data.avatar}
-                draggable={false}
-            />
+            <Link href={'/blog/me'}>
+                <Image
+                    className={'size-30 rounded-full'}
+                    fallback={user.data.name.substring(0, 1)}
+                    src={user.data.avatar}
+                    draggable={false}
+                />
+            </Link>
+
 
             <div className={'text-3xl mt-3.5 font-bold'}>{user.data.name}</div>
 
             <div className={'flex gap-x-5 mt-4'}>
                 {
                     statistics.map((item, index) => (
-                        <div className={'text-center'} key={index}>
+                        <div  className={'text-center'} key={index}>
                             <div>{item.title}</div>
                             <div className={'mt-1'}>{user.data.statistics[item.key]}</div>
                         </div>

@@ -153,7 +153,7 @@ export const addUnit = (num: number | string, unit = "px") => {
 
 /*获取纯文本的markdown内容*/
 
-export async function getPlainText(content: string, length: number = 150) {
+export async function getPlainText(content: string, length: number = 58) {
     const file = await remark()
         .use(strip) // 核心插件：去除所有 Markdown 格式
         .process(content)
