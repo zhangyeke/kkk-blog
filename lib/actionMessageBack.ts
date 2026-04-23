@@ -1,6 +1,6 @@
 // import {env} from "@/env.mjs";
 
-const SUCCESS_CODE = 200;
+export const SUCCESS_CODE = 200;
 const FAIL_CODE = 0;
 export const AUTH_FAIL_CODE = 401;
 const DEFAULT_MESSAGE = "操作失败，请稍后再试"
@@ -31,7 +31,7 @@ export function backImagePayloadLargeMessage<T>(msg: string, data?: T) {
 }
 
 
-export function backFailMessage<T>(msg?: string, data?: T): BaseResource<T> {
+export function backFailMessage<T = null>(msg?: string, data?: T): BaseResource<T> {
     return backMessage(FAIL_CODE, msg, data)
 }
 

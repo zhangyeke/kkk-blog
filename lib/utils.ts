@@ -1,5 +1,6 @@
 import {type ClassValue, clsx} from "clsx"
 import qs from "qs"
+
 import {remark} from 'remark'
 import strip from 'strip-markdown'
 import {toast} from "sonner";
@@ -7,7 +8,7 @@ import {twMerge} from "tailwind-merge"
 import {get, set} from "lodash"
 import {uploadImage} from "@/service/fileUpload";
 import {env} from "@/env.mjs";
-import {backImagePayloadLargeMessage} from "@/lib/actionMessageBack";
+import {backFailMessage, backImagePayloadLargeMessage, SUCCESS_CODE} from "./actionMessageBack";
 import {isNumber} from "./validator";
 
 /*
@@ -158,4 +159,50 @@ export async function getPlainText(content: string, length: number = 150) {
         .process(content)
 
     return String(file).trim().slice(0, length) + (content.length > length ? '...' : '')
+}
+
+
+/**
+ * 统一异步包装执行器
+ * 无论传入的是同步还是异步函数，都安全地以异步方式处理结果
+ */
+export async function executeAsyncSafe(fn, ...args) {
+    try {
+        const result = fn(...args);
+        // 自动处理：如果是 Promise 则 await，如果是普通值则直接返回
+        return await result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+/*
+ * @Author: kkk
+ * @Date: 2026/4/22
+ * @LastEditors: kkk
+ * @Description: 处理server action 返回的数据
+ * @Params:
+ */
+export function responseAsyncHandle<T>(promiseResponse: Promise<BaseResource<T>>, success?: (res: BaseResource<T>) => void, fail?: (res: BaseResource<T>) => void): Promise<BaseResource<T>> {
+    return new Promise((resolve, reject) => {
+        promiseResponse.then(res => {
+            if (res.code === SUCCESS_CODE) {
+                if (success) {
+                    success(res)
+                } else {
+                    toast.success(res.message)
+                }
+                resolve(res)
+            } else {
+                if (fail) {
+                    fail(res)
+                } else {
+                    toast.error(res.message)
+                }
+                reject(res)
+            }
+        }).catch(() => {
+            reject(backFailMessage('未知错误', null))
+        })
+    })
 }

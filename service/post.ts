@@ -1,18 +1,19 @@
 'use server';
 import {merge} from "lodash"
-import {cacheTag, revalidatePath,updateTag} from "next/cache";
+import {cacheTag, updateTag} from "next/cache";
 import {Prisma} from '@prisma/client'
 import prisma from "@/lib/prisma";
-import {addPostParams, PostWithUser, postWithUserInclude} from "@/types/post";
+import {addPostParams, PostWithFavorites, PostWithUser, postWithUserInclude} from "@/types/post";
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
-import {checkAuth, safeAction} from "@/service/auth";
+import {checkAuth} from "@/service/auth";
 import {addPostSchema} from "@/validators/post";
 import {getPlainText} from "@/lib/utils";
 import {after} from "next/server";
+import {auth} from "@/lib/auth";
 
 // --- CREATE (新增) ---
 export async function createPost(data: addPostParams) {
-    return safeAction(async () => {
+    try {
         // 1. 拦截未登录（抛出 ActionError）
         const user = await checkAuth();
         const params = addPostSchema.parse(data)
@@ -27,7 +28,10 @@ export async function createPost(data: addPostParams) {
 
         updateTag('action-postList')
         return backSuccessMessage("创建文章成功", post);
-    }, "创建文章失败");
+    } catch {
+        return backFailMessage('创建文章失败')
+    }
+
 
 }
 
@@ -51,10 +55,9 @@ export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
                 }
             })
         ) as PostWithUser[]
-
         return backSuccessMessage("获取文章列表成功", postsWithSummary);
     } catch {
-        return backFailMessage("获取文章列表失败", []);
+        return backFailMessage("获取文章列表失败", [])
     }
 }
 
@@ -90,7 +93,7 @@ export async function getPostsByPage(params: Prisma.PostFindManyArgs & Paging) {
             list: [],
             totalPages: 0,
             currentPage: 0,
-        });
+        })
 
     }
 
@@ -114,11 +117,30 @@ export async function updatePost(id: number, params: Prisma.PostUpdateInput) {
 
 // 根据 ID 获取单篇文章
 export async function getPostById(id: number) {
+
     try {
+        // 1. 获取当前登录用户会话
+        const session = await auth();
+        const currentUserId = session?.user?.id;
+
         const post = await prisma.post.findUnique({
             where: {id},
-            include: postWithUserInclude // 依然可以直接包含关联数据
-        }) as PostWithUser;
+            include: {
+                ...postWithUserInclude,
+                // 如果用户已登录，我们尝试查一下他是否收藏了这篇文章
+                favorites: currentUserId ? {
+                    where: {
+                        userId: currentUserId
+                    },
+                    take: 1
+                } : false
+            }
+        }) as PostWithFavorites;
+
+        // 为了保持 PostWithUser 类型的整洁，我们可以解构掉 favorites
+        const {favorites, ...postData} = post;
+        // 如果 favorites 数组长度大于 0，说明当前用户已收藏
+        const isFavorite = Array.isArray(favorites) && favorites.length > 0;
 
         after(async () => {
             await updatePost(id, {
@@ -126,7 +148,11 @@ export async function getPostById(id: number) {
             })
             updateTag('action-userStatisticsInfo')
         });
-        return backSuccessMessage('获取文章成功', post)
+
+        return backSuccessMessage('获取文章成功', {
+            ...postData,
+            isFavorite
+        } as PostWithFavorites & { isFavorite: boolean })
     } catch {
         return backFailMessage('文章不存在', null)
     }
@@ -135,6 +161,41 @@ export async function getPostById(id: number) {
 
 
 // --- DELETE (删除) ---
-export async function deletePost(id: string) {
+export async function deletePost(postId: number) {
+    try {
 
+        if (!Number.isInteger(postId) || postId <= 0) {
+            return backFailMessage('文章 ID 不合法');
+        }
+
+        const user = await checkAuth();
+
+        const post = await prisma.post.findUnique({
+            where: {id: postId},
+            select: {
+                id: true,
+                userId: true,
+            }
+        });
+
+        if (!post) {
+            return backFailMessage('文章不存在');
+        }
+
+        if (post.userId !== user.id) {
+            return backFailMessage('无权删除这篇文章');
+        }
+
+        const deletedPost = await prisma.post.delete({
+            where: {id: postId}
+        });
+
+        updateTag('action-postList');
+        updateTag('action-postDetail');
+        updateTag('action-userStatisticsInfo');
+
+        return backSuccessMessage('删除文章成功', deletedPost);
+    } catch {
+        return backFailMessage('删除文章失败');
+    }
 }

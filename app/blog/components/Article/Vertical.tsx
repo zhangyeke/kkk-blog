@@ -1,20 +1,22 @@
 "use client"
-import {CalendarRange} from "lucide-react";
+import {CalendarRange, Star} from "lucide-react";
 import {ReactNode} from "react";
-import {PostWithUser} from "@/types/post";
+import {PostWithFavorites} from "@/types/post";
 import {dateFormat} from "@/lib/date";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {Image} from "@/components/k-view"
+import {Image, LikeIcon} from "@/components/k-view"
 import {CategoryTag, Tag} from "./Tag"
 import Link from "next/link";
 
 type VerticalProps = {
-    data: PostWithUser
+    data: PostWithFavorites
     renderCategory?: ReactNode
+    showCollect?: boolean
+    onCollectChange?: () => void
 }
 
 
-export default  function Vertical({data, renderCategory}: VerticalProps) {
+export default function Vertical({data, renderCategory, showCollect, onCollectChange}: VerticalProps) {
     const tags = data.tags.split(',')
     return (
         <Link
@@ -31,6 +33,19 @@ export default  function Vertical({data, renderCategory}: VerticalProps) {
                 <div className={'flex items-center text-gray-600 text-sm'}>
                     <CalendarRange className={'size-4 mr-1'}/>
                     <span>发布于：{dateFormat(data.createdAt)}</span>
+                    {
+                        showCollect && (
+                            <LikeIcon
+                                icon={Star}
+                                activeClassName={'text-yellow-300 fill-yellow-300'}
+                                particlesClassName={'bg-yellow-300'}
+                                checked={Boolean(data?.favorites?.length)}
+                                className={'ml-auto'}
+                                onChange={onCollectChange}
+                            />
+                        )
+                    }
+
                 </div>
                 <Tooltip>
                     <TooltipTrigger>
@@ -47,7 +62,8 @@ export default  function Vertical({data, renderCategory}: VerticalProps) {
                     <Image
                         src={data.user.avatar || ''}
                         className={'object-cover size-5 ml-2 mr-1 rounded-full'}
-                        fallback={data.user.name.substring(0,1)}
+                        fallback={data.user.name.substring(0, 1)}
+
                     />
                     <span>{data.user.name}</span>
                 </div>
