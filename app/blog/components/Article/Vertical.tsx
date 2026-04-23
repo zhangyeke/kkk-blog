@@ -1,15 +1,15 @@
 "use client"
+import Link from "next/link";
 import {CalendarRange, Star} from "lucide-react";
 import {ReactNode} from "react";
-import {PostWithFavorites} from "@/types/post";
+import {PostWithFavorites, PostWithUser} from "@/types/post";
 import {dateFormat} from "@/lib/date";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {Image, LikeIcon} from "@/components/k-view"
 import {CategoryTag, Tag} from "./Tag"
-import Link from "next/link";
 
 type VerticalProps = {
-    data: PostWithFavorites
+    data: PostWithFavorites | PostWithUser
     renderCategory?: ReactNode
     showCollect?: boolean
     onCollectChange?: () => void
@@ -39,7 +39,7 @@ export default function Vertical({data, renderCategory, showCollect, onCollectCh
                                 icon={Star}
                                 activeClassName={'text-yellow-300 fill-yellow-300'}
                                 particlesClassName={'bg-yellow-300'}
-                                checked={Boolean(data?.favorites?.length)}
+                                checked={Boolean((data as PostWithFavorites)?.favorites?.length)}
                                 className={'ml-auto'}
                                 onChange={onCollectChange}
                             />
