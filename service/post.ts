@@ -99,6 +99,42 @@ export async function getPostsByPage(params: Prisma.PostFindManyArgs & Paging) {
 
 }
 
+/*查询登录用户的文章列表*/
+export async function getMePosts(params: Prisma.PostWhereInput & Paging) {
+    try {
+        const user = await checkAuth()
+        const {page, pageSize, ...where} = params
+
+        const mergedWhere = merge({
+            status: 1,
+            userId: user.id,
+        }, where)
+
+        const posts = await getAllPosts({
+            where: mergedWhere,
+            orderBy: {createdAt: 'desc'},
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+        })
+
+        const totalCount = await prisma.post.count({
+            where: mergedWhere
+        })
+
+        return backSuccessMessage("获取我的文章列表成功", {
+            list: posts.data,
+            totalPages: Math.ceil(totalCount / pageSize),
+            currentPage: page,
+        })
+    } catch {
+        return backFailMessage("获取我的文章列表失败", {
+            list: [],
+            totalPages: 0,
+            currentPage: 0,
+        })
+    }
+}
+
 
 // --- UPDATE (更新) ---
 export async function updatePost(id: number, params: Prisma.PostUpdateInput) {

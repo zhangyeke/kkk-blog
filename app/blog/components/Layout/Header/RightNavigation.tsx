@@ -16,7 +16,7 @@ export default async function RightNavigation() {
                         <Image className={"size-10 rounded-full"} fallback={"登录"}/>
                     </Link>
             }
-            <NavigationList/>
+            {/*<NavigationList/>*/}
             <DarkSwitch/>
         </div>
     )

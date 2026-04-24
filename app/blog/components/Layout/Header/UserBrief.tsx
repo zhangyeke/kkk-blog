@@ -2,7 +2,7 @@
 import React from "react";
 import {Session} from "next-auth"
 import Link from "next/link";
-import {ChevronRight, LogOut, NotebookPen, Settings, UserRound} from "lucide-react";
+import {ChevronRight, LogOut, NotebookPen, NotebookText, Settings, Star, UserRound} from "lucide-react";
 import {useHover} from "react-use";
 import {useRouter} from "next/navigation";
 import {cn} from "@/lib/utils";
@@ -72,7 +72,9 @@ export type UserBriefProps = {
 export function UserBrief({session}: UserBriefProps) {
 
     const menuList = React.useRef([
-        {label: "个人中心", icon: <UserRound/>, href: "/blog/me"},
+        // {label: "个人中心", icon: <UserRound/>, href: "/blog/me"},
+        {label: "我的文章", icon: <NotebookText/>, href: "/blog/me/articles"},
+        {label: "我的收藏", icon: <Star/>, href: "/blog/me/favorite"},
         {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/write"},
         {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>, href: "/blog/setting"},
     ])
@@ -123,13 +125,13 @@ export function UserBrief({session}: UserBriefProps) {
         if (item.href) router.push(item.href)
     }, [])
 
-/*    if (!user) {
-        return (
-            <Link href={"/login"}>
-                <Image className={"size-10 rounded-full"} fallback={"登录"}/>
-            </Link>
-        )
-    }*/
+    /*    if (!user) {
+            return (
+                <Link href={"/login"}>
+                    <Image className={"size-10 rounded-full"} fallback={"登录"}/>
+                </Link>
+            )
+        }*/
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>

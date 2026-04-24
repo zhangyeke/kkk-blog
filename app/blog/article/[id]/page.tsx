@@ -1,6 +1,6 @@
 import {notFound} from "next/navigation";
 import {getPostById} from "@/service/post";
-import {AsyncMarkedEditor, Image} from "@/components/k-view";
+import {AsyncMarkedEditor, CopyText, Image} from "@/components/k-view";
 import {CategoryTag, Tag} from "@/app/blog/components/Article/Tag";
 import {CalendarRange, Mail} from "lucide-react";
 import {dateFormat} from "@/lib/date";
@@ -42,8 +42,10 @@ export default async function Page({params}: PageParams<{ id: number }>) {
 
                             <Separator orientation="vertical" className={'mx-4 !h-4'}/>
 
-                            <Mail className={'size-4 mr-1 '}/>
-                            <span className={'mr-4'}>{post.user.email}</span>
+                            <CopyText className={'mr-4'} text={post.user.email}>
+                                <Mail className={'size-4'}/>
+                                <span>{post.user.email}</span>
+                            </CopyText>
 
                             {
                                 session &&

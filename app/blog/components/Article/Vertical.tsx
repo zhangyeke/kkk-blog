@@ -59,13 +59,15 @@ export default function Vertical({data, renderCategory, showCollect, onCollectCh
                 <div className={'flex items-center text-gray-500 text-sm mt-1'}>
                     <img src={'/images/hot.png'} className={'size-5 mr-1'} alt={'热度'}/>
                     <span>{data.pv} 热度</span>
+                    <Star className={'size-4 ml-2 mr-1 text-yellow-300 '}/>
+                    <span>{data.favoriteCount}</span>
                     <Image
                         src={data.user.avatar || ''}
                         className={'object-cover size-5 ml-2 mr-1 rounded-full'}
                         fallback={data.user.name.substring(0, 1)}
 
                     />
-                    <span>{data.user.name}</span>
+                    <span className={'truncate flex-1'}>{data.user.name}</span>
                 </div>
 
                 <div className={'mt-auto flex flex-wrap gap-2'}>

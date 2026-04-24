@@ -48,7 +48,7 @@ export default function ClientPageContainer({categoryList}: ClientPageContainerP
 
 
     return (
-        <div className={'container min-h-[300px]'}>
+        <div className={'container min-h-[300px] header-padding'}>
             <Tabs
                 className={'my-4'}
                 items={cateList}
@@ -69,7 +69,6 @@ export default function ClientPageContainer({categoryList}: ClientPageContainerP
                             amount: 0.5,
                             margin: '0px 0px 0px 0px'
                         }}
-                        direction={i % 2 === 0 ? 'left' : 'right'}
                     >
                         <Article.Vertical
                             showCollect={true}
