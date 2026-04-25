@@ -3,14 +3,13 @@ import "styles/iconfont.css"
 import {globalFont, h1Font} from "@/assets/fonts"
 import {Toaster} from "@/components/ui/sonner"
 import WebVitals from "@/components/WebVitals/WebVitals";
-import {AppStoreProvider, AuthProvider, ThemeProvider} from "@/providers";
+import {AppStoreProvider, ThemeProvider} from "@/providers";
 
 
 export default function RootLayout({children}: ContainerProps) {
 
     return (
         <html suppressHydrationWarning lang="zh-cn" className={`${globalFont.className} ${h1Font.variable} `}>
-        <AuthProvider>
             <body className={'overflow-y-auto overflow-x-hidden'}>
             <WebVitals/>
             <AppStoreProvider>
@@ -27,7 +26,6 @@ export default function RootLayout({children}: ContainerProps) {
             </AppStoreProvider>
 
             </body>
-        </AuthProvider>
         </html>
 
     )
