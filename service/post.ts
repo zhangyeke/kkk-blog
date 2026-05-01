@@ -1,6 +1,6 @@
 "use server"
 import { merge } from "lodash"
-import { cacheTag, updateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
 import { addPostParams, PostWithFavorites, PostWithUser, postWithUserInclude } from "@/types/post"
@@ -36,8 +36,7 @@ export async function createPost(data: addPostParams) {
 // --- READ (查询) ---
 // 获取所有文章
 export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
-  "use cache"
-  cacheTag("action-postList")
+  /* 不写 use cache：与 getPostCategoryWithPosts 等直查库的接口保持一致，避免预渲染 / 缓存把首页「最新」冻成空列表 */
   try {
     const posts = await prisma.post.findMany({
       include: postWithUserInclude,

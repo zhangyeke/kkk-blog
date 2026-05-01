@@ -7,6 +7,8 @@ import prisma from "./prisma"
 import {getUserByEmail, updateUser} from "@/service/user";
 
 const config = {
+    /** Auth.js v5：允许根据请求的 Host（如 localhost、Vercel 域名）生成 URL，否则会抛 UntrustedHost */
+    trustHost: true,
     pages: {
         signIn: "/login",
         error: "/login",
