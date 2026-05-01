@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useId, useRef } from "react"
+import { useEffect, useId } from "react"
 import "sakura-js/dist/sakura.min.css"
-import Sakura from "sakura-js/dist/sakura.js"
 import type { SakuraCtorOptions } from "sakura-js/dist/sakura.js"
 
 export type SakuraOverlayProps = Omit<SakuraCtorOptions, "className"> & {
@@ -12,8 +11,29 @@ export type SakuraOverlayProps = Omit<SakuraCtorOptions, "className"> & {
   petalClassName?: string
 }
 
+type SakuraInstance = { stop: (graceful?: boolean) => void }
+
+/** sakura-js 为 UMD/CJS，生产包 default 互操作可能不是可 new 的函数，需兼容多种导出形态 */
+function resolveSakuraConstructor(
+  mod: unknown,
+): new (selector: string, options?: SakuraCtorOptions) => SakuraInstance {
+  if (typeof mod === "function") {
+    return mod as new (selector: string, options?: SakuraCtorOptions) => SakuraInstance
+  }
+  if (mod !== null && typeof mod === "object" && "default" in mod) {
+    const d = (mod as { default: unknown }).default
+    if (typeof d === "function") {
+      return d as new (selector: string, options?: SakuraCtorOptions) => SakuraInstance
+    }
+  }
+  throw new TypeError(
+    "[SakuraOverlay] sakura-js：未解析到构造函数（生产包 ESM/CJS 互操作问题）",
+  )
+}
+
 /**
  * 全屏樱花飘落（sakura-js），仅客户端挂载；卸载时停止并清理花瓣。
+ * 使用动态 import，避免 Turbopack/Webpack 对 sakura.js 顶层 default + `new` 的错误压缩形态（i.default is not a constructor）。
  */
 export default function SakuraOverlay({
   wrapperClassName = "",
@@ -25,7 +45,6 @@ export default function SakuraOverlay({
   colors,
 }: SakuraOverlayProps) {
   const rootId = `sakura-root-${useId().replace(/:/g, "")}`
-  const instanceRef = useRef<Sakura | null>(null)
   const colorsJson = JSON.stringify(colors ?? null)
 
   useEffect(() => {
@@ -37,12 +56,30 @@ export default function SakuraOverlay({
     if (delay != null) opts.delay = delay
     if (colors != null) opts.colors = colors
 
-    if (!document.getElementById(rootId)) return
+    let instance: SakuraInstance | null = null
+    let cancelled = false
 
-    instanceRef.current = new Sakura(`#${CSS.escape(rootId)}`, opts)
+    void (async () => {
+      try {
+        const mod = await import("sakura-js/dist/sakura.js")
+        if (cancelled) return
+        if (!document.getElementById(rootId)) return
+        const Ctor = resolveSakuraConstructor(mod)
+        if (cancelled) return
+        instance = new Ctor(`#${CSS.escape(rootId)}`, opts)
+        if (cancelled) {
+          instance.stop(false)
+          instance = null
+        }
+      } catch (e) {
+        console.error("[SakuraOverlay]", e)
+      }
+    })()
+
     return () => {
-      instanceRef.current?.stop(false)
-      instanceRef.current = null
+      cancelled = true
+      instance?.stop(false)
+      instance = null
     }
   }, [
     rootId,
