@@ -69,16 +69,13 @@ export function PopoverMenu({ username, menuList = [], onMenuClick }: PopoverMen
 export type UserBriefProps = {
     session: Session | null
 }
-const menuList = [
 
-]
 
 export function UserBrief({ session }: UserBriefProps) {
 
 
     const user = React.useMemo(() => session?.user as User, [session])
     const username = (user?.name || "kkk")
-
 
     const [isFirstHover, setIsFirstHover] = React.useState(false)
     const [isOpen, setIsOpen] = React.useState(false)
