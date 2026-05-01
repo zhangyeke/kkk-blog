@@ -410,7 +410,7 @@ export function ChinaEChartsMap({ projects = DEFAULT_PROJECTS, onProvinceClick }
                 .sort((a, b) => b.value - a.value)
                 .slice(0, 5);
             const effectD = convertDataEffect(geo, m, effectRows);
-            const pillarSymbol = `image://${env.NEXT_PUBLIC_API_URL}/images/mark_border_bg.png`;
+            const pillarSymbol = `image://${window.location.origin}/images/mark_border_bg.png`;
             const scatterBubbleOffY =
                 -PILLAR_BUBBLE_H / 2 +
                 (isCountry ? PILLAR_COUNTRY_BUBBLE_OFFSET_Y : PILLAR_PROVINCE_BUBBLE_OFFSET_Y);

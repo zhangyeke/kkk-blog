@@ -104,6 +104,18 @@ export function buildSearchShortcutUrl(item: typeof SEARCH_SHORTCUTS[number], qu
   return `${base}${item.searchKey}${q}`
 }
 
+/** Opens URL in a new tab without `window.open` window features (better popup policy compatibility). */
+function openInNewTab(url: string) {
+  if (typeof document === "undefined") return
+  const a = document.createElement("a")
+  a.href = url
+  a.target = "_blank"
+  a.rel = "noopener noreferrer"
+  a.style.display = "none"
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+}
 
 export function SearchList({
   open,
@@ -197,7 +209,7 @@ export function GlassSearchBar({
   const handleSearch = React.useCallback(() => {
     const item = searchItem
     if (!item) return
-    window.open(buildSearchShortcutUrl(searchItem, query), "_blank", "noopener,noreferrer")
+    openInNewTab(buildSearchShortcutUrl(searchItem, query))
     setQuery("")
   }, [searchItem, query])
 
