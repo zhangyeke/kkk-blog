@@ -1,9 +1,10 @@
 'use client'
 import {createContext, useRef} from 'react'
 
-import { appStore} from '@/store'
+import {appStore} from '@/store'
 
-export type CounterStoreApi = ReturnType<typeof appStore>
+/** Store 实例（可调用的 API），勿用 `ReturnType<typeof appStore>`（会变成 state 类型而非 API） */
+export type CounterStoreApi = typeof appStore
 
 export const AppStoreContext = createContext<CounterStoreApi | undefined>(
     undefined,

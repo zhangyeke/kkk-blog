@@ -137,7 +137,7 @@ export async function getMePosts(params: Prisma.PostWhereInput & Paging) {
 }
 
 // --- UPDATE (更新) ---
-export async function updatePost({ id, ...params }: Prisma.PostUpdateInput & { id: number }) {
+export async function updatePost({ id, ...params }: addPostParams & { id: number }) {
   try {
     // 1. 拦截未登录（抛出 ActionError）
     await checkAuth()
@@ -183,10 +183,11 @@ export async function getPostById(id: number) {
     const isFavorite = Array.isArray(favorites) && favorites.length > 0
 
     after(async () => {
-      await updatePost({
-        id,
-        pv: { increment: 1 },
+      await prisma.post.update({
+        where: { id },
+        data: { pv: { increment: 1 } },
       })
+      updateTag("action-postList")
       updateTag("action-userStatisticsInfo")
     })
 

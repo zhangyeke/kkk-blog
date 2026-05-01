@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {useStore} from "zustand/index";
+import {useStore} from "zustand/react";
 import {AppStoreContext} from "@/providers/StoreProvider";
 import type {AppStore} from "@/store";
 
