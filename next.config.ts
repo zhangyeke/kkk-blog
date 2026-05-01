@@ -9,7 +9,7 @@ const withMDX = createMDX({
 })
 
 const config: NextConfig = {
-    cacheComponents: false,
+    cacheComponents: true, // 开启后可使用 use cache / cacheTag / updateTag
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [

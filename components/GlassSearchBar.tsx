@@ -195,11 +195,11 @@ export function GlassSearchBar({
   }
 
   const handleSearch = React.useCallback(() => {
-    const item = SEARCH_SHORTCUTS[current]
+    const item = searchItem
     if (!item) return
-    window.open(buildSearchShortcutUrl(item, query), "_blank", "noopener,noreferrer")
+    window.open(buildSearchShortcutUrl(searchItem, query), "_blank", "noopener,noreferrer")
     setQuery("")
-  }, [current, query])
+  }, [searchItem, query])
 
   return (
     <motion.div

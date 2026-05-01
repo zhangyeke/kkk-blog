@@ -1,5 +1,6 @@
 "use server"
 import {isRedirectError} from "next/dist/client/components/redirect-error";
+import {updateTag} from "next/cache"
 import {hashSync} from "bcrypt-ts-edge";
 import {loginSchema, registerSchema} from "@/validators/auth"
 import {auth, signIn, signOut, unstable_update} from "@/lib/auth"
@@ -75,6 +76,7 @@ export async function logout() {
     // }
 
     await signOut()
+    updateTag('action-userStatisticsInfo')
 }
 
 /*注册*/
