@@ -1,6 +1,5 @@
 "use server"
 import { merge } from "lodash"
-import { updateTag } from "next/cache"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
 import { addPostParams, PostWithFavorites, PostWithUser, postWithUserInclude } from "@/types/post"
@@ -26,7 +25,6 @@ export async function createPost(data: addPostParams) {
       },
     })
 
-    updateTag("action-postList")
     return backSuccessMessage("创建文章成功", post)
   } catch {
     return backFailMessage("创建文章失败")
@@ -36,7 +34,6 @@ export async function createPost(data: addPostParams) {
 // --- READ (查询) ---
 // 获取所有文章
 export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
-  /* 不写 use cache：与 getPostCategoryWithPosts 等直查库的接口保持一致，避免预渲染 / 缓存把首页「最新」冻成空列表 */
   try {
     const posts = await prisma.post.findMany({
       include: postWithUserInclude,
@@ -146,7 +143,6 @@ export async function updatePost({ id, ...params }: addPostParams & { id: number
       where: { id },
       data,
     })
-    updateTag("action-postList")
     return backSuccessMessage("更新文章成功", post)
   } catch {
     return backFailMessage("更新文章失败")
@@ -186,8 +182,6 @@ export async function getPostById(id: number) {
         where: { id },
         data: { pv: { increment: 1 } },
       })
-      updateTag("action-postList")
-      updateTag("action-userStatisticsInfo")
     })
 
     return backSuccessMessage("获取文章成功", {
@@ -227,10 +221,6 @@ export async function deletePost(postId: number) {
     const deletedPost = await prisma.post.delete({
       where: { id: postId },
     })
-
-    updateTag("action-postList")
-    updateTag("action-postDetail")
-    updateTag("action-userStatisticsInfo")
 
     return backSuccessMessage("删除文章成功", deletedPost)
   } catch {

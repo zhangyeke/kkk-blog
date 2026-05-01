@@ -1,5 +1,4 @@
 'use server';
-import {cacheTag, updateTag} from "next/cache";
 import prisma from "@/lib/prisma"
 import {Prisma} from '@prisma/client'
 import {checkAuth} from "@/service/auth";
@@ -94,7 +93,6 @@ export async function updateUser(params: Prisma.UserUpdateInput) {
             },
             data
         })
-        updateTag('action-userStatisticsInfo')
         return backSuccessMessage('更新用户信息成功', user)
     } catch (err) {
         return backFailMessage('更新用户信息失败', err)
@@ -104,8 +102,6 @@ export async function updateUser(params: Prisma.UserUpdateInput) {
 
 // 查询用户相关统计数据
 export async function userStatisticsInfo(id?: string) {
-    'use cache'
-    cacheTag('action-userStatisticsInfo')
     try {
 
         const [user, stats] = await Promise.all([

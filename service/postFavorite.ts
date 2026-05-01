@@ -1,5 +1,4 @@
 'use server';
-import {updateTag} from "next/cache";
 import prisma from "@/lib/prisma";
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 import {checkAuth} from "@/service/auth";
@@ -135,11 +134,6 @@ export async function updatePostFavorite(postId: number) {
                 isLiked = true;
             }
         });
-
-        // 4. 更新相关缓存标签
-        updateTag('action-userStatisticsInfo');
-        updateTag('action-postList');
-        updateTag('action-postDetail');
 
         return backSuccessMessage(isLiked ? "收藏成功" : "取消收藏成功", isLiked);
     } catch {

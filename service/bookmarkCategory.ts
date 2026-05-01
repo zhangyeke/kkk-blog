@@ -1,7 +1,6 @@
 "use server"
 
 import { merge } from "lodash"
-import { updateTag } from "next/cache"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
@@ -21,7 +20,6 @@ export async function createBookmarkCategory(data: Prisma.BookmarkCategoryCreate
         ...(params.status !== undefined ? { status: params.status } : {}),
       },
     })
-    updateTag("action-bookmarkCategoryList")
     return backSuccessMessage("创建书签分类成功", category)
   } catch {
     return backFailMessage("创建书签分类失败")
@@ -68,7 +66,6 @@ export async function updateBookmarkCategory({ id, ...data }: Prisma.BookmarkCat
       where: { id },
       data,
     })
-    updateTag("action-bookmarkCategoryList")
     return backSuccessMessage("更新书签分类成功", category)
   } catch {
     return backFailMessage("更新书签分类失败")
@@ -92,8 +89,6 @@ export async function deleteBookmarkCategory(id: number) {
       return backFailMessage("书签分类不存在")
     }
     const deleted = await prisma.bookmarkCategory.delete({ where: { id } })
-    updateTag("action-bookmarkCategoryList")
-    updateTag("action-bookmarkList")
     return backSuccessMessage("删除书签分类成功", deleted)
   } catch {
     return backFailMessage("删除书签分类失败")

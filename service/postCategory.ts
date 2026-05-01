@@ -4,15 +4,12 @@ import prisma from '@/lib/prisma'
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
 import {PostCategoryWithPosts} from "@/types/postCategory";
 import {postWithUserInclude} from "@/types/post";
-import {cacheTag} from "next/cache";
 
 export async function createPostCategory() {
 
 }
 
 export async function getPostCategoryList(params?: Prisma.PostCategoryWhereInput) {
-    "use cache"
-    cacheTag('action-postCategoryList')
     try {
         const where = params ? params : {}
         if (where?.name) {
