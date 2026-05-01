@@ -1,6 +1,5 @@
 "use server"
 import { merge } from "lodash"
-import { updateTag } from "next/cache"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
@@ -30,7 +29,6 @@ export async function createFootprint(data: addFootprintParams) {
       },
     })
 
-    updateTag("action-footprintList")
     return backSuccessMessage("创建足迹成功", footprint)
   } catch {
     return backFailMessage("创建足迹失败")
@@ -118,7 +116,6 @@ export async function updateFootprint({ id, ...data }: addFootprintParams & { id
       where: { id },
       data: updateData,
     })
-    updateTag("action-footprintList")
     return backSuccessMessage("更新足迹成功", footprint)
   } catch {
     return backFailMessage("更新足迹失败")
@@ -143,7 +140,6 @@ export async function deleteFootprint(id: number) {
     }
 
     const deleted = await prisma.footprint.delete({ where: { id } })
-    updateTag("action-footprintList")
     return backSuccessMessage("删除足迹成功", deleted)
   } catch {
     return backFailMessage("删除足迹失败")

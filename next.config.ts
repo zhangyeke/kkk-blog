@@ -9,7 +9,7 @@ const withMDX = createMDX({
 })
 
 const config: NextConfig = {
-    cacheComponents: true,//开启可以使用 use cache 来缓存数据或组件
+    cacheComponents: false,
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [

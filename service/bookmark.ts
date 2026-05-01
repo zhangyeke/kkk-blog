@@ -1,7 +1,6 @@
 "use server"
 
 import { merge } from "lodash"
-import { updateTag } from "next/cache"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
@@ -37,7 +36,6 @@ export async function createBookmark(data: Prisma.BookmarkCreateInput) {
       },
     })
 
-    updateTag("action-bookmarkList")
     return backSuccessMessage("创建书签成功", bookmark)
   } catch {
     return backFailMessage("创建书签失败")
@@ -116,7 +114,6 @@ export async function updateBookmark({ id, ...data }: Prisma.BookmarkUpdateInput
       where: { id },
       data,
     })
-    updateTag("action-bookmarkList")
     return backSuccessMessage("更新书签成功", bookmark)
   } catch {
     return backFailMessage("更新书签失败")
@@ -145,7 +142,6 @@ export async function deleteBookmark(id: number) {
     }
 
     const deleted = await prisma.bookmark.delete({ where: { id } })
-    updateTag("action-bookmarkList")
     return backSuccessMessage("删除书签成功", deleted)
   } catch {
     return backFailMessage("删除书签失败")
