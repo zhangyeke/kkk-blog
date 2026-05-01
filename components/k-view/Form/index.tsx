@@ -8,8 +8,8 @@ import {Control, FieldComponentsType} from "./components/Control";
 import {AutoFormProps} from '@autoform/react';
 import {ZodProvider} from "@autoform/zod";
 import {Button} from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {CustomControlProps} from "./type";
-
 
 export type FormInstance = UseFormReturn
 
@@ -38,8 +38,8 @@ function getFieldDefaultValue(key: FieldComponentsType) {
 }
 
 
-export function Form(props: FormProps) {
-    const {schema, defaultValues, withSubmit = true, formComponents, ref, children, onSubmit} = props
+export function Form(props: FormProps & BaseComponentProps) {
+    const {schema, defaultValues, withSubmit = true, formComponents,className,style, ref, children, onSubmit} = props
     const {fields} = useMemo(() => {
         const zodProvider = new ZodProvider(schema)
         return zodProvider.parseSchema()
@@ -64,7 +64,7 @@ export function Form(props: FormProps) {
 
     return (
         <ShadForm {...form}>
-            <form className="space-y-4 px-6">
+            <form className={cn("space-y-4 px-6", className)} style={style}>
                 {
                     fields.map((item) => (
                         <FormField

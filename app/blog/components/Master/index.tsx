@@ -1,9 +1,17 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2026-04-25 23:01:34
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-04-29 15:59:19
+ * @FilePath: \blog\app\blog\components\Master\index.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import React from 'react';
-import {cacheTag} from "next/cache"
-import {GradientTransition, Image} from "@/components/k-view"
-import {findUniqueUser, userStatisticsInfo} from "@/service/user";
+import { cacheTag } from "next/cache"
+import { GradientTransition, Image } from "@/components/k-view"
+import { findUniqueUser, userStatisticsInfo } from "@/service/user";
 import WriteArticleButton from "./WriteArticleButton";
-import {auth} from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import Link from "next/link";
 
 
@@ -58,7 +66,7 @@ export default async function Master() {
             <div className={'flex gap-x-5 mt-4'}>
                 {
                     statistics.map((item, index) => (
-                        <div  className={'text-center'} key={index}>
+                        <div className={'text-center'} key={index}>
                             <div>{item.title}</div>
                             <div className={'mt-1'}>{user.data.statistics[item.key]}</div>
                         </div>
@@ -67,7 +75,7 @@ export default async function Master() {
 
             </div>
 
-            <WriteArticleButton/>
+            <WriteArticleButton />
         </GradientTransition>
 
     )

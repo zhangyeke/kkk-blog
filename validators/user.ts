@@ -4,6 +4,8 @@ import dayjs from "dayjs";
 import {str2num} from "@/lib/utils";
 import {isAfterToday} from "@/lib/date";
 
+
+
 /*更新用户校验*/
 export const updateUserSchema = z.object({
     avatar: z.preprocess((arg) => {
@@ -28,3 +30,5 @@ export const updateUserSchema = z.object({
     message: "出生日期不能超过今天",
     path: ['birthday']
 })
+
+export type UpdateUserSchema = z.infer<typeof updateUserSchema>

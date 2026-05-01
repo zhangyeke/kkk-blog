@@ -1,17 +1,18 @@
 "use client"
 import React from "react";
-import {Session} from "next-auth"
+import { Session } from "next-auth"
 import Link from "next/link";
-import {ChevronRight, LogOut, NotebookPen, NotebookText, Settings, Star, UserRound} from "lucide-react";
-import {useHover} from "react-use";
-import {useRouter} from "next/navigation";
-import {cn} from "@/lib/utils";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {Image} from "@/components/k-view";
-import {MenuItem} from "./MenuItem"
-import {Separator} from "@/components/ui/separator";
-import {User} from "@/types/user";
-import {logout} from "@/service/auth"
+import { ChevronRight, LogOut, NotebookPen, NotebookText, Settings, Star,Footprints, BookmarkPlus } from "lucide-react";
+import { useHover } from "react-use";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Image } from "@/components/k-view";
+import { MenuItem } from "./MenuItem"
+import { Separator } from "@/components/ui/separator";
+import { Permission } from "@/components/Permission"
+import { User } from "@/types/user";
+import { logout } from "@/service/auth"
 
 type Menu = {
     label: string;
@@ -26,7 +27,7 @@ export type PopoverMenuProps = {
 }
 
 /*菜单弹窗内容*/
-export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuProps) {
+export function PopoverMenu({ username, menuList = [], onMenuClick }: PopoverMenuProps) {
 
 
     return (
@@ -42,12 +43,12 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
                         >
                             <i className={'size-4.5 k-icon'}>{item.icon}</i>
                             <span className={'flex-1'}>{item.label}</span>
-                            <ChevronRight className={'size-3.5'}/>
+                            <ChevronRight className={'size-3.5'} />
                         </MenuItem>
                     ))
                 }
             </div>
-            <Separator/>
+            <Separator />
             <MenuItem
                 className={' hover:bg-primary/30'}
             >
@@ -56,7 +57,7 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
                         type={'submit'}
                         className={'flex items-center gap-x-2 size-full px-4 py-2 cursor-pointer border-none outline-none'}
                     >
-                        <LogOut className={'size-4.5'}/>
+                        <LogOut className={'size-4.5'} />
                         退出登录
                     </button>
                 </form>
@@ -68,16 +69,13 @@ export function PopoverMenu({username, menuList = [], onMenuClick}: PopoverMenuP
 export type UserBriefProps = {
     session: Session | null
 }
+const menuList = [
 
-export function UserBrief({session}: UserBriefProps) {
+]
 
-    const menuList = React.useRef([
-        // {label: "个人中心", icon: <UserRound/>, href: "/blog/me"},
-        {label: "我的文章", icon: <NotebookText/>, href: "/blog/me/articles"},
-        {label: "我的收藏", icon: <Star/>, href: "/blog/me/favorite"},
-        {label: "写文章", icon: <NotebookPen/>, href: "/blog/article/write"},
-        {label: "设置", icon: <Settings className={"group-hover:animate-spin"}/>, href: "/blog/setting"},
-    ])
+export function UserBrief({ session }: UserBriefProps) {
+
+
     const user = React.useMemo(() => session?.user as User, [session])
     const username = (user?.name || "kkk")
 
@@ -85,8 +83,25 @@ export function UserBrief({session}: UserBriefProps) {
     const [isFirstHover, setIsFirstHover] = React.useState(false)
     const [isOpen, setIsOpen] = React.useState(false)
     const router = useRouter();
+
+    const menuList = React.useMemo(() => {
+        const list = [
+            { label: "记录足迹", icon: <Footprints />, href: "/blog/me/footprints/edit", permission: "superAdmin" },
+            { label: "添加书签", icon: <BookmarkPlus />, href: "/blog/me/bookmark/edit", permission: "superAdmin" },
+            { label: "我的文章", icon: <NotebookText />, href: "/blog/me/articles" },
+            { label: "我的收藏", icon: <Star />, href: "/blog/me/favorite" },
+            { label: "写文章", icon: <NotebookPen />, href: "/blog/article/write" },
+            { label: "设置", icon: <Settings className={"group-hover:animate-spin"} />, href: "/blog/setting" },
+        ]
+
+        return list.filter((item) => {
+            if (!("permission" in item)) return true
+            return user?.roles === item.permission
+        })
+    }, [user?.roles])
+
     const Avatar = React.useCallback(
-        ({className}: BaseComponentProps) => (
+        ({ className }: BaseComponentProps) => (
             <Image
                 src={user?.avatar || undefined}
                 className={cn("w-10 h-10 rounded-full", className)}
@@ -111,9 +126,8 @@ export function UserBrief({session}: UserBriefProps) {
                     className={`${hasOpen && "delay-50 opacity-0"} ${notHovered && "animate-small-avatar-show"}`}
                 />
                 <Avatar
-                    className={`opacity-0 shadow-sm absolute z-[100] top-0 left-0 ${
-                        notHovered && "animate-avatar-offset-scale-reverse pointer-events-none"
-                    } ${hasOpen && 'animate-avatar-offset-scale'} `}
+                    className={`opacity-0 shadow-sm absolute z-[100] top-0 left-0 ${notHovered && "animate-avatar-offset-scale-reverse pointer-events-none"
+                        } ${hasOpen && 'animate-avatar-offset-scale'} `}
                 />
             </Link>
         )
@@ -142,7 +156,7 @@ export function UserBrief({session}: UserBriefProps) {
                 onMouseEnter={() => setIsOpen(true)}
                 onMouseLeave={() => setIsOpen(false)}
             >
-                <PopoverMenu username={username} menuList={menuList.current} onMenuClick={handleMenuClick}/>
+                <PopoverMenu username={username} menuList={menuList} onMenuClick={handleMenuClick} />
             </PopoverContent>
         </Popover>
     )

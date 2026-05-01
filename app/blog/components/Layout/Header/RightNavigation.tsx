@@ -1,9 +1,8 @@
-import {NavigationList} from "./NavigationList"
-import {UserBrief} from "./UserBrief"
-import {DarkSwitch, Image} from "@/components/k-view";
-import React from "react";
-import Link from "next/link";
-import {auth} from "@/lib/auth";
+
+import { UserBrief } from "./UserBrief"
+import { DarkSwitch, Image } from "@/components/k-view"
+import Link from "next/link"
+import { auth } from "@/lib/auth"
 
 export default async function RightNavigation() {
     const session = await auth()

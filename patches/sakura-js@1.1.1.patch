@@ -1,0 +1,14 @@
+diff --git a/dist/sakura.js b/dist/sakura.js
+index e9d9d2c669bfa37499f524bd6969feba99b613d2..fd7bc3a1ae13eefbb99d9d3efc013e77f7173ecc 100644
+--- a/dist/sakura.js
++++ b/dist/sakura.js
+@@ -175,3 +175,9 @@ Sakura.prototype.stop = function () {
+     }, this.settings.delay + 50);
+   }
+ };
++
++// CommonJS / bundler compatibility (patch for Next.js)
++if (typeof module !== 'undefined' && module.exports) {
++  module.exports = Sakura;
++  module.exports.default = Sakura;
++}

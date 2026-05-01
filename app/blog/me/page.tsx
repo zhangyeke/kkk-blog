@@ -1,8 +1,17 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2025-09-17 21:38:09
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-05-01 01:18:24
+ * @FilePath: \blog\app\blog\me\page.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 
+import { Section } from "@/components/k-view";
 import EditUserForm from "./components/EditUserForm"
-import {getMeInfo} from "@/service/user";
-import {notFound} from "next/navigation";
-
+import { getMeInfo } from "@/service/user";
+import { notFound } from "next/navigation";
+import { UpdateUserSchema } from "@/validators/user";
 export default async function MePage() {
     const user = await getMeInfo()
 
@@ -11,13 +20,10 @@ export default async function MePage() {
     return (
 
         <div className={'bg-card/80 rounded-sm border border-solid border-input w-full lg:w-1/2 shadow-md'}>
-            <div className={'flex items-center py-4 px-6 border-b border-solid border-input text-primary text-sm'}>
-                <i className={'h-4 w-1 bg-primary rounded-lg mr-1'}></i>
-                <span>我的信息</span>
-            </div>
+            <Section>我的信息</Section>
 
             <div className={'py-4 px-6 '}>
-                <EditUserForm defaultValues={user.data}/>
+                <EditUserForm defaultValues={user.data as Partial<UpdateUserSchema>} />
             </div>
         </div>
 

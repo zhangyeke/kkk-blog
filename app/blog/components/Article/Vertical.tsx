@@ -1,37 +1,39 @@
 "use client"
 import Link from "next/link";
-import {CalendarRange, Star} from "lucide-react";
-import {ReactNode} from "react";
-import {PostWithFavorites, PostWithUser} from "@/types/post";
-import {dateFormat} from "@/lib/date";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
-import {Image, LikeIcon} from "@/components/k-view"
-import {CategoryTag, Tag} from "./Tag"
+import { CalendarRange, Star } from "lucide-react";
+import { ReactNode } from "react";
+import { PostWithFavorites, PostWithUser } from "@/types/post";
+import { dateFormat } from "@/lib/date";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Image, LikeIcon } from "@/components/k-view"
+import { CategoryTag, Tag } from "./Tag"
 
 type VerticalProps = {
     data: PostWithFavorites | PostWithUser
     renderCategory?: ReactNode
     showCollect?: boolean
     onCollectChange?: () => void
-}
+} & Partial<ContainerProps>
 
 
-export default function Vertical({data, renderCategory, showCollect, onCollectChange}: VerticalProps) {
+export default function Vertical({ children, data, renderCategory, showCollect, onCollectChange }: VerticalProps) {
     const tags = data.tags.split(',')
     return (
         <Link
             href={`/blog/article/${data.id}`}
-            className={'flex flex-col h-[350px] pb-1 shadow-sm rounded-sm overflow-hidden bg-card cursor-pointer hover:shadow-lg transition-shadow duration-300'}>
-            <Image
-                src={data.cover}
-                alt={data.title}
-                className='w-full mb-2 h-50 object-cover'
-            />
+            className={'relative group flex flex-col h-[350px] pb-1 shadow-sm rounded-sm overflow-hidden bg-card cursor-pointer hover:shadow-lg transition-shadow duration-300'}>
+            <div className="w-full mb-2 h-50 overflow-hidden ">
+                <Image
+                    src={data.cover}
+                    alt={data.title}
+                    className='size-full hover:scale-110 duration-500 transition-transform'
+                />
 
+            </div>
             <div className={'p-1.5 flex flex-col flex-1'}>
 
                 <div className={'flex items-center text-gray-600 text-sm'}>
-                    <CalendarRange className={'size-4 mr-1'}/>
+                    <CalendarRange className={'size-4 mr-1'} />
                     <span>发布于：{dateFormat(data.createdAt)}</span>
                     {
                         showCollect && (
@@ -57,9 +59,9 @@ export default function Vertical({data, renderCategory, showCollect, onCollectCh
                 </Tooltip>
 
                 <div className={'flex items-center text-gray-500 text-sm mt-1'}>
-                    <img src={'/images/hot.png'} className={'size-5 mr-1'} alt={'热度'}/>
+                    <img src={'/images/hot.png'} className={'size-5 mr-1'} alt={'热度'} />
                     <span>{data.pv} 热度</span>
-                    <Star className={'size-4 ml-2 mr-1 text-yellow-300 '}/>
+                    <Star className={'size-4 ml-2 mr-1 text-yellow-300 '} />
                     <span>{data.favoriteCount}</span>
                     <Image
                         src={data.user.avatar || ''}
@@ -95,7 +97,7 @@ export default function Vertical({data, renderCategory, showCollect, onCollectCh
 
                 </div>
             </div>
-
+            {children}
         </Link>
     )
 }

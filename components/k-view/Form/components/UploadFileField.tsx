@@ -1,92 +1,127 @@
-import * as React from "react";
-import { FileUploadCard, UploadedFile } from "@/components/ui/file-upload-card";
+"use client"
+import React from "react";
+import { FileUploadCard, UploadedFile, uploadedFileFromRemoteUrl } from "@/components/ui/file-upload-card";
+import { uploadImagePromise } from "@/lib/utils";
+import { CustomControlProps } from "../type";
+import { Textarea } from "@/components/ui/textarea"
 
-// A mock file object for demonstration
-const createMockFile = (name: string, size: number, type: string): File => {
-    const blob = new Blob([""], { type });
-    return new File([blob], name, { type });
-};
+function collectUploadedUrls(items: UploadedFile[]): string[] {
+    return items.map((f) => f.uploadedUrl).filter((u): u is string => Boolean(u));
+}
 
-// Initial files for the demo
-const initialFiles: UploadedFile[] = [
-    {
-        id: "cv-pdf",
-        file: createMockFile("my-cv.pdf", 120 * 1024, "application/pdf"),
-        progress: 0,
-        status: "uploading",
-    },
-    {
-        id: "cert-pdf",
-        file: createMockFile("google-certificate.pdf", 94 * 1024, "application/pdf"),
-        progress: 100,
-        status: "completed",
-    },
-];
+function urlsFromValue(value: unknown): string[] {
+    if (Array.isArray(value)) {
+        return value.filter((u): u is string => typeof u === "string" && u.trim().length > 0);
+    }
+    if (typeof value === "string" && value.trim().length > 0) return [value.trim()];
+    return [];
+}
 
-export default function FileUploadDemo() {
-    const [files, setFiles] = React.useState<UploadedFile[]>(initialFiles);
-    const [isVisible, setIsVisible] = React.useState(true);
+function valueUrlsKey(value: unknown): string {
+    return JSON.stringify(urlsFromValue(value));
+}
 
-    // Simulate upload progress for the "uploading" file
+export default function UploadFileField({ onChange, name, value, ...props }: CustomControlProps) {
+    const [files, setFiles] = React.useState<UploadedFile[]>(() =>
+        urlsFromValue(value).map((href, i) => uploadedFileFromRemoteUrl(href, i)),
+    );
+
+    const filesRef = React.useRef(files);
+    filesRef.current = files;
+
+    const prevValueKeyRef = React.useRef<string>(valueUrlsKey(value));
+
     React.useEffect(() => {
-        const uploadingFile = files.find((f) => f.status === "uploading");
-        if (!uploadingFile) return;
+        const key = valueUrlsKey(value);
+        if (prevValueKeyRef.current === key) return;
+        if (filesRef.current.some((f) => f.status === "uploading")) return;
+        prevValueKeyRef.current = key;
+        setFiles(urlsFromValue(value).map((href, i) => uploadedFileFromRemoteUrl(href, i)));
+    }, [value]);
 
-        const interval = setInterval(() => {
-            setFiles((prevFiles) =>
-                prevFiles.map((f) => {
-                    if (f.id === uploadingFile.id) {
-                        const newProgress = Math.min(f.progress + 10, 100);
-                        return {
-                            ...f,
-                            progress: newProgress,
-                            status: newProgress === 100 ? "completed" : "uploading",
-                        };
-                    }
-                    return f;
+    React.useEffect(() => {
+        if (!onChange) return;
+        const urls = collectUploadedUrls(files);
+        onChange({
+            target: {
+                name,
+                value: urls,
+            },
+        });
+    }, [files, name, onChange]);
+
+    const handleFilesChange = (newItems: UploadedFile[]) => {
+        setFiles((prev) => [...prev, ...newItems]);
+        for (const item of newItems) {
+            const { file, id } = item;
+            if (!file.type.startsWith("image/")) continue;
+            uploadImagePromise(file, true)
+                .then((url) => {
+                    setFiles((prev) =>
+                        prev.map((row) =>
+                            row.id === id
+                                ? {
+                                    ...row,
+                                    progress: 100,
+                                    status: "completed",
+                                    uploadedUrl: url || undefined,
+                                }
+                                : row
+                        )
+                    );
                 })
-            );
-        }, 300); // Update progress every 300ms
-
-        return () => clearInterval(interval);
-    }, [files]);
-
-    // Handler for adding new files
-    const handleFilesChange = (newFiles: File[]) => {
-        const newUploadedFiles: UploadedFile[] = newFiles.map((file) => ({
-            id: `${file.name}-${Date.now()}`,
-            file,
-            progress: 0,
-            status: "uploading",
-        }));
-        setFiles((prev) => [...prev, ...newUploadedFiles]);
+                .catch(() => {
+                    setFiles((prev) =>
+                        prev.map((row) =>
+                            row.id === id ? { ...row, status: "error" } : row
+                        )
+                    );
+                });
+        }
     };
 
-    // Handler for removing a file
     const handleFileRemove = (id: string) => {
         setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
     };
 
-    // Handler for closing the card
-    const handleClose = () => {
-        setIsVisible(false);
-        // After animation, reset to show again for demo purposes
-        setTimeout(() => {
-            setIsVisible(true);
-            setFiles(initialFiles);
-        }, 500);
-    };
+    return (
+        <FileUploadCard
+            files={files}
+            {...props}
+            onFilesChange={handleFilesChange}
+            onFileRemove={handleFileRemove}
+        />
+    );
+}
+
+
+
+
+/** 将富文本/多行粘贴按行切成非空字符串（一行一个链接时常用） */
+export function splitLinesToUrls(text: string): string[] {
+    return text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+}
+
+export function UploadFileTextarea({ onChange, name, value, ...props }: CustomControlProps) {
+    const lineValue = Array.isArray(value) ? value.join("\n") : typeof value === "string" ? value : "";
 
     return (
-        <div className="w-full h-screen flex items-center justify-center p-4">
-            {isVisible && (
-                <FileUploadCard
-                    files={files}
-                    onFilesChange={handleFilesChange}
-                    onFileRemove={handleFileRemove}
-                    onClose={handleClose}
-                />
-            )}
-        </div>
+        <Textarea
+            {...props}
+            name={name}
+            value={lineValue}
+            onChange={(e) => {
+                const urls = splitLinesToUrls(e.target.value);
+                onChange?.({
+                    target: {
+                        name,
+                        value: urls,
+                    },
+                });
+            }}
+        />
     );
 }

@@ -1,11 +1,11 @@
 "use client"
-import {z} from "zod";
-import {useForm} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import React, {ChangeEvent, useCallback, useMemo, useState} from "react"
-import {toast} from "sonner";
-import {env} from "env.mjs"
-import {updateUserSchema} from "@/validators/user";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react"
+import { toast } from "sonner";
+import { env } from "env.mjs"
+import { UpdateUserSchema, updateUserSchema } from "@/validators/user";
 import {
     FormControl,
     FormField,
@@ -14,16 +14,13 @@ import {
     FormMessage,
     Form as ShadForm,
 } from "@/components/ui/form"
-import {Input} from "@/components/ui/input";
-import {DatePicker, FixSpin, Image} from "@/components/k-view"
-import {Button} from "@/components/ui/button";
-import {uploadImagePromise} from "@/lib/utils";
-import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
-import {updateAuth} from "@/service/auth";
-import {useRouter} from "next/navigation";
-
-
-type UpdateUserSchema = z.infer<typeof updateUserSchema>
+import { Input } from "@/components/ui/input";
+import { DatePicker, FixSpin, Image } from "@/components/k-view"
+import { Button } from "@/components/ui/button";
+import { uploadImagePromise } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { updateAuth } from "@/service/auth";
+import { useRouter } from "next/navigation";
 
 
 interface EditUserFormProps extends BaseComponentProps {
@@ -31,7 +28,7 @@ interface EditUserFormProps extends BaseComponentProps {
 }
 
 export default function EditUserForm(props: EditUserFormProps) {
-    const {defaultValues} = props;
+    const { defaultValues } = props;
     const router = useRouter();
 
     const [pending, setPending] = useState(false)
@@ -102,7 +99,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                 <FormField
                     control={form.control}
                     name={'avatar'}
-                    render={({field}) => {
+                    render={({ field }) => {
                         return (
                             <FormItem className={'flex items-center flex-col'}>
                                 <FormControl>
@@ -126,10 +123,10 @@ export default function EditUserForm(props: EditUserFormProps) {
                                             accept={'image/*'}
                                             onChange={(e) => handleFileChange(e, field.onChange)}
                                         />
-                                        {uploadPending && <FixSpin/>}
+                                        {uploadPending && <FixSpin />}
                                     </div>
                                 </FormControl>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )
                     }}
@@ -138,7 +135,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                 <FormField
                     control={form.control}
                     name={'name'}
-                    render={({field}) => {
+                    render={({ field }) => {
                         return (
                             <FormItem>
                                 <div className={'flex items-center'}>
@@ -147,7 +144,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                                         <Input {...field} />
                                     </FormControl>
                                 </div>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )
                     }}
@@ -155,7 +152,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                 <FormField
                     control={form.control}
                     name={'email'}
-                    render={({field}) => {
+                    render={({ field }) => {
                         return (
                             <FormItem>
                                 <div className={'flex items-center'}>
@@ -164,7 +161,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                                         <span className={'text-gray-500'}>{field.value}</span>
                                     </FormControl>
                                 </div>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )
                     }}
@@ -172,7 +169,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                 <FormField
                     control={form.control}
                     name={'gender'}
-                    render={({field}) => {
+                    render={({ field }) => {
                         return (
                             <FormItem>
                                 <div className={'flex items-center'}>
@@ -185,11 +182,11 @@ export default function EditUserForm(props: EditUserFormProps) {
                                         >
 
                                             <div className="flex items-center gap-3">
-                                                <RadioGroupItem value="1" id='1'/>
+                                                <RadioGroupItem value="1" id='1' />
                                                 <FormLabel htmlFor="1">男</FormLabel>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <RadioGroupItem value="0" id='0'/>
+                                                <RadioGroupItem value="0" id='0' />
                                                 <FormLabel htmlFor="0">女</FormLabel>
                                             </div>
                                         </RadioGroup>
@@ -197,7 +194,7 @@ export default function EditUserForm(props: EditUserFormProps) {
 
                                 </div>
 
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )
                     }}
@@ -206,7 +203,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                 <FormField
                     control={form.control}
                     name={'birthday'}
-                    render={({field}) => {
+                    render={({ field }) => {
                         return (
                             <FormItem>
                                 <div className={'flex items-center'}>
@@ -220,15 +217,15 @@ export default function EditUserForm(props: EditUserFormProps) {
                                         />
                                     </FormControl>
                                 </div>
-                                <FormMessage/>
+                                <FormMessage />
                             </FormItem>
                         )
                     }}
                 />
 
 
-                <div className={'mx-auto lg:w-1/4 mt-4'}>
-                    <Button long={true} size={'lg'} loading={pending}>保存</Button>
+                <div className={'flex justify-end'}>
+                    <Button loading={pending}>保存</Button>
                 </div>
             </form>
         </ShadForm>

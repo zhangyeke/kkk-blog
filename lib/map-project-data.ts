@@ -1,4 +1,5 @@
-import type {ChinaGeoJSON} from "@/lib/china-map";
+import type {Footprint} from "@prisma/client";
+import type {ChinaGeoJSON} from "@/types/china-map";
 
 /** 与你在 page 中约定的项目分布结构 */
 export type ProjectMapItem = {
@@ -13,6 +14,8 @@ export type ProjectMapItem = {
      * 地级或直辖市区县级 adcode，与下钻后该省 GeoJSON 中对应面的 `properties.adcode` 一致。
      */
     cityAdcode?: string;
+    /** 区县 adcode（`Footprint.area`），与市级 GeoJSON 中区县级面一致 */
+    areaAdcode?: string;
     /** 全国视图中按「省」整省汇总展示（如广东省一块） */
     totalNums: number;
     /**
@@ -20,7 +23,75 @@ export type ProjectMapItem = {
      * 也兼容旧数据：键为区划中文名时仍按 `name` 匹配。
      */
     city: Record<string, number>;
+    /** 足迹相册图片 URL，下钻市级点击时汇总展示 */
+    album?: string[];
 };
+
+export type MapGalleryItem = { id: string; url: string };
+
+/** 单张图及其所属足迹的唯一 address（一条足迹只有一个 address） */
+export type MapGalleryImageItem = {
+    url: string;
+    address: string;
+};
+
+/** 地图下钻点击后传给画廊的行政区划文案 */
+export type MapGalleryLocationMeta = {
+    provinceName: string;
+    cityName: string;
+    districtName: string;
+};
+
+/** 画廊条目（URL 去重保留首次）+ 省/市/区展示用 */
+export type MapRegionGalleryPayload = {
+    items: MapGalleryImageItem[];
+    location: MapGalleryLocationMeta;
+};
+
+function padSixAdcode(n: number): string {
+    const s = `${Math.trunc(n)}`.replace(/\D/g, "");
+    return s.length >= 6 ? s.slice(0, 6) : s.padStart(6, "0");
+}
+
+function normalizeAdcodeString(s: string): string | null {
+    const d = s.replace(/\D/g, "");
+    if (d.length === 0) {
+        return null;
+    }
+    return d.length >= 6 ? d.slice(0, 6) : d.padStart(6, "0");
+}
+
+/** 将 Prisma 足迹行转为地图展示用结构；每条足迹视为 1 次数，同省/市在聚合层累加。 */
+export function footprintRowsToProjectMapItems(rows: Footprint[]): ProjectMapItem[] {
+    return rows.map((f) => {
+        const provinceAdcode = padSixAdcode(f.province);
+        const cityAdcode = padSixAdcode(f.city);
+        const areaAdcode =
+            f.area != null && Number.isFinite(Number(f.area)) ? padSixAdcode(Number(f.area)) : undefined;
+        return {
+            id: f.id,
+            address: f.address ?? "",
+            provinceAdcode,
+            cityAdcode,
+            areaAdcode,
+            totalNums: 1,
+            city: {[cityAdcode]: 1},
+            album: Array.isArray(f.album) ? f.album : []
+        };
+    });
+}
+
+/** 优先用 `address` 解析省名；若无则按 `provinceAdcode` 与当前 GeoJSON 面匹配。 */
+export function resolveProvinceLabel(geo: ChinaGeoJSON, p: ProjectMapItem): string | null {
+    const {province} = parseAddress(p.address);
+    if (province) {
+        return matchRegionNameInGeo(geo, province);
+    }
+    if (p.provinceAdcode) {
+        return nameFromAdcodeInGeo(geo, p.provinceAdcode);
+    }
+    return null;
+}
 
 /**
  * 从「地址」中拆省/市。全国 GeoJSON 为「xx省」；下钻到省为「xx市」等。
@@ -45,6 +116,33 @@ export function parseAddress(address: string): {province: string; city: string} 
         return {province: m[1]!, city: m[2]!};
     }
     return {province: "", city: ""};
+}
+
+/** 从地址串尽量解析省 / 市 / 区（县），用于画廊副标题等展示。 */
+export function parseAddressParts(address: string): {
+    province: string;
+    city: string;
+    district: string;
+} {
+    const t = address.trim();
+    if (!t) {
+        return {province: "", city: "", district: ""};
+    }
+    for (const {p: prov, re} of MUNI) {
+        if (re.test(t)) {
+            const tail = t.slice(prov.length);
+            const dm = tail.match(/^(.+?区|.+?县|.+?旗|.+?市)/u);
+            return {province: prov, city: prov, district: dm ? dm[1]! : ""};
+        }
+    }
+    const m3 = t.match(
+        /^(.+?省|.+?自治区)(.+?市|.+?州|.+?盟)(.+?区|.+?县|.+?旗|.+?市)/u
+    );
+    if (m3) {
+        return {province: m3[1]!, city: m3[2]!, district: m3[3]!};
+    }
+    const base = parseAddress(t);
+    return {province: base.province, city: base.city, district: ""};
 }
 
 /**
@@ -144,10 +242,175 @@ function withProvinceBarHeights(merged: Array<{name: string; value: number}>): M
 }
 
 /**
+ * 与 GeoJSON 中区县/地市名称对齐，取 6 位 adcode（供下钻点击与足迹 city 匹配）。
+ */
+export function findAdcodeForRegionName(geo: ChinaGeoJSON, rawName: string): string | null {
+    const k = matchRegionNameInGeo(geo, rawName) ?? rawName;
+    for (const f of geo.features) {
+        const p = f.properties;
+        if (p == null || typeof p.name !== "string" || p.name.length === 0) {
+            continue;
+        }
+        if (p.name === k || p.name === rawName) {
+            const ac = p.adcode;
+            if (ac == null) {
+                return null;
+            }
+            const ad = typeof ac === "number" ? String(ac) : String(ac).replace(/\D/g, "");
+            if (ad.length !== 6) {
+                return null;
+            }
+            return ad;
+        }
+    }
+    return null;
+}
+
+function isProjectInDrilledProvince(
+    p: ProjectMapItem,
+    currentProvinceAdcode: string,
+    currentProvinceName: string,
+    geo: ChinaGeoJSON
+): boolean {
+    const drillProv = normalizeAdcodeString(currentProvinceAdcode);
+    let inThisProvince = false;
+    if (drillProv && p.provinceAdcode) {
+        const pa = normalizeAdcodeString(p.provinceAdcode);
+        if (pa != null && pa === drillProv) {
+            inThisProvince = true;
+        }
+    }
+    if (!inThisProvince) {
+        const provLabel = resolveProvinceLabel(geo, p);
+        inThisProvince = provLabel != null && provLabel === currentProvinceName;
+    }
+    return inThisProvince;
+}
+
+/** 省下钻后点击某区县/市：匹配足迹；每张图绑定**该足迹唯一** `address`；URL 去重保留首次。 */
+export function buildRegionGalleryForDrilledClick(
+    projects: ProjectMapItem[],
+    geo: ChinaGeoJSON,
+    provinceCtx: { adcode: string; name: string },
+    clickedRegionName: string
+): MapRegionGalleryPayload | null {
+    const regionAdcode = findAdcodeForRegionName(geo, clickedRegionName);
+    const hitName = matchRegionNameInGeo(geo, clickedRegionName) ?? clickedRegionName;
+    const matched: ProjectMapItem[] = [];
+    const seenUrl = new Set<string>();
+    const items: MapGalleryImageItem[] = [];
+
+    for (const p of projects) {
+        if (!isProjectInDrilledProvince(p, provinceCtx.adcode, provinceCtx.name, geo)) {
+            continue;
+        }
+        const album = p.album;
+        if (!album || album.length === 0) {
+            continue;
+        }
+        let rowMatch = false;
+        if (regionAdcode != null) {
+            if (p.cityAdcode) {
+                const ca = normalizeAdcodeString(p.cityAdcode);
+                if (ca === regionAdcode) {
+                    rowMatch = true;
+                }
+            }
+            if (!rowMatch && p.areaAdcode) {
+                const aa = normalizeAdcodeString(p.areaAdcode);
+                if (aa === regionAdcode) {
+                    rowMatch = true;
+                }
+            }
+            if (!rowMatch) {
+                for (const key of Object.keys(p.city)) {
+                    if (normalizeAdcodeString(key) === regionAdcode) {
+                        rowMatch = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!rowMatch && regionAdcode == null) {
+            const {city} = parseAddress(p.address ?? "");
+            if (city.length > 0) {
+                const cResolved = matchRegionNameInGeo(geo, city) ?? city;
+                rowMatch =
+                    cResolved === hitName ||
+                    hitName.includes(cResolved) ||
+                    cResolved.includes(hitName.replace(/市$/u, ""));
+            }
+        }
+        if (!rowMatch) {
+            continue;
+        }
+        matched.push(p);
+        const addr = (p.address ?? "").trim();
+        for (const url of album) {
+            if (typeof url === "string" && url.length > 0 && !seenUrl.has(url)) {
+                seenUrl.add(url);
+                items.push({url, address: addr});
+            }
+        }
+    }
+
+    if (items.length === 0) {
+        return null;
+    }
+
+    const provinceName = provinceCtx.name;
+    let cityName = "";
+    let districtName = "";
+
+    const districtLike = /(区|县|旗|自治县|自治旗|林区)$/.test(hitName);
+    const cityLike =
+        hitName.endsWith("市") || hitName.endsWith("州") || hitName.endsWith("盟");
+
+    if (districtLike) {
+        districtName = hitName;
+        const a0 = matched[0]?.address;
+        if (a0) {
+            cityName = parseAddressParts(a0).city;
+        }
+    } else if (cityLike) {
+        cityName = hitName;
+    } else {
+        cityName = hitName;
+    }
+
+    if (!cityName && matched[0]?.address) {
+        cityName = parseAddressParts(matched[0].address).city;
+    }
+
+    return {
+        items,
+        location: {
+            provinceName,
+            cityName,
+            districtName
+        }
+    };
+}
+
+/** @deprecated 仅保留兼容；请优先使用 `buildRegionGalleryForDrilledClick`。 */
+export function collectGalleryItemsForDrilledRegion(
+    projects: ProjectMapItem[],
+    geo: ChinaGeoJSON,
+    provinceCtx: { adcode: string; name: string },
+    clickedRegionName: string
+): MapGalleryItem[] {
+    const built = buildRegionGalleryForDrilledClick(projects, geo, provinceCtx, clickedRegionName);
+    if (!built) {
+        return [];
+    }
+    return built.items.map((it, i) => ({id: `map-gallery-${i}`, url: it.url}));
+}
+
+/**
  * 把业务数据变成 ECharts `map3D` 的 `series.data` + visualMap 用的数值表。
  *
  * - **全国** (`scope === "country"`)：按 **省** 汇总，用 `totalNums`；`name` 与省级面名称一致（如 `广东省`）。
- * - **省级** (`scope === "province"`)：只处理 `address` 中省名与 `currentProvinceName` 一致（如 `广东省`）的项目，
+ * - **省级** (`scope === "province"`)：只处理属于当前下钻省的数据；优先用 `currentProvinceAdcode` 与 `provinceAdcode` 对齐（子级 Geo 无省界面时亦可靠），否则回退到省名与 `currentProvinceName` 一致。
  *   用 `city` 中各区划数量；键优先为 **adcode**（如 `440100`），解析为与市级面一致的 `name`（如 `广州市`）。
  *   省级结果带 **`height`**，用于 map3D 光柱；全国仅填色，不设 `height`。
  */
@@ -155,7 +418,8 @@ export function buildMap3DDataFromProjects(
     geo: ChinaGeoJSON,
     projects: ProjectMapItem[],
     scope: "country" | "province",
-    currentProvinceName: string
+    currentProvinceName: string,
+    currentProvinceAdcode?: string
 ): Map3DProjectDatum[] {
     if (projects.length === 0) {
         return [];
@@ -163,11 +427,7 @@ export function buildMap3DDataFromProjects(
     if (scope === "country") {
         const acc = new Map<string, number>();
         for (const p of projects) {
-            const {province} = parseAddress(p.address);
-            if (!province) {
-                continue;
-            }
-            const n = matchRegionNameInGeo(geo, province);
+            const n = resolveProvinceLabel(geo, p);
             if (n == null) {
                 continue;
             }
@@ -176,10 +436,21 @@ export function buildMap3DDataFromProjects(
         return [...acc.entries()].map(([name, value]) => ({name, value}));
     }
     const list: Array<{name: string; value: number}> = [];
+    const drillProv = currentProvinceAdcode ? normalizeAdcodeString(currentProvinceAdcode) : null;
+
     for (const p of projects) {
-        const {province} = parseAddress(p.address);
-        /** 与下钻后 payload.name（如 `广东省`）一致即可；子级 Geo 里只有市面，没有省名。 */
-        if (province !== currentProvinceName) {
+        let inThisProvince = false;
+        if (drillProv && p.provinceAdcode) {
+            const pa = normalizeAdcodeString(p.provinceAdcode);
+            if (pa != null && pa === drillProv) {
+                inThisProvince = true;
+            }
+        }
+        if (!inThisProvince) {
+            const provLabel = resolveProvinceLabel(geo, p);
+            inThisProvince = provLabel != null && provLabel === currentProvinceName;
+        }
+        if (!inThisProvince) {
             continue;
         }
         for (const [cityKey, v] of Object.entries(p.city)) {
@@ -251,11 +522,7 @@ export function buildECharts2DMapFromProjects(
     }
     const acc = new Map<string, {total: number; cities: Map<string, number>}>();
     for (const p of projects) {
-        const {province} = parseAddress(p.address);
-        if (!province) {
-            continue;
-        }
-        const n = matchRegionNameInGeo(geo, province);
+        const n = resolveProvinceLabel(geo, p);
         if (n == null) {
             continue;
         }

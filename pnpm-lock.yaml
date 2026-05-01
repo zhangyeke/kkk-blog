@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  sakura-js@1.1.1:
+    hash: qfrb3uhikk3mu7iulchuwkr25i
+    path: patches/sakura-js@1.1.1.patch
+
 importers:
 
   .:
@@ -140,6 +145,9 @@ importers:
       dayjs:
         specifier: ^1.11.20
         version: 1.11.20
+      dayjs-lunar:
+        specifier: ^0.0.3
+        version: 0.0.3
       echarts:
         specifier: ^6.0.0
         version: 6.0.0
@@ -218,6 +226,9 @@ importers:
       remark:
         specifier: ^15.0.1
         version: 15.0.1
+      sakura-js:
+        specifier: ^1.1.1
+        version: 1.1.1(patch_hash=qfrb3uhikk3mu7iulchuwkr25i)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -384,6 +395,9 @@ importers:
       semantic-release:
         specifier: ^22.0.12
         version: 22.0.12(typescript@5.9.3)
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       tailwindcss:
         specifier: ^4.1.5
         version: 4.2.2
@@ -3733,6 +3747,9 @@ packages:
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
+  dayjs-lunar@0.0.3:
+    resolution: {integrity: sha512-GbXLt1cODRkY3uFWEAdXM8Y0LO6aueCGdiGROhRyRtjBcOKSRN42nhobnRE7h29vlYMh18SmxlrhEsCRVDJyJg==}
+
   dayjs@1.11.20:
     resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
 
@@ -5367,6 +5384,9 @@ packages:
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  lunar-typescript@1.8.6:
+    resolution: {integrity: sha512-5Eo4T/cnuXfrgO4k5LCpOGHIUOuz5hCF/IfNv0T29WY2shR36Hiz+ecN9WjnUuxUKhql9gbOkPaQoqLFKtPRNA==}
+
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
     hasBin: true
@@ -6698,6 +6718,9 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  sakura-js@1.1.1:
+    resolution: {integrity: sha512-JWTK9RauYrZoDMymmuXRH+fFdqh9uJqZUdy0bUbt001w6N9QO82+gpTGoTtwDn+KROnffQIMTfQOvG8t9GwQDw==}
 
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
@@ -8288,8 +8311,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@img/colour@1.1.0':
-    optional: true
+  '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.34.5':
     optionalDependencies:
@@ -11556,6 +11578,10 @@ snapshots:
 
   date-fns@4.1.0: {}
 
+  dayjs-lunar@0.0.3:
+    dependencies:
+      lunar-typescript: 1.8.6
+
   dayjs@1.11.20: {}
 
   debounce@1.2.1: {}
@@ -13574,6 +13600,8 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  lunar-typescript@1.8.6: {}
+
   lz-string@1.5.0: {}
 
   magic-string@0.30.21:
@@ -15130,6 +15158,8 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
+  sakura-js@1.1.1(patch_hash=qfrb3uhikk3mu7iulchuwkr25i): {}
+
   saxes@6.0.0:
     dependencies:
       xmlchars: 2.2.0
@@ -15241,7 +15271,6 @@ snapshots:
       '@img/sharp-win32-arm64': 0.34.5
       '@img/sharp-win32-ia32': 0.34.5
       '@img/sharp-win32-x64': 0.34.5
-    optional: true
 
   shebang-command@2.0.0:
     dependencies:

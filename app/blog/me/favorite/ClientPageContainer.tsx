@@ -1,3 +1,11 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2026-04-23 02:05:05
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-04-29 19:30:59
+ * @FilePath: \blog\app\blog\me\favorite\ClientPageContainer.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%A2
+ */
 "use client"
 import React, {useCallback, useMemo, useRef, useState} from "react"
 import {PostCategory} from "@/types/postCategory";
@@ -57,12 +65,12 @@ export default function ClientPageContainer({categoryList}: ClientPageContainerP
 
             <InfiniteScrollList
                 ref={listInstance}
-                className={'columns-3 w-full'}
+                className={'flex flex-wrap gap-4 w-full'}
                 apiParams={apiParams}
                 fetchData={getMeFavorites}
                 renderItem={(item, i) => (
                     <ScrollElement
-                        className={'mb-4'}
+                        className={'w-[30%]'}
                         key={item.post.id}
                         viewport={{
                             once: true,

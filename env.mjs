@@ -13,6 +13,7 @@ export const env = createEnv({
         IMGBB_API_URL: z.string().url(),
         AL_API_URL: z.string().url(),
         POEM_API_URL: z.string().url(),
+        MAP_BASE_URL: z.string().url(),
         // API_URL: z.string().url(),
         // REQUEST_URL: z.string(),
     },
@@ -36,6 +37,7 @@ export const env = createEnv({
         MATERIAL_API_URL: process.env.MATERIAL_API_URL,
         AL_API_URL: process.env.AL_API_URL,
         POEM_API_URL: process.env.POEM_API_URL,
+        MAP_BASE_URL: process.env.MAP_BASE_URL,
         IMGBB_API_TOKEN: process.env.IMGBB_API_TOKEN,
         IMGBB_API_URL: process.env.IMGBB_API_URL,
         // 客户端变量
