@@ -102,10 +102,8 @@ export async function updateUser(params: Prisma.UserUpdateInput) {
 
 }
 
-// 查询用户相关统计数据
+// 查询用户相关统计数据（不宜 use cache：id 随登录态变化，与 Cache Components 重放槽位易冲突）
 export async function userStatisticsInfo(id?: string) {
-    'use cache'
-    cacheTag('action-userStatisticsInfo')
     try {
 
         const [user, stats] = await Promise.all([
