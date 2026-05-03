@@ -6,10 +6,8 @@
  * @FilePath: \blog\app\blog\components\Master\index.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import React from 'react';
-import { GradientTransition, Image } from "@/components/k-view"
+import { GradientTransition, Image,GoButton } from "@/components/k-view"
 import { findUniqueUser, userStatisticsInfo } from "@/service/user";
-import WriteArticleButton from "./WriteArticleButton";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 
@@ -74,7 +72,7 @@ export default async function Master() {
 
             </div>
 
-            <WriteArticleButton />
+            <GoButton className={'mt-4'} href={"/blog/article/write"}/>
         </GradientTransition>
 
     )

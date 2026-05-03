@@ -2,7 +2,7 @@
  * @Author: kkk 997610780@qq.com
  * @Date: 2025-09-17 21:38:09
  * @LastEditors: kkk 997610780@qq.com
- * @LastEditTime: 2026-04-29 18:51:02
+ * @LastEditTime: 2026-05-03 18:06:41
  * @FilePath: \blog\app\blog\layout.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -27,21 +27,20 @@ export const metadata: Metadata = {
 
 export default async function BlogLayout({ children, drawer, footer }: Slots<'children' | 'drawer' | 'footer'>) {
     return (
-        <>
-            <SakuraOverlay delay={200}/>
 
-            <section className={'min-h-full flex flex-col'}>
-                <SplashCursor />
-                <Header />
-                <main className={'flex-1 relative flex flex-col'}>
-                    {children}
-                </main>
-                <BackTop />
-                {footer}
-                {drawer}
-            </section>
+        <section className={'blog-layout min-h-full flex flex-col'}>
+            <SakuraOverlay delay={200} />
 
-        </>
+            <SplashCursor />
+            <Header />
+            <main className={'flex-1 relative flex flex-col'}>
+                {children}
+            </main>
+            <BackTop />
+            {footer}
+            {drawer}
+        </section>
+
 
     )
 }

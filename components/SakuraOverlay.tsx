@@ -1,8 +1,17 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2026-04-29 17:01:05
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-05-03 18:15:23
+ * @FilePath: \blog\components\SakuraOverlay.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 "use client"
 
-import { useEffect, useId } from "react"
+import { useEffect } from "react"
 import "sakura-js/dist/sakura.min.css"
-import type { SakuraCtorOptions } from "sakura-js/dist/sakura.js"
+
+import Sakura, { SakuraCtorOptions } from "sakura-js/dist/sakura.js"
 
 export type SakuraOverlayProps = Omit<SakuraCtorOptions, "className"> & {
   /** 覆盖层容器 className（固定全屏、不拦截点击） */
@@ -13,23 +22,6 @@ export type SakuraOverlayProps = Omit<SakuraCtorOptions, "className"> & {
 
 type SakuraInstance = { stop: (graceful?: boolean) => void }
 
-/** sakura-js 为 UMD/CJS，生产包 default 互操作可能不是可 new 的函数，需兼容多种导出形态 */
-function resolveSakuraConstructor(
-  mod: unknown,
-): new (selector: string, options?: SakuraCtorOptions) => SakuraInstance {
-  if (typeof mod === "function") {
-    return mod as new (selector: string, options?: SakuraCtorOptions) => SakuraInstance
-  }
-  if (mod !== null && typeof mod === "object" && "default" in mod) {
-    const d = (mod as { default: unknown }).default
-    if (typeof d === "function") {
-      return d as new (selector: string, options?: SakuraCtorOptions) => SakuraInstance
-    }
-  }
-  throw new TypeError(
-    "[SakuraOverlay] sakura-js：未解析到构造函数（生产包 ESM/CJS 互操作问题）",
-  )
-}
 
 /**
  * 全屏樱花飘落（sakura-js），仅客户端挂载；卸载时停止并清理花瓣。
@@ -44,11 +36,13 @@ export default function SakuraOverlay({
   delay,
   colors,
 }: SakuraOverlayProps) {
-  const rootId = `sakura-root-${useId().replace(/:/g, "")}`
+
   const colorsJson = JSON.stringify(colors ?? null)
 
   useEffect(() => {
-    const opts: SakuraCtorOptions = {}
+    console.log(`Sakura`, Sakura);
+
+    const opts: AnyObject = {}
     if (petalClassName != null) opts.className = petalClassName
     if (fallSpeed != null) opts.fallSpeed = fallSpeed
     if (maxSize != null) opts.maxSize = maxSize
@@ -61,14 +55,10 @@ export default function SakuraOverlay({
 
     void (async () => {
       try {
-        const mod = await import("sakura-js/dist/sakura.js")
-        if (cancelled) return
-        if (!document.getElementById(rootId)) return
-        const Ctor = resolveSakuraConstructor(mod)
-        if (cancelled) return
-        instance = new Ctor(`#${CSS.escape(rootId)}`, opts)
+
+        instance = new Sakura('.blog-layout', opts)
         if (cancelled) {
-          instance.stop(false)
+          instance.stop(true)
           instance = null
         }
       } catch (e) {
@@ -78,11 +68,10 @@ export default function SakuraOverlay({
 
     return () => {
       cancelled = true
-      instance?.stop(false)
+      instance?.stop(true)
       instance = null
     }
   }, [
-    rootId,
     petalClassName,
     fallSpeed,
     maxSize,
@@ -93,7 +82,6 @@ export default function SakuraOverlay({
 
   return (
     <div
-      id={rootId}
       className={`pointer-events-none fixed inset-0 z-60 overflow-x-hidden ${wrapperClassName}`.trim()}
       aria-hidden
     />

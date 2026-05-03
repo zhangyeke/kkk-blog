@@ -1,3 +1,11 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2025-09-17 21:38:09
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-05-03 17:59:48
+ * @FilePath: \blog\env.mjs
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import {createEnv} from "@t3-oss/env-nextjs"
 import {z} from "zod"
 
@@ -11,7 +19,14 @@ export const env = createEnv({
         MATERIAL_API_URL: z.string().url(),
         IMGBB_API_TOKEN: z.string(),
         IMGBB_API_URL: z.string().url(),
-        AL_API_URL: z.string().url(),
+        // 默认海外线路，便于 Vercel 等境外节点访问；本地可设 AL_API_URL=https://v1.hitokoto.cn
+        AL_API_URL: z.preprocess(
+            (v) =>
+                typeof v === "string" && v.trim() !== ""
+                    ? v.trim()
+                    : "https://v1.hitokoto.cn",
+            z.string().url()
+        ),
         POEM_API_URL: z.string().url(),
         MAP_BASE_URL: z.string().url(),
         // API_URL: z.string().url(),
