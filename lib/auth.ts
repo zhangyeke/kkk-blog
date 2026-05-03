@@ -89,7 +89,7 @@ const config = {
                 ...newUser
             }
             /*同步更新会话中的用户信息*/
-            if (trigger === 'update') {
+            if (trigger === "update" && user?.name != null) {
                 session.user.name = user.name
             }
             return session

@@ -96,10 +96,11 @@ export const SEARCH_SHORTCUTS = [
 export function buildSearchShortcutUrl(item: typeof SEARCH_SHORTCUTS[number], query: string): string {
   const raw = query.trim()
   const q = encodeURIComponent(raw || "")
+  const base = item.href.replace(/\/$/, "")
+  if (!raw) return base
   if (item.searchKey.startsWith("http")) {
     return `${item.searchKey}=${encodeURIComponent(raw)}`
   }
-  const base = item.href.replace(/\/$/, "")
 
   return `${base}${item.searchKey}${q}`
 }
