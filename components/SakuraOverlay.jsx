@@ -13,18 +13,31 @@ import Sakura from "@/lib/sakura"
 import "@/styles/sakura.css"
 
 /**
+ * @typedef {object} SakuraOverlayProps
+ * @property {string} [wrapperClassName]
+ * @property {string} [petalClassName]
+ * @property {number} [fallSpeed]
+ * @property {number} [maxSize]
+ * @property {number} [minSize]
+ * @property {number} [delay]
+ * @property {unknown} [colors] sakura-js 可选项；库内与渐变等配置有关
+ */
+
+/**
  * 全屏樱花飘落（sakura-js），仅客户端挂载；卸载时停止并清理花瓣。
  * 使用动态 import，避免 Turbopack/Webpack 对 sakura.js 顶层 default + `new` 的错误压缩形态（i.default is not a constructor）。
+ * @param {SakuraOverlayProps} props
  */
-export default function SakuraOverlay({
-  wrapperClassName = "",
-  petalClassName,
-  fallSpeed,
-  maxSize,
-  minSize,
-  delay,
-  colors,
-}) {
+export default function SakuraOverlay(props) {
+  const {
+    wrapperClassName = "",
+    petalClassName,
+    fallSpeed,
+    maxSize,
+    minSize,
+    delay,
+    colors,
+  } = props
   const colorsJson = JSON.stringify(colors ?? null)
 
   useEffect(() => {
