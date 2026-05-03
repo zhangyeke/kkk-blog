@@ -143,6 +143,9 @@ importers:
       dayjs-lunar:
         specifier: ^0.0.3
         version: 0.0.3
+      disable-devtool:
+        specifier: ^0.3.9
+        version: 0.3.9
       echarts:
         specifier: ^6.0.0
         version: 6.0.0
@@ -3851,6 +3854,9 @@ packages:
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
+
+  disable-devtool@0.3.9:
+    resolution: {integrity: sha512-WHCpC8f93Cn2DnTeaq57NFLcdw4921sovh1ammnp/2o8Snb704HK/Vw1/D2D1Pihc0zc8/mVKb5nchHtoadObQ==}
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -11642,6 +11648,8 @@ snapshots:
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
+
+  disable-devtool@0.3.9: {}
 
   doctrine@2.1.0:
     dependencies:
