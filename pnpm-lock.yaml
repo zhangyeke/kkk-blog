@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  sakura-js@1.1.1:
-    hash: qfrb3uhikk3mu7iulchuwkr25i
-    path: patches/sakura-js@1.1.1.patch
-
 importers:
 
   .:
@@ -226,9 +221,6 @@ importers:
       remark:
         specifier: ^15.0.1
         version: 15.0.1
-      sakura-js:
-        specifier: ^1.1.1
-        version: 1.1.1(patch_hash=qfrb3uhikk3mu7iulchuwkr25i)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -6718,9 +6710,6 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
-
-  sakura-js@1.1.1:
-    resolution: {integrity: sha512-JWTK9RauYrZoDMymmuXRH+fFdqh9uJqZUdy0bUbt001w6N9QO82+gpTGoTtwDn+KROnffQIMTfQOvG8t9GwQDw==}
 
   saxes@6.0.0:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
@@ -15157,8 +15146,6 @@ snapshots:
       is-regex: 1.2.1
 
   safer-buffer@2.1.2: {}
-
-  sakura-js@1.1.1(patch_hash=qfrb3uhikk3mu7iulchuwkr25i): {}
 
   saxes@6.0.0:
     dependencies:
