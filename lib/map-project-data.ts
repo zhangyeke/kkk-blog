@@ -61,6 +61,35 @@ function normalizeAdcodeString(s: string): string | null {
     return d.length >= 6 ? d.slice(0, 6) : d.padStart(6, "0");
 }
 
+/**
+ * 同属一个地级政区时常共前 4 位（例：阿坝州 513200 与下属县；成都 510100 与武侯 510107），
+ * 便于点击地市/州多边形仍能命中仅填区县码的足迹。
+ */
+function adcodesRoughlySameAdminUnit(regionSix: string, candidate: string): boolean {
+    const a = normalizeAdcodeString(regionSix);
+    const b = normalizeAdcodeString(candidate);
+    if (a == null || b == null) {
+        return false;
+    }
+    if (a === b) {
+        return true;
+    }
+    return a.slice(0, 4) === b.slice(0, 4);
+}
+
+function albumImageCountForMap(p: ProjectMapItem): number {
+    if (!Array.isArray(p.album)) {
+        return 0;
+    }
+    let n = 0;
+    for (const u of p.album) {
+        if (typeof u === "string" && u.trim().length > 0) {
+            n += 1;
+        }
+    }
+    return n;
+}
+
 /** 将 Prisma 足迹行转为地图展示用结构；每条足迹视为 1 次数，同省/市在聚合层累加。 */
 export function footprintRowsToProjectMapItems(rows: Footprint[]): ProjectMapItem[] {
     return rows.map((f) => {
@@ -310,21 +339,15 @@ export function buildRegionGalleryForDrilledClick(
         }
         let rowMatch = false;
         if (regionAdcode != null) {
-            if (p.cityAdcode) {
-                const ca = normalizeAdcodeString(p.cityAdcode);
-                if (ca === regionAdcode) {
-                    rowMatch = true;
-                }
+            if (p.cityAdcode && adcodesRoughlySameAdminUnit(regionAdcode, p.cityAdcode)) {
+                rowMatch = true;
             }
-            if (!rowMatch && p.areaAdcode) {
-                const aa = normalizeAdcodeString(p.areaAdcode);
-                if (aa === regionAdcode) {
-                    rowMatch = true;
-                }
+            if (!rowMatch && p.areaAdcode && adcodesRoughlySameAdminUnit(regionAdcode, p.areaAdcode)) {
+                rowMatch = true;
             }
             if (!rowMatch) {
                 for (const key of Object.keys(p.city)) {
-                    if (normalizeAdcodeString(key) === regionAdcode) {
+                    if (adcodesRoughlySameAdminUnit(regionAdcode, key)) {
                         rowMatch = true;
                         break;
                     }
@@ -410,9 +433,8 @@ export function collectGalleryItemsForDrilledRegion(
  * 把业务数据变成 ECharts `map3D` 的 `series.data` + visualMap 用的数值表。
  *
  * - **全国** (`scope === "country"`)：按 **省** 汇总，用 `totalNums`；`name` 与省级面名称一致（如 `广东省`）。
- * - **省级** (`scope === "province"`)：只处理属于当前下钻省的数据；优先用 `currentProvinceAdcode` 与 `provinceAdcode` 对齐（子级 Geo 无省界面时亦可靠），否则回退到省名与 `currentProvinceName` 一致。
- *   用 `city` 中各区划数量；键优先为 **adcode**（如 `440100`），解析为与市级面一致的 `name`（如 `广州市`）。
- *   省级结果带 **`height`**，用于 map3D 光柱；全国仅填色，不设 `height`。
+ * - **省级** (`scope === "province"`)：只处理当前省数据；对每个地级面累加该区划相关足迹的 **`album` 图片张数**（无图足迹不参与柱/热力），便于气泡与画册一致。
+ *   区级 adcode（`city` 键、`cityAdcode`、`areaAdcode`）映射为与下级 GeoJSON 面一致的 `name`。
  */
 export function buildMap3DDataFromProjects(
     geo: ChinaGeoJSON,
@@ -453,11 +475,15 @@ export function buildMap3DDataFromProjects(
         if (!inThisProvince) {
             continue;
         }
-        for (const [cityKey, v] of Object.entries(p.city)) {
+        const imgs = albumImageCountForMap(p);
+        if (imgs < 1) {
+            continue;
+        }
+        for (const [cityKey] of Object.entries(p.city)) {
             const cityName =
                 nameFromAdcodeInGeo(geo, cityKey) ?? matchRegionNameInGeo(geo, cityKey);
             if (cityName != null) {
-                list.push({name: cityName, value: v});
+                list.push({name: cityName, value: imgs});
             }
         }
     }
@@ -504,6 +530,16 @@ function cityLabelFor2DTooltip(geo: ChinaGeoJSON, key: string): string {
     return key;
 }
 
+/** 全国聚合同一「市/地级」维度去重（优先 6 位 adcode）。 */
+function dedupCityKeyForNationalAgg(rawKey: string): string {
+    const six = normalizeAdcodeString(rawKey);
+    if (six != null) {
+        return `a:${six}`;
+    }
+    const t = rawKey.trim();
+    return t.length > 0 ? `n:${t}` : "";
+}
+
 export type ECharts2DMapToolRow = {
     name: string;
     value: number;
@@ -511,7 +547,8 @@ export type ECharts2DMapToolRow = {
 };
 
 /**
- * 全国 2D 地图：`totalNums` 按 `address` 省汇总；`tooltip`/`柱线气泡` 用 `city` 拼市明细（adcode 解析名 + 回退表）。
+ * 全国 2D 地图：柱顶气泡与填色 `value` = **该省有相册图的地级市个数**（去重）；
+ * `areas` 为各市「名称 + 张数」列表。无图足迹不参与。
  */
 export function buildECharts2DMapFromProjects(
     geo: ChinaGeoJSON,
@@ -520,32 +557,53 @@ export function buildECharts2DMapFromProjects(
     if (projects.length === 0) {
         return null;
     }
-    const acc = new Map<string, {total: number; cities: Map<string, number>}>();
+    /** 省 -> 市去重键 -> 展示名 + 累计张数 */
+    const acc = new Map<string, Map<string, {label: string; photos: number}>>();
     for (const p of projects) {
-        const n = resolveProvinceLabel(geo, p);
-        if (n == null) {
+        const provName = resolveProvinceLabel(geo, p);
+        if (provName == null) {
             continue;
         }
-        const row = acc.get(n) ?? {total: 0, cities: new Map<string, number>()};
-        row.total += p.totalNums;
-        for (const [k, v] of Object.entries(p.city)) {
-            row.cities.set(k, (row.cities.get(k) ?? 0) + v);
+        const imgs = albumImageCountForMap(p);
+        if (imgs < 1) {
+            continue;
         }
-        acc.set(n, row);
+        const keys = Object.keys(p.city);
+        const primaryRaw =
+            (p.cityAdcode != null && `${p.cityAdcode}`.trim().length > 0
+                ? String(p.cityAdcode)
+                : undefined) ?? keys[0];
+        if (primaryRaw == null || primaryRaw.length === 0) {
+            continue;
+        }
+        const dk = dedupCityKeyForNationalAgg(primaryRaw);
+        if (dk.length === 0) {
+            continue;
+        }
+        const label = cityLabelFor2DTooltip(geo, primaryRaw);
+        let cityMap = acc.get(provName);
+        if (cityMap == null) {
+            cityMap = new Map();
+            acc.set(provName, cityMap);
+        }
+        const prev = cityMap.get(dk) ?? {label, photos: 0};
+        prev.photos += imgs;
+        if (!prev.label) {
+            prev.label = label;
+        }
+        cityMap.set(dk, prev);
     }
     if (acc.size === 0) {
         return null;
     }
     const toolRows: ECharts2DMapToolRow[] = [];
-    for (const [provName, {total, cities}] of acc) {
-        const parts: {label: string; n: number}[] = [];
-        for (const [k, v] of cities) {
-            parts.push({label: `${cityLabelFor2DTooltip(geo, k)} ${v}个`, n: v});
-        }
-        parts.sort((a, b) => b.n - a.n);
+    for (const [provName, cityMap] of acc) {
+        const parts = [...cityMap.values()]
+            .map(({label, photos}) => ({label: `${label} ${photos}张`, n: photos}))
+            .sort((a, b) => b.n - a.n);
         toolRows.push({
             name: provName,
-            value: total,
+            value: cityMap.size,
             areas: parts.map((x) => x.label)
         });
     }

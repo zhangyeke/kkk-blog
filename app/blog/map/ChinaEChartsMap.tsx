@@ -35,9 +35,9 @@ const PILLAR_BUBBLE_W = 118;
 const PILLAR_COUNTRY_BUBBLE_OFFSET_Y = 12;
 const PILLAR_PROVINCE_BUBBLE_OFFSET_Y = 4;
 
-/** 柱顶气泡标签（与 label formatter 文案一致）估算宽度，避免长地名裁切；与 rich.padding 左右约 14px 对齐。 */
-function pillarBubbleSymbolWidth(it: ToolTipRow): number {
-    const label = `${it.name} : ${it.value}个`;
+/** 柱顶气泡标签（与 label formatter 文案一致）估算宽度 */
+function pillarBubbleSymbolWidth(it: ToolTipRow, valueSuffix = "个"): number {
+    const label = `${it.name} : ${it.value}${valueSuffix}`;
     let px = 0;
     for (const ch of label) {
         px += /[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]/.test(ch) ? 13 : ch === " " ? 4 : 8;
@@ -414,6 +414,8 @@ export function ChinaEChartsMap({ projects = DEFAULT_PROJECTS, onProvinceClick }
             const scatterBubbleOffY =
                 -PILLAR_BUBBLE_H / 2 +
                 (isCountry ? PILLAR_COUNTRY_BUBBLE_OFFSET_Y : PILLAR_PROVINCE_BUBBLE_OFFSET_Y);
+            /** 全国：去重地级市数（有图）；省图：相片张数 */
+            const bubbleValueSuffix = isCountry ? "个市" : "张图";
 
             const titleText = isCountry ? "项目分布图" : `${payloadName ?? mapDrill.name} · 项目分布`;
 
@@ -530,7 +532,10 @@ export function ChinaEChartsMap({ projects = DEFAULT_PROJECTS, onProvinceClick }
                     }
                 }
             ];
-            const geoList: echarts.GeoComponentOption[] = [geoMainLayer, ...geo3DStackLayers];
+            /** 省下钻仅保留主 geo：多 geo 同步 roam 时叠层一起动，观感像「拖了多层」；全国仍用叠层做立体边 */
+            const geoList: echarts.GeoComponentOption[] = isCountry
+                ? [geoMainLayer, ...geo3DStackLayers]
+                : [geoMainLayer];
 
             const option: echarts.EChartsOption = {
                 backgroundColor: "#003366",
@@ -639,7 +644,7 @@ export function ChinaEChartsMap({ projects = DEFAULT_PROJECTS, onProvinceClick }
                                     return "";
                                 }
                                 const it = d[2] as unknown as ToolTipRow;
-                                return `{row|${it.name} : ${it.value}个}`;
+                                return `{row|${it.name} : ${it.value}${bubbleValueSuffix}}`;
                             },
                             rich: {
                                 row: {
@@ -661,7 +666,10 @@ export function ChinaEChartsMap({ projects = DEFAULT_PROJECTS, onProvinceClick }
                             if (!it) {
                                 return [PILLAR_BUBBLE_W, PILLAR_BUBBLE_H] as [number, number];
                             }
-                            return [pillarBubbleSymbolWidth(it), PILLAR_BUBBLE_H] as [number, number];
+                            return [pillarBubbleSymbolWidth(it, bubbleValueSuffix), PILLAR_BUBBLE_H] as [
+                                number,
+                                number
+                            ];
                         },
                         /**
                          * 以柱顶地理点为锚点；省图对底图+PNG 下留白补 px，与 lines 端点对齐
