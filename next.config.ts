@@ -1,3 +1,11 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2025-09-17 21:38:09
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-05-04 19:28:17
+ * @FilePath: \blog\next.config.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import withBundleAnalyzer from "@next/bundle-analyzer"
 import createMDX from '@next/mdx'
 import {type NextConfig, SizeLimit} from "next"
@@ -9,6 +17,7 @@ const withMDX = createMDX({
 })
 
 const config: NextConfig = {
+    allowedDevOrigins: ['127.0.0.1'],
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [

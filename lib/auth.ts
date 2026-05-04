@@ -1,12 +1,13 @@
-import NextAuth, {type NextAuthConfig} from "next-auth"
+import NextAuth, { type NextAuthConfig } from "next-auth"
 import GitHub from "next-auth/providers/github"
+import Google from "next-auth/providers/google"
 import { env } from "@/env.mjs"
-import {PrismaAdapter} from "@auth/prisma-adapter"
+import { PrismaAdapter } from "@auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
-import {compareSync} from "bcrypt-ts-edge";
+import { compareSync } from "bcrypt-ts-edge"
 
 import prisma from "./prisma"
-import {getUserByEmail, updateUser} from "@/service/user";
+import { getUserByEmail, updateUser } from "@/service/user"
 
 const config = {
   /** Auth.js v5：允许根据请求的 Host（如 localhost、Vercel 域名）生成 URL，否则会抛 UntrustedHost */
@@ -22,6 +23,11 @@ const config = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
+    Google({
+      clientId: env.AUTH_GOOGLE_ID,
+      clientSecret: env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
     GitHub({
       clientId: env.AUTH_GITHUB_ID,
       clientSecret: env.AUTH_GITHUB_SECRET,
@@ -103,5 +109,4 @@ const config = {
   },
 } satisfies NextAuthConfig
 
-
-export const {handlers, auth, signOut, signIn, unstable_update} = NextAuth(config)
+export const { handlers, auth, signOut, signIn, unstable_update } = NextAuth(config)

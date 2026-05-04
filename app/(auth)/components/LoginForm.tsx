@@ -2,7 +2,7 @@
  * @Author: kkk 997610780@qq.com
  * @Date: 2025-09-17 21:38:09
  * @LastEditors: kkk 997610780@qq.com
- * @LastEditTime: 2026-05-04 17:57:31
+ * @LastEditTime: 2026-05-04 19:06:32
  * @FilePath: \blog\app\(auth)\components\LoginForm.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -92,16 +92,22 @@ function LoginForm({ callbackUrl, authError }: LoginFormProps) {
 
             </Form>
 
-            <Division className="mt-5">
+            <Division className="mt-10">
                 其他登录方式
             </Division>
 
-            <div className="flex-center gap-x-2 mt-2" >
+            <div className="flex-center gap-x-4 mt-2" >
                 <Image
                     title="github登录"
-                    className="size-10 cursor-pointer"
+                    className="size-8 cursor-pointer"
                     src='/images/searchIcons/github.png'
                     onClick={() => handleProviderLogin('github')}
+                />
+                <Image
+                    title="google登录"
+                    className="size-8 cursor-pointer"
+                    src='/images/searchIcons/google.png'
+                    onClick={() => handleProviderLogin('google')}
                 />
             </div>
         </>
