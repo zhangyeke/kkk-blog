@@ -13,6 +13,8 @@ export interface SystemSliceState {
     themes: Themes
     /*鼠标轨迹动画*/
     trackMouse: boolean
+    /** 博客全屏樱花飘落（fixed 叠层），关则不占 DOM / 不占动画 */
+    fullScreenSakura: boolean
     /*首页轮播图*/
     homeBanners: string[]
 }
@@ -20,6 +22,7 @@ export interface SystemSliceState {
 export interface SystemSliceAction {
     updateThemes: (value: Themes | string, key?: keyof Themes) => void
     updateTrackMouseStatus: (value: boolean) => void
+    updateFullScreenSakura: (value: boolean) => void
     updateHomeBanners: (values: string[]) => void
     reset: () => void
 }
@@ -31,10 +34,16 @@ export const useSystemSlice: StoreCreator<SystemSlice> = (set, get, store) => ({
         primary: "#e6c99f",
     },
     trackMouse: true,
+    fullScreenSakura: true,
     homeBanners: [`${env.NEXT_PUBLIC_RANDOM_IMAGE_URL_1}/web?type=file`, env.NEXT_PUBLIC_RANDOM_IMAGE_URL_2],
     updateTrackMouseStatus: (value: boolean) => {
         set(state => {
             state.trackMouse = value
+        })
+    },
+    updateFullScreenSakura: (value: boolean) => {
+        set((state) => {
+            state.fullScreenSakura = value
         })
     },
     updateHomeBanners: (newBanners) => {

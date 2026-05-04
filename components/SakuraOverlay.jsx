@@ -2,7 +2,7 @@
  * @Author: kkk 997610780@qq.com
  * @Date: 2026-04-29 17:01:05
  * @LastEditors: kkk 997610780@qq.com
- * @LastEditTime: 2026-05-04 18:26:14
+ * @LastEditTime: 2026-05-04 18:52:50
  * @FilePath: \blog\components\SakuraOverlay.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -12,6 +12,7 @@ import { useEffect } from "react"
 import { merge } from "lodash"
 import Sakura from "@/lib/sakura"
 import "@/styles/sakura.css"
+import { useAppStore } from "@/hooks"
 
 /**
  * @typedef {object} SakuraOverlayProps
@@ -30,7 +31,12 @@ import "@/styles/sakura.css"
  * @param {SakuraOverlayProps} props
  */
 export default function SakuraOverlay({ className = "", ...props }) {
+  const fullScreenSakura = useAppStore((s) => s.fullScreenSakura)
+
   useEffect(() => {
+    if (!fullScreenSakura) {
+      return
+    }
     const opts = merge({}, props)
     let instance = null
     let cancelled = false
@@ -52,7 +58,16 @@ export default function SakuraOverlay({ className = "", ...props }) {
       instance?.stop(true)
       instance = null
     }
-  }, [props])
+  }, [fullScreenSakura, props])
 
-  return <div className={`sakura-overlay pointer-events-none fixed inset-0 z-60 overflow-x-hidden ${className}`.trim()} aria-hidden />
+  if (!fullScreenSakura) {
+    return null
+  }
+
+  return (
+    <div
+      className={`sakura-overlay pointer-events-none fixed inset-0 z-60 overflow-x-hidden ${className}`.trim()}
+      aria-hidden
+    />
+  )
 }

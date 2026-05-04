@@ -77,8 +77,8 @@ export default async function HeaderMenu({ categoryList, className, style }: Hea
                         className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>记录</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         {
-                            categoryList && categoryList.map((item, index) => (
-                                <NavigationMenuLink key={index} asChild>
+                            categoryList && categoryList.map((item) => (
+                                <NavigationMenuLink key={item.id} asChild>
                                     <Link className={'text-nowrap'}
                                         href={`/blog/article/list?cid=${item.id}`}>{item.name}</Link>
                                 </NavigationMenuLink>
