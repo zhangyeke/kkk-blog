@@ -143,6 +143,7 @@
 */
 /*markdown编辑器样式*/
 .mdxeditor.custom-editor {
+    @apply relative;
     --basePageBg: var(--background);
     --accentSolidHover: var(--color-primary);
     line-height: 2;
