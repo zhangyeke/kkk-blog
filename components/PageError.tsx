@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import {useRouter} from "next/navigation";
 
 // Combined component for 500 page
-export default function pageError() {
+export default function pageError({message}: {message: string}) {
   return (
     <div className="w-full h-screen bg-black overflow-x-hidden flex justify-center items-center relative">
-      <MessageDisplay />
+      <MessageDisplay message={message} />
       <CharactersAnimation />
       <CircleAnimation />
     </div>
@@ -13,7 +13,7 @@ export default function pageError() {
 }
 
 // 1. Message Display Component
-function MessageDisplay() {
+function MessageDisplay({message}: {message: string}) {
   // const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const navigate = useRouter();
@@ -40,7 +40,8 @@ function MessageDisplay() {
           500
         </div>
         <div className="  text-center  m-[1%] text-nowrap">
-          您要查找的页面可能暂时不可用。
+          {/* 您要查找的页面可能暂时不可用。 */}
+          {message}
         </div>
         <div className="flex gap-6 mt-8">
           <button
