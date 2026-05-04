@@ -1,18 +1,18 @@
 "use client"
-import React, {ReactNode, Ref, useEffect, useImperativeHandle, useMemo, useRef, useState} from "react"
-import {useAsyncFn, useIntersection} from "react-use";
-import {addUnit, cn} from "@/lib/utils";
-import {AlertCircle,} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {Spinner} from "../Loader/Spinner";
-import {Empty} from "../Empty";
-
+import React, { ReactNode, Ref, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
+import { useAsyncFn, useIntersection } from "react-use";
+import { addUnit, cn } from "@/lib/utils";
+import { AlertCircle, } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "../Loader/Spinner";
+import { Empty } from "../Empty";
+import { Division } from "../division";
 
 export type InfiniteScrollListInstance<T> = {
     updateItems: React.Dispatch<React.SetStateAction<T[]>>
 }
 
-export interface InfiniteScrollListProps<D, > extends BaseComponentProps {
+export interface InfiniteScrollListProps<D,> extends BaseComponentProps {
     initialData?: D[]
     apiParams?: AnyObject
     loaderMargin?: number | string // 离底部还有x距离进行更多加载
@@ -30,18 +30,18 @@ export interface InfiniteScrollListProps<D, > extends BaseComponentProps {
 /**
  * 封装的无限滚动列表组件
  */
-export const InfiniteScrollList = <T, >({
-                                            ref,
-                                            fetchData,
-                                            renderItem,
-                                            apiParams,
-                                            className,
-                                            style,
-                                            loaderMargin = "200px",
-                                            initialPageSize = 10,
-                                            enabledScrollLoad = true,
-                                            initialData = []
-                                        }: InfiniteScrollListProps<T>) => {
+export const InfiniteScrollList = <T,>({
+    ref,
+    fetchData,
+    renderItem,
+    apiParams,
+    className,
+    style,
+    loaderMargin = "200px",
+    initialPageSize = 10,
+    enabledScrollLoad = true,
+    initialData = []
+}: InfiniteScrollListProps<T>) => {
     /*是否完成了一次加载*/
     const isCompleteFirstLoad = useRef(false)
     const [items, setItems] = useState<T[]>(initialData);
@@ -78,7 +78,7 @@ export const InfiniteScrollList = <T, >({
                 ...params
             });
             isCompleteFirstLoad.current = true
-            const {list: newItems, totalPages} = response.data;
+            const { list: newItems, totalPages } = response.data;
 
             if (currentPage === 1) {
                 setItems(newItems);
@@ -90,7 +90,7 @@ export const InfiniteScrollList = <T, >({
             setHasMore(nextHasMore);
 
             if (nextHasMore) {
-                setPaging((prev) => ({...prev, page: currentPage + 1}));
+                setPaging((prev) => ({ ...prev, page: currentPage + 1 }));
             }
 
             return response;
@@ -114,7 +114,7 @@ export const InfiniteScrollList = <T, >({
     useEffect(() => {
         // 只有在非初始化（或者参数真的变了）时才重置
         setHasMore(true);
-        setPaging({page: 1, pageSize: initialPageSize});
+        setPaging({ page: 1, pageSize: initialPageSize });
 
         // 触发第一页
         loadMore(1, initialPageSize, memoParams);
@@ -156,7 +156,7 @@ export const InfiniteScrollList = <T, >({
             </div>
 
             {
-                (!state.loading && items.length <= 0 && isCompleteFirstLoad.current) && <Empty/>
+                (!state.loading && items.length <= 0 && isCompleteFirstLoad.current) && <Empty />
             }
 
             {enabledScrollLoad && (
@@ -164,12 +164,12 @@ export const InfiniteScrollList = <T, >({
                     ref={intersectionRef}
                     className="py-10 flex-center flex-col min-h-30"
                 >
-                    {state.loading && <Spinner text={'加载中'}/>}
+                    {state.loading && <Spinner text={'加载中'} />}
 
                     {state.error && (
                         <div className="flex flex-col items-center text-red-500 gap-2">
                             <div className="flex items-center bg-red-50 px-4 py-2 rounded-lg border border-red-100">
-                                <AlertCircle className="w-4 h-4 mr-2"/>
+                                <AlertCircle className="w-4 h-4 mr-2" />
                                 <span className="text-sm">加载失败</span>
                             </div>
                             <Button
@@ -182,11 +182,9 @@ export const InfiniteScrollList = <T, >({
                     )}
 
                     {!hasMore && items.length > 0 && (
-                        <div className={'flex items-center w-full'}>
-                            <i className={'flex-1 bg-border h-[1px]'}/>
+                        <Division >
                             <span className={'mx-2'}>🧩 已经没有更多碎片啦</span>
-                            <i className={'flex-1 bg-border h-[1px]'}/>
-                        </div>
+                        </Division>
                     )}
                 </div>
             )}

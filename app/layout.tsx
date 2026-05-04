@@ -2,7 +2,7 @@
  * @Author: kkk 997610780@qq.com
  * @Date: 2025-09-17 21:38:09
  * @LastEditors: kkk 997610780@qq.com
- * @LastEditTime: 2026-05-03 19:21:06
+ * @LastEditTime: 2026-05-03 20:53:14
  * @FilePath: \blog\app\layout.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -18,7 +18,6 @@ import { auth } from "@/lib/auth";
 
 export default async function RootLayout({ children }: ContainerProps) {
     const session = await auth()
-    console.log(`session`, session);
     return (
         <html suppressHydrationWarning lang="zh-cn" className={`${globalFont.className} ${h1Font.variable} `}>
             <body className={'overflow-y-auto overflow-x-hidden'}>

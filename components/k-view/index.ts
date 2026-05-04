@@ -21,7 +21,13 @@ export { Form, type FormProps, type FormInstance } from "./Form"
 export { Empty, type EmptyProps } from "./Empty"
 export { Icon, type IconProps } from "./Icon"
 
-export { InfiniteScrollList, type InfiniteScrollListProps, type InfiniteScrollListInstance } from "./InfiniteScrollList"
+export {
+  InfiniteScrollList,
+  type InfiniteScrollListProps,
+  type InfiniteScrollListInstance,
+} from "./InfiniteScrollList"
+
+export { Division } from "./division"
 
 export { DatePicker, type DatePickerProps } from "./DatePicker"
 

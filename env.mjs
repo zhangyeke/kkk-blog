@@ -2,7 +2,7 @@
  * @Author: kkk 997610780@qq.com
  * @Date: 2025-09-17 21:38:09
  * @LastEditors: kkk 997610780@qq.com
- * @LastEditTime: 2026-05-03 17:59:48
+ * @LastEditTime: 2026-05-04 14:16:53
  * @FilePath: \blog\env.mjs
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -19,6 +19,8 @@ export const env = createEnv({
         MATERIAL_API_URL: z.string().url(),
         IMGBB_API_TOKEN: z.string(),
         IMGBB_API_URL: z.string().url(),
+        AUTH_GITHUB_ID: z.string(),
+        AUTH_GITHUB_SECRET: z.string(),
         // 默认海外线路，便于 Vercel 等境外节点访问；本地可设 AL_API_URL=https://v1.hitokoto.cn
         AL_API_URL: z.preprocess(
             (v) =>
@@ -55,6 +57,8 @@ export const env = createEnv({
         MAP_BASE_URL: process.env.MAP_BASE_URL,
         IMGBB_API_TOKEN: process.env.IMGBB_API_TOKEN,
         IMGBB_API_URL: process.env.IMGBB_API_URL,
+        AUTH_GITHUB_ID: process.env.AUTH_GITHUB_ID,
+        AUTH_GITHUB_SECRET: process.env.AUTH_GITHUB_SECRET,
         // 客户端变量
         NEXT_PUBLIC_ENV: process.env.NODE_ENV, // 通常客户端环境与服务器一致
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
