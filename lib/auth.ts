@@ -2,7 +2,7 @@ import NextAuth, { type NextAuthConfig } from "next-auth"
 import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import { env } from "@/env.mjs"
-import { PrismaAdapter } from "@auth/prisma-adapter"
+import { prismaAuthAdapter } from "./prisma-auth-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compareSync } from "bcrypt-ts-edge"
 
@@ -21,7 +21,7 @@ const config = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 缓存时效： 30 days
   },
-  adapter: PrismaAdapter(prisma),
+  adapter: prismaAuthAdapter(prisma),
   providers: [
     Google({
       clientId: env.AUTH_GOOGLE_ID,
@@ -66,8 +66,13 @@ const config = {
           ...token,
           ...user,
         }
-        // token.roles = user.roles
-        // token.avatar = user.avatar
+        const profileImage = "image" in user && typeof user.image === "string" ? user.image : undefined
+        const profileAvatar = "avatar" in user && typeof user.avatar === "string" ? user.avatar : undefined
+        if (profileImage != null && profileImage.length > 0) {
+          token.avatar = profileImage
+        } else if (profileAvatar != null && profileAvatar.length > 0) {
+          token.avatar = profileAvatar
+        }
 
         /*截取邮箱前缀作为默认名称 */
         if (user.name === "NO_NAME" && user.email) {
@@ -93,7 +98,7 @@ const config = {
         id: token.sub,
         roles: token.roles,
         name: token.name,
-        avatar: token.avatar,
+        avatar: (token.avatar as string | undefined) ?? (token.image as string | undefined),
       } as AnyObject
 
       session.user = {
