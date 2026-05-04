@@ -12,7 +12,7 @@ import {
 } from "@/lib/actionMessageBack"
 import { LoginParams, RegisterParams } from "@/types/ahth"
 import { createUser, getUserByEmail } from "@/service/user"
-import { Session } from "next-auth"
+import type { AppSessionUser } from "@/types/next-auth"
 
 export async function safeAction<T>(actionFn: () => Promise<T>, failMessage = "操作失败请稍后再试") {
   try {
@@ -27,7 +27,8 @@ export async function safeAction<T>(actionFn: () => Promise<T>, failMessage = "�
   }
 }
 
-export async function updateAuth(data: Session["user"]) {
+/** 个人资料等场景只改部分字段，与 unstable_update 行为一致 */
+export async function updateAuth(data: Partial<AppSessionUser>) {
   return safeAction(async () => {
     await unstable_update({
       user: data,
