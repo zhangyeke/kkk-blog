@@ -1,3 +1,11 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2025-09-17 21:38:09
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-05-05 13:35:09
+ * @FilePath: \blog\app\(auth)\layout.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 "use client"
 import {useState} from "react"
 import Elf from "@/components/Elf"
@@ -7,8 +15,8 @@ import Aurora from "@/components/bits/Aurora";
 
 
 function BrandLogo({className, style}: BaseComponentProps) {
-    return <img style={style} src={'/images/logo.png'} alt={'logo'}
-                className={cn('size-12 rounded-full', className)}/>
+    return <img style={style} src={'/images/global_logo.png'} alt={'logo'}
+                className={cn('size-12 rounded-full bg-white', className)}/>
 }
 
 export default function Layout({children}: Slots<'children'>) {
@@ -39,7 +47,7 @@ export default function Layout({children}: Slots<'children'>) {
                     />
                     <div className="relative z-20 flex items-center gap-x-2">
                         <BrandLogo/>
-                        <span>kkk的博客</span>
+                        <span>kkk的个人网站</span>
                     </div>
 
                     <Elf/>

@@ -2,7 +2,7 @@
  * @Author: kkk 997610780@qq.com
  * @Date: 2025-09-17 21:38:09
  * @LastEditors: kkk 997610780@qq.com
- * @LastEditTime: 2026-05-03 20:53:14
+ * @LastEditTime: 2026-05-05 13:32:10
  * @FilePath: \blog\app\layout.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -14,6 +14,15 @@ import { Toaster } from "@/components/ui/sonner"
 import WebVitals from "@/components/WebVitals/WebVitals";
 import { AppStoreProvider, ThemeProvider } from "@/providers";
 import { auth } from "@/lib/auth";
+
+
+export const metadata = {
+    icons: {
+        icon: '/images/global_logo.png',
+        apple: '/images/global_logo.png',
+    },
+}
+
 
 
 export default async function RootLayout({ children }: ContainerProps) {

@@ -1,3 +1,11 @@
+/*
+ * @Author: kkk 997610780@qq.com
+ * @Date: 2025-09-17 21:38:09
+ * @LastEditors: kkk 997610780@qq.com
+ * @LastEditTime: 2026-05-05 19:49:47
+ * @FilePath: \blog\proxy.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 // middleware.ts
 import type {NextRequest} from 'next/server';
 import {NextResponse} from "next/server";
@@ -14,7 +22,7 @@ const corsOptions = {
 /*需要登录才能访问的路由
 拦截文章详情:  /^\/blog\/article\/\d+(\/\d+)*$/
 */
-const protectedRoutes = ['/blog/article/write', /^\/blog\/me($|\/.*)/]
+const protectedRoutes = ['/blog/article/write',/^\/admin($|\/.*)/, /^\/blog\/me($|\/.*)/]
 
 export async function proxy(request: NextRequest) {
     // const requestHeaders = new Headers(request.headers)
