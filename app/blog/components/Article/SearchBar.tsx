@@ -94,11 +94,11 @@ export default function SearchBar({
           ))}
         </SelectContent>
       </Select>
-      <div className={`relative flex flex-1 flex-shrink-1 items-center pr-7 pl-1`}>
+      <div className={`relative flex min-w-37 flex-1 flex-shrink-1 items-center pr-7 pl-1`}>
         <input
           ref={ref}
           value={params.keyword}
-          className={"h-full flex-1 outline-none"}
+          className={"h-full max-w-full flex-1 outline-none"}
           placeholder={placeholder || "请输入关键词搜索"}
           onChange={(e) => paramsChange("keyword", e.target.value)}
         />
