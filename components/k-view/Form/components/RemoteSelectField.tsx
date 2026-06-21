@@ -56,7 +56,7 @@ export function RemoteSelect(props: CustomControlProps) {
                 getDisplayValue={(item) => (
                     <DisplayLabel item={item} keyName={labelKeyName}/>
                 )}
-                width={'375px'}
+                width={'100%'}
                 {...props}
                 value={String(value)}
                 label={String(label || 'name')}

@@ -50,3 +50,11 @@ type EventValue<T> = {
         value: T
     }
 }
+
+/*导航菜单*/
+type NavigationMenuType = {
+    name:string;
+    href?:string;
+    [key:string]:any;
+    children?:NavigationMenuType[]
+}

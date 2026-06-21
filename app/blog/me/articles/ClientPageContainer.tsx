@@ -52,7 +52,7 @@ export default function ClientPageContainer({ categoryList }: ClientPageContaine
             />
 
             <InfiniteScrollList
-                className={'columns-3 w-full'}
+                className={'lg:columns-3 md:columns-2 w-full'}
                 apiParams={apiParams}
                 fetchData={getMePosts}
                 renderItem={(item: PostWithUser, i) => (

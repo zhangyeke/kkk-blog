@@ -17,10 +17,11 @@ export const metadata = {
 }
 
 export default function IndexPage() {
+
   return (
     <div className="h-screen bg-primary/20 dark:bg-transparent">
       <MountainVistaParallax />
-      <div className="lg:w-[600px] -mt-24 mx-auto relative z-10 flex h-full flex-col items-center justify-center gap-4 text-center">
+      <div className="w-4/5 lg:w-150 -mt-24 mx-auto relative z-10 flex h-full flex-col items-center justify-center gap-4 text-center">
         <FlipClock className="text-6xl font-bold text-white" />
         <TodayCalendarBar className="text-center text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]" />
         <GlassSearchBar className="mt-2 " />

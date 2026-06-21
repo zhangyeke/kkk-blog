@@ -35,7 +35,7 @@ export default async function Web() {
             <HomeHedaer />
 
             <div className={'container flex py-4'}>
-                <aside className={'w-1/4'}>
+                <aside className={'w-1/4 lg:block hidden'}>
                     <ScrollElement {...scrollElementProps}>
                         <Article.SearchBar className={'bg-card mb-4'} />
                     </ScrollElement>
@@ -61,7 +61,7 @@ export default async function Web() {
                         </ScrollElement>
                     </Suspense>
                 </aside>
-                <section className={'ml-10 flex-1'}>
+                <section className={'lg:ml-10 flex-1'}>
                     <Suspense className={'w-full min-h-[600px]'}>
                         <HomeArticleList />
                     </Suspense>

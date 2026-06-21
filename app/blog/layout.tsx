@@ -31,7 +31,7 @@ export default async function BlogLayout({ children, drawer, footer }: Slots<'ch
         <>
             <SakuraOverlay delay={200} />
 
-            <section className={' min-h-full flex flex-col'}>
+            <section className={'flex flex-col min-h-screen'}>
 
                 <SplashCursor />
                 <Header />

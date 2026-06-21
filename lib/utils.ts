@@ -206,3 +206,9 @@ export function responseAsyncHandle<T>(promiseResponse: Promise<BaseResource<T>>
         })
     })
 }
+/**
+ * 辅助函数：将大驼峰（PascalCase, 如 ArrowRight）转换为短横线格式（kebab-case, 如 arrow-right）
+ */
+export const toKebabCase = (str: string): string => {
+    return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+}

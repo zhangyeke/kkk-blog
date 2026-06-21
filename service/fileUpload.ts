@@ -26,4 +26,57 @@ export async function uploadImage(params: FormData) {
 
 }
 
+/*
+interface UploadResult {
+    Jobs: string;
+    Name: string;
+    os: string;
+}
+export async function uploadToMeituan(
+    formData: FormData
+): Promise<UploadResult> {
+    const file = formData.get("file");
 
+    if (!(file instanceof File)) {
+        throw new Error("No file uploaded");
+    }
+
+
+    // 转发上传
+    const uploadForm = new FormData();
+    uploadForm.append("file", file);
+
+    const response = await fetch(
+        "https://pic-up.meituan.com/extrastorage/new/video?isHttps=true",
+        {
+            method: "POST",
+            headers: {
+                "client-id": "p5gfsvmw6qnwc45n000000000025bbf1",
+                "token": token,
+                "Origin": "https://czz.meituan.com",
+                "Referer": "https://czz.meituan.com/"
+            },
+            body: uploadForm
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+        throw new Error("Upload failed");
+    }
+
+    return {
+        Jobs: data.data.originalLink,
+        Name: data.data.originalFileName,
+        os: "node-oss.zai1.com"
+    };
+}
+
+
+
+*/

@@ -8,9 +8,9 @@
  */
 "use client"
 import React from "react"
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton"
+import {cn} from "@/lib/utils";
+import {Avatar, AvatarImage} from "@/components/ui/avatar";
+import {Skeleton} from "@/components/ui/skeleton"
 
 export type ImageProps = React.ComponentProps<typeof AvatarImage> & {
     fallback?: React.ReactNode
@@ -20,7 +20,7 @@ export type ImageProps = React.ComponentProps<typeof AvatarImage> & {
 
 /** 未传 `loading` 时默认为 `lazy`（原生懒加载）。 */
 export function Image(props: ImageProps) {
-    const { className, fallback, loading = "lazy", objectFit = "cover", ...imageProps } = props;
+    const {className, fallback, loading = "lazy", objectFit = "cover", ...imageProps} = props;
     const [status, setStatus] = React.useState('loading')
 
     const Fallback = React.useCallback(() => {
@@ -31,14 +31,14 @@ export function Image(props: ImageProps) {
             )
         }
 
-        return <AvatarImage className={'size-full'} src={'/images/placeholder/image_error.png'} alt={"加载失败"} />
+        return <AvatarImage className={'size-full'} src={'/images/placeholder/image_error.png'} alt={"加载失败"}/>
     }, [fallback])
 
 
     if (!imageProps.src) {
         return (
             <Avatar className={className}>
-                <Fallback />
+                <Fallback/>
             </Avatar>
         )
     }
@@ -57,10 +57,10 @@ export function Image(props: ImageProps) {
                 onLoadingStatusChange={setStatus}
             />
             {
-                status === 'loading' && <Skeleton className={'size-full'} />
+                status === 'loading' && <Skeleton className={'size-full'}/>
             }
             {
-                status === 'error' && <Fallback />
+                status === 'error' && <Fallback/>
             }
 
         </Avatar>

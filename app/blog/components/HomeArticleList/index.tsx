@@ -21,7 +21,7 @@ export default async function HomeArticleList() {
                         initialData={posts.data.list}
                         className={'flex flex-wrap gap-4'}
                         scrollProps={{
-                            className: 'w-[32%]'
+                            className: 'w-full md:w-[48%] lg:w-[32%]'
                         }}
                     />
                     : <Empty/>
@@ -43,7 +43,7 @@ export default async function HomeArticleList() {
                                         initialData={cate.posts}
                                         className={'flex flex-wrap gap-4'}
                                         scrollProps={{
-                                            className: 'w-[32%]'
+                                            className: 'w-full md:w-[48%] lg:w-[32%]'
                                         }}
                                     />
                                     : <Empty/>

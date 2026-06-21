@@ -1,19 +1,21 @@
+import {UserBrief} from "./UserBrief"
+import {DarkSwitch} from "@/components/k-view"
+import {cn} from "@/lib/utils";
+import NotLoginAvatar from "./NotLoginAvatar";
+import {Session} from "next-auth";
 
-import { UserBrief } from "./UserBrief"
-import { DarkSwitch, Image } from "@/components/k-view"
-import Link from "next/link"
-import { auth } from "@/lib/auth"
+type RightNavigationProps = {
+    session: Session | null
+} & BaseComponentProps
 
-export default async function RightNavigation() {
-    const session = await auth()
+export default async function RightNavigation({className, style, session}: RightNavigationProps) {
+
     return (
-        <div className={'flex items-center gap-x-4'}>
+        <div style={style} className={cn('flex items-center gap-x-4', className)}>
             {
                 session ?
                     <UserBrief session={session}/> :
-                    <Link href={"/login"}>
-                        <Image className={"size-10 rounded-full"} fallback={"登录"}/>
-                    </Link>
+                    <NotLoginAvatar/>
             }
             {/*<NavigationList/>*/}
             <DarkSwitch/>

@@ -6,26 +6,13 @@
  * @FilePath: \blog\app\blog\components\Master\index.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import { GradientTransition, Image,GoButton } from "@/components/k-view"
+import { GoButton, GradientTransition,Image } from "@/components/k-view"
 import { findUniqueUser, userStatisticsInfo } from "@/service/user";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
+import {statistics} from "@/assets/enumerate/menu";
 
 
-const statistics = [
-    {
-        title: "文章",
-        key: 'totalPosts',
-    },
-    {
-        title: "被收藏数",
-        key: 'totalFavorites',
-    },
-    {
-        title: "浏览量",
-        key: 'totalPV',
-    }
-]
 
 // 博主信息展示组件
 export default async function Master() {

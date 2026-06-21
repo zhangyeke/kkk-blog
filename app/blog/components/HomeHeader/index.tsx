@@ -32,10 +32,13 @@ export default function HomeHeader() {
                 className={"absolute bottom-0 w-full z-10"}
             />
             {/*一句随机言言*/}
-            <Saying
+            <div className={'absolute position-center z-100 w-full text-center  py-2 px-4 '}>
+                <Saying
 
-                className={'absolute position-center z-100 w-fit break-keep text-xl py-2 px-4 rounded-full'}
-            />
+                    className={' break-keep text-xl '}
+                />
+            </div>
+
 
         </div>
     )

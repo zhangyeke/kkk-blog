@@ -73,7 +73,7 @@ export function Banner<T>(props: BannerProps<T>) {
 
 
     return (
-        <div className={cn('relative h-[500px]', className)} style={style} key={refreshKey}>
+        <div className={cn('relative h-75 lg:h-125', className)} style={style} key={refreshKey}>
             <div
                 style={currentImageStyle}
                 className="bg-cover bg-center bg-no-repeat size-full "

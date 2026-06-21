@@ -28,8 +28,8 @@ export const metadata = {
 export default async function RootLayout({ children }: ContainerProps) {
     const session = await auth()
     return (
-        <html suppressHydrationWarning lang="zh-cn" className={`${globalFont.className} ${h1Font.variable} `}>
-            <body className={'overflow-y-auto overflow-x-hidden'}>
+        <html suppressHydrationWarning lang="zh-cn" className={`scroll-smooth ${globalFont.className} ${h1Font.variable} `}>
+            <body className={'overflow-y-auto overflow-x-hidden '}>
                 <WebVitals />
                 <AppStoreProvider>
                     <ThemeProvider

@@ -46,7 +46,6 @@
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
 
-
 }
 
 /*
@@ -153,6 +152,10 @@
     @apply sticky left-0 w-full;
     top: var(--header-height);
     border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.mdxeditor.custom-editor .mdxeditor-toolbar div:first-child {
+    flex-wrap: wrap;
 }
 
 .mdxeditor.custom-editor.mdxeditor-popup-container {

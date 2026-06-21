@@ -67,7 +67,7 @@ export default function ClientPageContainer({categoryList, defaultParams}: PageC
                 <Image className={'size-full absolute inset-0'} src={env.NEXT_PUBLIC_RANDOM_IMAGE_URL_2}/>
                 <Article.SearchBar
                     defaultValue={searchParams}
-                    className={'w-1/4  relative bg-card/80 shadow-md'}
+                    className={'lg:w-1/3 w-4/5 relative bg-card/80 shadow-md'}
                     onSearch={handleSearch}
                 />
 

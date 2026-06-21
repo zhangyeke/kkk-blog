@@ -19,7 +19,7 @@ export { GradientTransition, type GradientTransitionProps } from "./GradientTran
 export { MarkedEditor, AsyncMarkedEditor } from "./MarkedEditor"
 export { Form, type FormProps, type FormInstance } from "./Form"
 export { Empty, type EmptyProps } from "./Empty"
-export { Icon, type IconProps } from "./Icon"
+export { Icon, type IconProps,LucideIcon } from "./Icon"
 
 export {
   InfiniteScrollList,

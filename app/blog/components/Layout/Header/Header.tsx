@@ -31,7 +31,7 @@ function Header({ children, className, style }: ContainerProps & BaseComponentPr
     return (
         <header
             style={style}
-            className={cn(`shadow-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] text-base bg-background/50 z-[300] w-full flex justify-between items-center px-15 h-15 ${isFixed ? fixedClassName : ''} ${y >= 200 ? ' dark:shadow-[0_4px_10px_rgba(0,0,0,0.5)]   fancy-nav-mask ' : ''}`, className)}
+            className={cn(`shadow-md shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] text-base bg-background/50 z-[300] w-full flex justify-between items-center md:px-15 md:h-15 ${isFixed ? fixedClassName : ''} ${y >= 200 ? ' dark:shadow-[0_4px_10px_rgba(0,0,0,0.5)]   fancy-nav-mask ' : ''}`, className)}
         >
 
             {children}

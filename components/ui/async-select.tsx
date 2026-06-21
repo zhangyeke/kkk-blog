@@ -169,7 +169,7 @@ export function AsyncSelect<T>({
             </PopoverTrigger>
             <PopoverContent style={{width: width}} className={cn("p-0", className)}>
                 <Command>
-                    <div className="relative border-b w-full">
+                    <div className="relative border-b w-full md:min-w-100">
                         <Search
                             className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
                         <Input

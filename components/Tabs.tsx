@@ -29,11 +29,11 @@ export default function Tabs<T extends { id: number | string }>({
     }, [onClick])
 
     return (
-        <ul className={cn('flex-center', className)} style={style}>
+        <ul className={cn('max-w-full flex-center overflow-x-auto whitespace-nowrap', className)} style={style}>
             {items.map((item, index) => (
                 <button
                     key={item.id}
-                    className="py-2 relative duration-300 transition-colors hover:text-foreground cursor-pointer"
+                    className="flex-shrink-0 py-2 relative duration-300 transition-colors hover:text-foreground cursor-pointer"
                     onClick={() => handleClickActive(item, index)}
                     onMouseEnter={() => setIsHover(item)}
                     onMouseLeave={() => setIsHover(null)}

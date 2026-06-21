@@ -142,7 +142,7 @@ export function SearchList({
           className={cn("w-full origin-bottom", className)}
           id="search-shortcut-list"
         >
-          <div className="columns-3 w-full rounded-lg bg-black/50 p-2">
+          <div className="columns-2 md:columns-3 w-full rounded-lg bg-black/50 p-2">
             {SEARCH_SHORTCUTS.map((item, index) => (
               <div
                 className={cn(

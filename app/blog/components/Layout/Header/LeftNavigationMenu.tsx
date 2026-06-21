@@ -17,94 +17,54 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger
 } from "@/components/ui/navigation-menu";
-import { PostCategory } from "@/types/postCategory";
 
 export interface HeaderMenuProps extends BaseComponentProps {
-    categoryList?: PostCategory[]
+
+    menuList:NavigationMenuType[]
 }
 
-const homeMenus = [
-    {
-        name: "博客",
-        href: "/blog"
-    },
-    {
-        name: "起始页",
-        href: "/blog/index"
-    }
-]
-
-const onePieces = [
-    {
-        name: "书签",
-        href: "/blog/bookmark"
-    },
-
-]
 
 
-
-export default async function HeaderMenu({ categoryList, className, style }: HeaderMenuProps) {
+export default async function HeaderMenu({  menuList,className, style }: HeaderMenuProps) {
 
     return (
         <NavigationMenu viewport={false} style={style} className={className}>
             <NavigationMenuList>
+                {
+                    menuList.map((item,i)=>{
 
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger
-                        className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>首页</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        {
-                            homeMenus.map((item, index) => (
-                                <NavigationMenuLink key={index} asChild>
-                                    <Link
-                                        className={'text-nowrap'}
-                                        href={item.href}
-                                    >{item.name}</Link>
-                                </NavigationMenuLink>
-                            ))
+                        if(Array.isArray(item.children)){
+                            return (
+                                <NavigationMenuItem key={i}>
+                                    <NavigationMenuTrigger
+                                        className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>首页</NavigationMenuTrigger>
+                                    <NavigationMenuContent>
+                                        {
+                                            item.children.map((menu, index) => (
+                                                <NavigationMenuLink key={index+`${i}`} asChild>
+                                                    <Link
+                                                        className={'text-nowrap'}
+                                                        href={menu.href || ''}
+                                                    >{menu.name}</Link>
+                                                </NavigationMenuLink>
+                                            ))
+                                        }
+
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            )
                         }
 
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                        <Link href={"/blog/map"} className={'hover:text-primary flex-center '}>旅行足迹</Link>
-                    </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger
-                        className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>记录</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        {
-                            categoryList && categoryList.map((item) => (
-                                <NavigationMenuLink key={item.id} asChild>
-                                    <Link className={'text-nowrap'}
-                                        href={`/blog/article/list?cid=${item.id}`}>{item.name}</Link>
+                        return (
+                            <NavigationMenuItem key={i}>
+                                <NavigationMenuLink asChild>
+                                    <Link href={item.href || ''} className={'hover:text-primary flex-center '}>{item.name}</Link>
                                 </NavigationMenuLink>
-                            ))
-                        }
+                            </NavigationMenuItem>
+                        )
+                    })
+                }
 
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger
-                        className={'hover:text-primary data-[state=open]:text-primary data-[state=open]:bg-white'}>藏宝阁</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        {
-                            onePieces.map((item, index) => (
-                                <NavigationMenuLink key={index} asChild>
-                                    <Link
-                                        className={'text-nowrap'}
-                                        href={item.href}
-                                    >{item.name}</Link>
-                                </NavigationMenuLink>
-                            ))
-                        }
-
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
 
             </NavigationMenuList>
         </NavigationMenu>

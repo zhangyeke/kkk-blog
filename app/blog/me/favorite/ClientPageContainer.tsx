@@ -70,7 +70,7 @@ export default function ClientPageContainer({categoryList}: ClientPageContainerP
                 fetchData={getMeFavorites}
                 renderItem={(item, i) => (
                     <ScrollElement
-                        className={'w-[30%]'}
+                        className={'lg:w-[30%] md:w-[48%]'}
                         key={item.post.id}
                         viewport={{
                             once: true,

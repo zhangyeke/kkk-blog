@@ -55,7 +55,8 @@ export async function getMeInfo() {
                 name: true,
                 email: true,
                 gender: true,
-                birthday: true
+                birthday: true,
+                roles:true,
             }
         })
         return backSuccessMessage('获取用户信息成功', user)
