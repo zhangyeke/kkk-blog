@@ -9,7 +9,9 @@
 import {notFound} from "next/navigation";
 import type {Metadata} from "next";
 import {getPostById} from "@/service/post";
-import {AsyncMarkedEditor, CopyText, Image} from "@/components/k-view";
+import { AsyncMarkedEditor } from "@/components/k-view/MarkedEditor/AsyncMarkedEditor";
+import { CopyText } from "@/components/k-view/Text";
+import { Image } from "@/components/k-view/Image";
 import {CategoryTag, Tag} from "@/app/blog/components/Article/Tag";
 import {CalendarRange, Mail} from "lucide-react";
 import {dateFormat} from "@/lib/date";

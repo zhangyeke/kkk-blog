@@ -15,7 +15,9 @@ import {
     Form as ShadForm,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input";
-import { DatePicker, FixSpin, Image } from "@/components/k-view"
+import { DatePicker } from "@/components/k-view/DatePicker";
+import { FixSpin } from "@/components/k-view/Loader";
+import { Image } from "@/components/k-view/Image";
 import { Button } from "@/components/ui/button";
 import { uploadImagePromise } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";

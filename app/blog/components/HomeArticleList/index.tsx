@@ -1,7 +1,7 @@
 import {getPostCategoryWithPosts} from "@/service/postCategory";
 import {getPostsByPage} from "@/service/post";
 import Article from "@/app/blog/components/Article";
-import {Empty} from "@/components/k-view";
+import { Empty } from "@/components/k-view/Empty";
 
 export default async function HomeArticleList() {
     const postCategory = await getPostCategoryWithPosts();

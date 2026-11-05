@@ -7,7 +7,7 @@ import { useHover } from "react-use"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Image } from "@/components/k-view"
+import { Image } from "@/components/k-view/Image";
 import { MenuItem } from "./MenuItem"
 import { Separator } from "@/components/ui/separator"
 import { User } from "@/types/user"

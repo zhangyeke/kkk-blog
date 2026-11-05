@@ -8,19 +8,19 @@ import { registerOTel } from "@vercel/otel";
 export async function register() {
   registerOTel("next-app");
 
-  if (process.env.NEXT_RUNTIME === "edge") {
-    return;
-  }
-  if (process.env.NODE_ENV !== "development") {
-    return;
-  }
-  if (!process.env.HTTP_PROXY && !process.env.HTTPS_PROXY) {
-    return;
-  }
-  try {
-    const { setGlobalDispatcher, EnvHttpProxyAgent } = await import("undici");
-    setGlobalDispatcher(new EnvHttpProxyAgent());
-  } catch {
-    /* 非 Node 或未解析到 undici 时忽略 */
+  // 正向判断运行时，让 Edge 编译排除 undici 等 Node 专用依赖。
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    if (process.env.NODE_ENV !== "development") {
+      return;
+    }
+    if (!process.env.HTTP_PROXY && !process.env.HTTPS_PROXY) {
+      return;
+    }
+    try {
+      const { setGlobalDispatcher, EnvHttpProxyAgent } = await import("undici");
+      setGlobalDispatcher(new EnvHttpProxyAgent());
+    } catch {
+      /* 非 Node 或未解析到 undici 时忽略 */
+    }
   }
 }

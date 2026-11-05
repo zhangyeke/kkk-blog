@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import {Star} from "lucide-react";
-import {LikeButton, LikeButtonProps} from "@/components/k-view";
+import { LikeButton, type LikeButtonProps } from "@/components/k-view/LikeButton";
 import {updatePostFavorite} from "@/service/postFavorite"
 import {responseAsyncHandle} from "@/lib/utils";
 

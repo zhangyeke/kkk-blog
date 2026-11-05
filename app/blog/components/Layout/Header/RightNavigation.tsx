@@ -1,5 +1,5 @@
 import {UserBrief} from "./UserBrief"
-import {DarkSwitch} from "@/components/k-view"
+import { DarkSwitch } from "@/components/k-view/DarkSwitch";
 import {cn} from "@/lib/utils";
 import NotLoginAvatar from "./NotLoginAvatar";
 import {Session} from "next-auth";

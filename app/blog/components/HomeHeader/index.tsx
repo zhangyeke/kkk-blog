@@ -1,6 +1,7 @@
 "use client"
 import React from "react";
-import {Banner, WavyGroup} from "@/components/k-view";
+import { Banner } from "@/components/k-view/Banner";
+import { WavyGroup } from "@/components/k-view/Wavy";
 import Saying from "@/app/blog/components/Saying";
 import {useAppStore} from "@/hooks";
 

@@ -1,6 +1,6 @@
 import React, {startTransition, useActionState, useCallback, useEffect} from "react";
 import {toast} from "sonner";
-import {FormInstance} from "@/components/k-view";
+import type { FormInstance } from "@/components/k-view/Form";
 import {FieldValues} from "react-hook-form";
 
 /*

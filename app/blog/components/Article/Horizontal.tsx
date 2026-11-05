@@ -3,7 +3,7 @@ import React from "react"
 import {PostWithUser} from "@/types/post";
 import {CalendarRange, Star} from "lucide-react";
 import {dateFormat} from "@/lib/date";
-import {AsyncMarkedEditor, Image} from "@/components/k-view";
+import { Image } from "@/components/k-view/Image";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import Link from "next/link";
 
@@ -50,7 +50,7 @@ export default function Horizontal({data, direction, cateClicked = true}: Horizo
                 </div>
 
                 <div className={'line-clamp-3 mb-2'}>
-                    <AsyncMarkedEditor className={'pre-complex'} value={data?.summary} readOnly={true}/>
+                    <p className={'pre-complex whitespace-pre-line'}>{data?.summary}</p>
                 </div>
                 <div className={'mt-auto flex flex-wrap gap-2'}>
                     <CategoryTag

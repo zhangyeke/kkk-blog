@@ -1,4 +1,4 @@
-import {Hamster} from "@/components/k-view"
+import { Hamster } from "@/components/k-view/Loader";
 
 export default function Loading() {
 

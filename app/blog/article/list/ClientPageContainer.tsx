@@ -1,7 +1,8 @@
 "use client"
 import {env} from "env.mjs"
 import {getPostsByPage} from "@/service/post"
-import {Image, InfiniteScrollList} from "@/components/k-view"
+import { Image } from "@/components/k-view/Image";
+import { InfiniteScrollList } from "@/components/k-view/InfiniteScrollList";
 import Article from "@/app/blog/components/Article";
 import ScrollElement from "@/components/scroll-animation";
 import {useCallback, useMemo, useState} from "react";

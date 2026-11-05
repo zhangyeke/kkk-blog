@@ -13,14 +13,14 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import {getTodayPoem} from "@/service/poem";
-import {TextLine} from "@/components/k-view";
+import { TextLine } from "@/components/k-view/Text";
 import {cn} from "@/lib/utils";
 
 
 export default async function TodayPoetry({className, style}: BaseComponentProps) {
     const res = await getTodayPoem()
-    if (!res) return null
-    const poem = res.data
+    const poem = res?.data
+    if (!poem?.origin || !Array.isArray(poem.origin.content)) return null
     return (
         <Card
             style={style}

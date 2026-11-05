@@ -7,7 +7,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Image } from '@/components/k-view';
+import { Image } from "@/components/k-view/Image";
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, RotateCw, Undo2, ZoomIn, ZoomOut } from 'lucide-react';
 import type { MapGalleryLocationMeta } from '@/lib/map-project-data';

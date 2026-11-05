@@ -21,7 +21,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button"
 import { loginSchema } from "@/validators/auth"
 import { useRouter } from "next/navigation";
-import { Division, Form, Image } from "@/components/k-view"
+import { Division } from "@/components/k-view/division";
+import { Form } from "@/components/k-view/Form";
+import { Image } from "@/components/k-view/Image";
 import { useCustomFormSubmit } from "@/hooks/useAutoFormSubmit";
 import { CustomPasswordInput } from "./CustomPasswordInput";
 import { CustomInput } from "./CustomInput";

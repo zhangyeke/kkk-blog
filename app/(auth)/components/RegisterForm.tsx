@@ -4,7 +4,7 @@ import {toast} from "sonner";
 import Link from "next/link";
 import {registerSchema} from "@/validators/auth";
 import {Button} from "@/components/ui/button";
-import {Form} from "@/components/k-view"
+import { Form } from "@/components/k-view/Form";
 import {CustomPasswordInput} from "@/app/(auth)/components/CustomPasswordInput";
 import {CustomInput} from "@/app/(auth)/components/CustomInput";
 import {useCustomFormSubmit} from "@/hooks/useAutoFormSubmit";

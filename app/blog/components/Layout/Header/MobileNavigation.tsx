@@ -1,7 +1,8 @@
 import {motion} from 'framer-motion';
 import Link from "next/link";
 import {cn} from "@/lib/utils";
-import {Drawer, Image, LucideIcon} from "@/components/k-view"
+import { Drawer } from "@/components/k-view/Popup";
+import { Image } from "@/components/k-view/Image";
 import {
     Accordion,
     AccordionContent,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/accordion"
 
 import {Session} from "next-auth";
-import {LogOut, Menu} from 'lucide-react';
+import {ArrowRight, ChevronRight, LogOut, Menu} from 'lucide-react';
 import {DrawerClose} from "@/components/ui/drawer";
 import {LogOutButton} from "./LogOutButton";
 import NotLoginAvatar from "./NotLoginAvatar";
@@ -98,7 +99,7 @@ const UserInfo = ({session}: Pick<MobileNavigationProps, 'session'>) => {
             </Link>
             <Link className={'text-xs text-gray-600 flex items-center gap-x-1'} href={'/blog/article/write'}>
                 写文章
-                <LucideIcon className={'size-4'} name={'arrow-right'}/>
+                <ArrowRight className={'size-4'}/>
             </Link>
         </DrawerClose>
     )
@@ -159,7 +160,7 @@ const MobileNavigation = ({style, className, menuList, session}: MobileNavigatio
                                         href={item.href || ''}
                                     >
                                         <span>{item.name}</span>
-                                        <LucideIcon className={'size-4 text-muted-foreground'} name={'ChevronRight'}/>
+                                        <ChevronRight className={'size-4 text-muted-foreground'}/>
                                     </Link>
                                 </DrawerClose>
 

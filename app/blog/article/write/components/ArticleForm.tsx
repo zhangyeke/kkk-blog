@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { createPost, updatePost } from "@/service/post"
 import { addPostSchema } from "@/validators/post";
 
-import { FooterButtons, Form } from "@/components/k-view";
+import { FooterButtons } from "@/components/k-view/Popup";
+import { Form } from "@/components/k-view/Form";
 import { useCustomFormSubmit } from "@/hooks/useAutoFormSubmit";
 import type { PostWithFavorites } from "@/types/post";
 

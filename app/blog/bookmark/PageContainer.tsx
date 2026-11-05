@@ -2,7 +2,9 @@
 import { cloneDeep } from "lodash"
 import { toast } from "sonner"
 import Link from "next/link"
-import { Empty, Image, TextLine } from "@/components/k-view"
+import { Empty } from "@/components/k-view/Empty";
+import { Image } from "@/components/k-view/Image";
+import { TextLine } from "@/components/k-view/Text";
 
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { BookmarkCategoryWithBookmarks } from "@/types/bookmark"

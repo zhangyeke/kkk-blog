@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPostsByPage } from "@/service/post";
 import { dateFormat } from "@/lib/date";
-import { Empty, Image } from "@/components/k-view"
+import { Empty } from "@/components/k-view/Empty";
+import { Image } from "@/components/k-view/Image";
 
 export default async function HotArticles({ className, style }: BaseComponentProps) {
     const posts = await getPostsByPage({

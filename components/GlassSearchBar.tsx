@@ -5,7 +5,7 @@ import { Search } from "lucide-react"
 import React from "react"
 import { useClickAway } from "react-use"
 
-import { Image } from "@/components/k-view"
+import { Image } from "@/components/k-view/Image";
 import { cn } from "@/lib/utils"
 
 

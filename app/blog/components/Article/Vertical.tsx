@@ -5,7 +5,8 @@ import { ReactNode } from "react";
 import { PostWithFavorites, PostWithUser } from "@/types/post";
 import { dateFormat } from "@/lib/date";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Image, LikeIcon } from "@/components/k-view"
+import { Image } from "@/components/k-view/Image";
+import { LikeIcon } from "@/components/k-view/LikeButton/LikeIcon";
 import { CategoryTag, Tag } from "./Tag"
 
 type VerticalProps = {

@@ -1,17 +1,12 @@
 import React from "react"
 import { LucideProps } from "lucide-react"
-import { cn, toKebabCase } from "@/lib/utils"
+import { toKebabCase } from "@/lib/utils"
 import { dynamicIconImports } from "lucide-react/dynamic"
 import dynamic from "next/dynamic"
 
-export type IconProps = {
-  name: string
-} & BaseComponentProps &
-  React.HTMLAttributes<HTMLDivElement>
 
-export function Icon({ name, className, style, ...props }: IconProps) {
-  return <i style={style} className={cn(`iconfont icon-${name} text-base`, className)} {...props}></i>
-}
+
+
 
 interface LucideIconProps extends Omit<LucideProps, "ref"> {
   name: string
@@ -33,3 +28,5 @@ export function LucideIcon({ name, ...props }: LucideIconProps) {
 
   return <Icon {...props} />
 }
+
+export { Icon, type IconProps } from "./Icon";

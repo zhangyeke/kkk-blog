@@ -8,7 +8,7 @@
  */
 "use client"
 import React, {useCallback} from "react";
-import {Smoky} from "@/components/k-view"
+import { Smoky } from "@/components/k-view/Text";
 import {getSaying} from "@/service/alApi";
 
 // 随机名言组件

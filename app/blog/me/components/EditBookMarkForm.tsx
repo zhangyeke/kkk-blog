@@ -10,7 +10,8 @@
 import { toast } from "sonner";
 import { createBookmark } from "@/service/bookmark"
 import { addBookmarkSchema, } from "@/validators/bookmark";
-import { FooterButtons, Form } from "@/components/k-view";
+import { FooterButtons } from "@/components/k-view/Popup";
+import { Form } from "@/components/k-view/Form";
 import { useCustomFormSubmit } from "@/hooks/useAutoFormSubmit";
 import { Button } from "@/components/ui/button";
 

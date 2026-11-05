@@ -1,5 +1,5 @@
 "use client"
-import {Icon} from "@/components/k-view";
+import { Icon } from "@/components/k-view/Icon/Icon";
 import {ChevronsRight} from "lucide-react";
 import Link from "next/link";
 

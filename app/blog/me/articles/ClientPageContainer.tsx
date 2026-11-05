@@ -9,7 +9,7 @@
 "use client"
 import React, { useCallback, useMemo, useState } from "react"
 import Tabs from "@/components/Tabs";
-import { InfiniteScrollList } from "@/components/k-view";
+import { InfiniteScrollList } from "@/components/k-view/InfiniteScrollList";
 import ScrollElement from "@/components/scroll-animation";
 import Article from "@/app/blog/components/Article";
 import { PostCategory } from "@/types/postCategory";

@@ -5,7 +5,9 @@ import { produce } from 'immer';
 import { useCallback, useState } from "react";
 import { MonitorSmartphone, Plus, PlusIcon, Trash2 } from "lucide-react";
 import { useAppStore } from "@/hooks";
-import { ColorBox, ColorPicker, Drawer, Image } from "@/components/k-view";
+import { ColorBox, ColorPicker } from "@/components/k-view/ColorPicker";
+import { Drawer } from "@/components/k-view/Popup";
+import { Image } from "@/components/k-view/Image";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";

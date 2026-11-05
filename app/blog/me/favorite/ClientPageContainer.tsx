@@ -10,7 +10,7 @@
 import React, {useCallback, useMemo, useRef, useState} from "react"
 import {PostCategory} from "@/types/postCategory";
 import Tabs from "@/components/Tabs";
-import {InfiniteScrollList, InfiniteScrollListInstance} from "@/components/k-view";
+import { InfiniteScrollList, type InfiniteScrollListInstance } from "@/components/k-view/InfiniteScrollList";
 import ScrollElement from "@/components/scroll-animation";
 import Article from "@/app/blog/components/Article";
 import {getMeFavorites, updatePostFavorite} from "@/service/postFavorite";

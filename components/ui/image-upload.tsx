@@ -5,7 +5,8 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {useImageUpload} from "@/hooks/use-image-upload"
 import {cn} from "@/lib/utils"
-import {FixSpin, Image} from "@/components/k-view";
+import { FixSpin } from "@/components/k-view/Loader";
+import { Image } from "@/components/k-view/Image";
 
 interface ImageUploadProps extends BaseComponentProps {
     onUpload?: (url: string) => void;

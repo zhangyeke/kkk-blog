@@ -1,5 +1,5 @@
 "use client"
-import {Icon} from "@/components/k-view";
+import { Icon } from "@/components/k-view/Icon/Icon";
 import { useWindowScroll} from "react-use";
 import {useClientMounted} from "@/hooks"
 
