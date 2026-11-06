@@ -11,18 +11,10 @@ import type {NextRequest} from 'next/server';
 import {NextResponse} from "next/server";
 import {auth} from "@/lib/auth";
 
-// 允许通过的白名单
-const allowedOrigins = ['https://acme.com', 'http://localhost:3000']
-// 服务器可允许的请求方式 和 请求头头
-const corsOptions = {
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-}
-
 /*需要登录才能访问的路由
 拦截文章详情:  /^\/blog\/article\/\d+(\/\d+)*$/
 */
-const protectedRoutes = ['/blog/article/write',/^\/admin($|\/.*)/, /^\/blog\/me($|\/.*)/]
+const protectedRoutes = [/^\/blog\/article\/write($|\/.*)/, /^\/admin($|\/.*)/, /^\/blog\/me($|\/.*)/]
 
 export async function proxy(request: NextRequest) {
     // const requestHeaders = new Headers(request.headers)
@@ -31,16 +23,18 @@ export async function proxy(request: NextRequest) {
     const {pathname} = request.nextUrl;
     // response.headers.set('k-pathname', pathname)
     /*拦截需要登录才能访问的路由*/
-    const session = await auth()
     const isProtected = protectedRoutes.some(route => {
         if (route instanceof RegExp) {
             return route.test(pathname)
         }
         return route === pathname
     })
-    if (isProtected && !session) {
+    if (!isProtected) return NextResponse.next()
+
+    const session = await auth()
+    if (!session) {
         const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("callbackUrl", pathname);
+        loginUrl.searchParams.set("callbackUrl", pathname + request.nextUrl.search);
         return NextResponse.redirect(loginUrl)
     }
 

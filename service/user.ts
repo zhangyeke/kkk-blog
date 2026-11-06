@@ -1,4 +1,5 @@
-'use server';
+// Internal database helpers. Public mutations are exposed through service/auth.
+import "server-only"
 import prisma from "@/lib/prisma"
 import {Prisma} from '@prisma/client'
 import {checkAuth} from "@/service/auth";
@@ -80,7 +81,7 @@ export async function getUserByEmail(email: string) {
 }
 
 // --- UPDATE (更新) ---
-export async function updateUser(params: Prisma.UserUpdateInput) {
+export async function updateUser(params: Prisma.UserUpdateInput): Promise<BaseResource<Omit<User, "password"> | null>> {
     try {
         const data = updateUserSchema.parse(params)
         // // 1. 获取当前会话，验证权限
@@ -95,8 +96,8 @@ export async function updateUser(params: Prisma.UserUpdateInput) {
             data
         })
         return backSuccessMessage('更新用户信息成功', user)
-    } catch (err) {
-        return backFailMessage('更新用户信息失败', err)
+    } catch {
+        return backFailMessage('更新用户信息失败', null)
     }
 
 }

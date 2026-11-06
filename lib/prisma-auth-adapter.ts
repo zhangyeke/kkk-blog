@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import type { Prisma, PrismaClient, User as DbUser } from "@prisma/client"
+import type { User as DbUser, Prisma, PrismaClient } from "@prisma/client"
 import type { Adapter, AdapterUser } from "next-auth/adapters"
 
 import prisma from "./prisma"

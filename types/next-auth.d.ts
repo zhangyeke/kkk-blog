@@ -21,5 +21,7 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   /** jwt callback 里从 user / session 合并进 token 的字段，与 Prisma 对齐 */
-  interface JWT extends Partial<SessionUserFromPrisma> {}
+  interface JWT extends Partial<SessionUserFromPrisma> {
+    avatar?: SessionUserFromPrisma["avatar"]
+  }
 }

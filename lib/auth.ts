@@ -64,7 +64,10 @@ const config = {
       if (user) {
         token = {
           ...token,
-          ...user,
+          sub: user.id,
+          name: user.name,
+          email: user.email,
+          roles: "roles" in user ? user.roles : "user",
         }
         const profileImage = "image" in user && typeof user.image === "string" ? user.image : undefined
         const profileAvatar = "avatar" in user && typeof user.avatar === "string" ? user.avatar : undefined
@@ -85,10 +88,14 @@ const config = {
       }
 
       if (trigger === "update" && session) {
-        await updateUser(session.user)
-        token = {
-          ...token,
-          ...session.user,
+        const result = await updateUser(session.user)
+        if (result.code === 200 && result.data) {
+          token = {
+            ...token,
+            name: result.data.name,
+            avatar: result.data.avatar,
+            email: result.data.email,
+          }
         }
       }
       return token
@@ -114,4 +121,11 @@ const config = {
   },
 } satisfies NextAuthConfig
 
-export const { handlers, auth, signOut, signIn, unstable_update } = NextAuth(config)
+const authInstance = NextAuth(config)
+export const { handlers, signOut, signIn, unstable_update } = authInstance
+
+/** Auth.js may return an error JSON object when configuration is invalid. */
+export async function auth() {
+  const session = await authInstance.auth()
+  return session?.user?.id ? session : null
+}
