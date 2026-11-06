@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DesktopShortcutButton } from "@/components/DesktopShortcutButton";
 import { Separator } from "@/components/ui/separator"
+import FallingSettings from "@/components/FallingSettings"
 
 function Cell({ className, style, children }: BaseComponentProps & ContainerProps) {
     return (
@@ -29,7 +30,7 @@ function Cell({ className, style, children }: BaseComponentProps & ContainerProp
 export default function SettingPage() {
     const router = useRouter()
     const [open, setOpen] = useState(true)
-    const { themes, updateThemes, trackMouse, updateTrackMouseStatus, fullScreenSakura, updateFullScreenSakura, homeBanners, updateHomeBanners } = useAppStore(
+    const { themes, updateThemes, trackMouse, updateTrackMouseStatus, homeBanners, updateHomeBanners } = useAppStore(
         (state) => state,
     )
 
@@ -91,7 +92,7 @@ export default function SettingPage() {
                                 <ColorBox color={themes.primary} />
                             </Cell>
                         </PopoverTrigger>
-                        <PopoverContent className={'z-[10001] border-0  w-fit p-0 '}>
+                        <PopoverContent className={'z-10001 border-0  w-fit p-0 '}>
                             <ColorPicker defaultValue={themes.primary} onChangeComplete={handlePrimaryColorConfirm} />
                         </PopoverContent>
                     </Popover>
@@ -99,15 +100,6 @@ export default function SettingPage() {
                     <Cell className={'mt-2'}>
                         <span>鼠标轨迹动画：</span>
                         <Switch className={'cursor-pointer'} checked={trackMouse} onCheckedChange={updateTrackMouseStatus} />
-                    </Cell>
-
-                    <Cell className={'mt-2'}>
-                        <span>全屏樱花飘落：</span>
-                        <Switch
-                            className={'cursor-pointer'}
-                            checked={fullScreenSakura}
-                            onCheckedChange={updateFullScreenSakura}
-                        />
                     </Cell>
 
                     {/* 轮播图设置 */}
@@ -127,7 +119,7 @@ export default function SettingPage() {
                                 </AvatarGroup>
                             </Cell>
                         </PopoverTrigger>
-                        <PopoverContent className={'z-[10001] '}>
+                        <PopoverContent className={'z-10001 '}>
                             {
                                 banners.map((item, i) => (
                                     <Cell className={'mb-4 gap-x-2'} key={i}>
@@ -146,6 +138,12 @@ export default function SettingPage() {
                             <Button long={true} onClick={handleSaveHomeBanners}>保存</Button>
                         </PopoverContent>
                     </Popover>
+
+                    <Cell className="mt-2">
+                        <span className="mr-1">全局飘落：</span>
+                        <FallingSettings />
+                    </Cell>
+                    
                 </div>
             </div>
 

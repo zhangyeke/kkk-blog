@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/sonner"
 import WebVitals from "@/components/WebVitals/WebVitals";
 import { AppStoreProvider, ThemeProvider } from "@/providers";
 import { auth } from "@/lib/auth";
+import BlogEffects from "./blog/components/BlogEffects"
 
 
 export const metadata = {
@@ -39,6 +40,7 @@ export default async function RootLayout({ children }: ContainerProps) {
                         disableTransitionOnChange
                     >
                         {children}
+                        <BlogEffects />
                         <Toaster position="top-center" richColors duration={1500} />
                     </ThemeProvider>
 

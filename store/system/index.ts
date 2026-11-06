@@ -2,6 +2,7 @@ import {env} from "env.mjs"
 
 import {setDeepValue} from "@/lib/utils";
 import {StoreCreator} from "../utils";
+import { clampFallingSpeed, type FallingDirection, type FallingPattern, fallingSpeed } from "@/lib/falling-patterns"
 
 // const myMiddlewares = (f) => devtools(persist(f, {name: 'bearStore'}))
 
@@ -13,8 +14,13 @@ export interface SystemSliceState {
     themes: Themes
     /*鼠标轨迹动画*/
     trackMouse: boolean
-    /** 博客全屏樱花飘落（fixed 叠层），关则不占 DOM / 不占动画 */
-    fullScreenSakura: boolean
+    fallingEnabled: boolean
+    fallingPattern: FallingPattern
+    fallingImage: string
+    fallingSizes: [number, number]
+    fallingDensity: number
+    fallingSpeed: number
+    fallingDirection: FallingDirection
     /*首页轮播图*/
     homeBanners: string[]
 }
@@ -22,7 +28,12 @@ export interface SystemSliceState {
 export interface SystemSliceAction {
     updateThemes: (value: Themes | string, key?: keyof Themes) => void
     updateTrackMouseStatus: (value: boolean) => void
-    updateFullScreenSakura: (value: boolean) => void
+    setFallingPattern: (value: FallingPattern) => void
+    setFallingImage: (value: string) => void
+    setFallingSizes: (value: [number, number]) => void
+    setFallingDensity: (value: number) => void
+    setFallingSpeed: (value: number) => void
+    setFallingDirection: (value: FallingDirection) => void
     updateHomeBanners: (values: string[]) => void
     reset: () => void
 }
@@ -34,18 +45,25 @@ export const useSystemSlice: StoreCreator<SystemSlice> = (set, get, store) => ({
         primary: "#e6c99f",
     },
     trackMouse: true,
-    fullScreenSakura: true,
+    fallingEnabled: true,
+    fallingPattern: "petal",
+    fallingImage: "",
+    fallingSizes: [14, 28],
+    fallingDensity: 4,
+    fallingSpeed: fallingSpeed.default,
+    fallingDirection: "down",
     homeBanners: [`${env.NEXT_PUBLIC_RANDOM_IMAGE_URL_1}/web?type=file`, env.NEXT_PUBLIC_RANDOM_IMAGE_URL_2],
     updateTrackMouseStatus: (value: boolean) => {
         set(state => {
             state.trackMouse = value
         })
     },
-    updateFullScreenSakura: (value: boolean) => {
-        set((state) => {
-            state.fullScreenSakura = value
-        })
-    },
+    setFallingPattern: (fallingPattern) => set({ fallingPattern, fallingEnabled: fallingPattern !== "none" }),
+    setFallingImage: (fallingImage) => set({ fallingImage }),
+    setFallingSizes: (fallingSizes) => set({ fallingSizes }),
+    setFallingDensity: (fallingDensity) => set({ fallingDensity }),
+    setFallingSpeed: (value) => set({ fallingSpeed: clampFallingSpeed(value) }),
+    setFallingDirection: (fallingDirection) => set({ fallingDirection }),
     updateHomeBanners: (newBanners) => {
         set(state => {
             state.homeBanners = newBanners

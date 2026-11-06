@@ -15,7 +15,7 @@ export type GradientTransitionProps = {
 } & Partial<ContainerProps> & BaseComponentProps
 
 export const GradientTransition = (props: GradientTransitionProps) => {
-    let {
+    const {
         defaultColor = 'linear-gradient(-45deg, #e8d8b9, #eccec5, #a3e9eb, #bdbdf0, #eec1ea)',
         duration = 10,
         children,

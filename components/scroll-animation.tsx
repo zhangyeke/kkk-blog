@@ -4,23 +4,24 @@ import { cn } from '@/lib/utils';
 import {
   HTMLMotionProps,
   motion,
-  SVGMotionProps,
+  TargetAndTransition,
 } from 'motion/react';
 import React from 'react';
 type Direction = 'up' | 'down' | 'left' | 'right';
 
 const generateVariants = (
   direction: Direction
-): { hidden: any; visible: any } => {
-  const axis = direction === 'left' || direction === 'right' ? 'x' : 'y';
+): { hidden: TargetAndTransition; visible: TargetAndTransition } => {
+  const horizontal = direction === 'left' || direction === 'right';
   const value = direction === 'right' || direction === 'down' ? 100 : -100;
 
   return {
-    hidden: { filter: 'blur(10px)', opacity: 0, [axis]: value },
+    hidden: { filter: 'blur(10px)', opacity: 0, x: horizontal ? value : 0, y: horizontal ? 0 : value },
     visible: {
       filter: 'blur(0px)',
       opacity: 1,
-      [axis]: 0,
+      x: 0,
+      y: 0,
       transition: {
         duration: 0.5,
         ease: 'easeOut',
@@ -30,14 +31,14 @@ const generateVariants = (
 };
 
 const defaultViewport = { amount: 0.3, margin: '0px 0px -200px 0px' };
-type MotionComponentProps = HTMLMotionProps<any> & SVGMotionProps<any>;
+type MotionComponentProps = HTMLMotionProps<'div'>;
 
 export interface ScrollElementProps extends Omit<MotionComponentProps, 'children'> {
   children: React.ReactNode;
   className?: string;
   variants?: {
-    hidden?: any;
-    visible?: any;
+    hidden?: TargetAndTransition;
+    visible?: TargetAndTransition;
   };
   viewport?: {
     amount?: number;
@@ -59,11 +60,11 @@ function ScrollElement({
 }: ScrollElementProps) {
   const baseVariants = variants || generateVariants(direction);
   const modifiedVariants = {
-    hidden: baseVariants.hidden,
+    hidden: baseVariants.hidden || {},
     visible: {
       ...baseVariants.visible,
       transition: {
-        ...baseVariants.visible.transition,
+        ...baseVariants.visible?.transition,
         delay, 
       },
     },

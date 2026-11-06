@@ -4,7 +4,7 @@ import {useAppStore} from "@/hooks";
 
 function SplashCursor({
                           SIM_RESOLUTION = 128,
-                          DYE_RESOLUTION = 1440,
+                          DYE_RESOLUTION = 512,
                           CAPTURE_RESOLUTION = 512,
                           DENSITY_DISSIPATION = 3.5,
                           VELOCITY_DISSIPATION = 2,
@@ -18,9 +18,7 @@ function SplashCursor({
                           BACK_COLOR = {r: 0.5, g: 0, b: 0},
                           TRANSPARENT = true
                       }) {
-    const {trackMouse} = useAppStore(
-        (state) => state,
-    )
+    const trackMouse = useAppStore((state) => state.trackMouse)
 
 
     const canvasRef = useRef(null);
@@ -29,6 +27,7 @@ function SplashCursor({
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
+        canvas.style.visibility = 'hidden';
 
         // Track if the effect is still active for cleanup
         let isActive = true;
@@ -66,7 +65,9 @@ function SplashCursor({
 
         let pointers = [new pointerPrototype()];
 
-        const {gl, ext} = getWebGLContext(canvas);
+        const context = getWebGLContext(canvas);
+        if (!context) return;
+        const {gl, ext} = context;
         if (!ext.supportLinearFiltering) {
             config.DYE_RESOLUTION = 256;
             config.SHADING = false;
@@ -83,6 +84,7 @@ function SplashCursor({
             let gl = canvas.getContext('webgl2', params);
             const isWebGL2 = !!gl;
             if (!isWebGL2) gl = canvas.getContext('webgl', params) || canvas.getContext('experimental-webgl', params);
+            if (!gl) return null;
 
             let halfFloat;
             let supportLinearFiltering;
@@ -96,6 +98,7 @@ function SplashCursor({
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
             const halfFloatTexType = isWebGL2 ? gl.HALF_FLOAT : halfFloat && halfFloat.HALF_FLOAT_OES;
+            if (!halfFloatTexType) return null;
             let formatRGBA;
             let formatRG;
             let formatR;
@@ -109,6 +112,9 @@ function SplashCursor({
                 formatRG = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
                 formatR = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
             }
+
+            // A context can exist without any renderable floating-point formats.
+            if (!formatRGBA || !formatRG || !formatR) return null;
 
             return {
                 gl,
@@ -138,17 +144,31 @@ function SplashCursor({
 
         function supportRenderTextureFormat(gl, internalFormat, format, type) {
             const texture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, format, type, null);
+            if (!texture) return false;
             const fbo = gl.createFramebuffer();
-            gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-            const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-            return status === gl.FRAMEBUFFER_COMPLETE;
+            if (!fbo) {
+                gl.deleteTexture(texture);
+                return false;
+            }
+
+            try {
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, format, type, null);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+                gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+                return gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+            } catch {
+                return false;
+            } finally {
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                gl.deleteFramebuffer(fbo);
+                gl.deleteTexture(texture);
+            }
         }
 
         class Material {
@@ -685,13 +705,24 @@ function SplashCursor({
 
         function updateFrame() {
             if (!isActive) return;
-            const dt = calcDeltaTime();
-            if (resizeCanvas()) initFramebuffers();
-            updateColors(dt);
-            applyInputs();
-            step(dt);
-            render(null);
-            animationFrameId.current = requestAnimationFrame(updateFrame);
+            try {
+                if (gl.isContextLost()) {
+                    canvas.style.visibility = 'hidden';
+                    return;
+                }
+                const dt = calcDeltaTime();
+                if (resizeCanvas()) initFramebuffers();
+                updateColors(dt);
+                applyInputs();
+                step(dt);
+                render(null);
+                canvas.style.visibility = 'visible';
+                animationFrameId.current = requestAnimationFrame(updateFrame);
+            } catch (error) {
+                canvas.style.visibility = 'hidden';
+                isActive = false;
+                console.error('[SplashCursor] Rendering stopped', error);
+            }
         }
 
         function calcDeltaTime() {
@@ -797,6 +828,11 @@ function SplashCursor({
         }
 
         function render(target) {
+            if (target == null) {
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
             gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             gl.enable(gl.BLEND);
             drawDisplay(target);
@@ -957,7 +993,7 @@ function SplashCursor({
         }
 
         function scaleByPixelRatio(input) {
-            const pixelRatio = window.devicePixelRatio || 1;
+            const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
             return Math.floor(input * pixelRatio);
         }
 
@@ -1026,8 +1062,8 @@ function SplashCursor({
         // Add event listeners
         window.addEventListener('mousedown', handleMouseDown);
         window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('touchstart', handleTouchStart);
-        window.addEventListener('touchmove', handleTouchMove, false);
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
         window.addEventListener('touchend', handleTouchEnd);
 
         updateFrame();
@@ -1048,6 +1084,10 @@ function SplashCursor({
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
+            // Strict Mode and Fast Refresh can replay the effect on the same canvas.
+            queueMicrotask(() => {
+                if (!canvas.isConnected) gl.getExtension('WEBGL_lose_context')?.loseContext();
+            });
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trackMouse]);
@@ -1065,6 +1105,7 @@ function SplashCursor({
             }}
         >
             <canvas
+                aria-hidden="true"
                 ref={canvasRef}
                 id="fluid"
                 style={{

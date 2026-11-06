@@ -10,6 +10,7 @@ import {
     Dialog as ShadDialog
 } from "@/components/ui/dialog";
 import {createTeleporter} from "@/lib/teleporter";
+import {cn} from "@/lib/utils";
 import {merge} from "lodash";
 import {FooterButtons} from "./FooterButtons";
 
@@ -20,6 +21,9 @@ export type DialogProps = {
     trigger?: React.ReactNode
     footer?: React.ReactNode
     contentClassName?: string
+    contentProps?: Omit<React.ComponentProps<typeof DialogContent>, "children" | "className"> & {
+        "data-vaul-no-drag"?: boolean
+    }
     onConfirm?: () => void
     onCancel?: () => void
 } & React.ComponentProps<typeof ShadDialog>
@@ -32,6 +36,7 @@ export function Dialog(props: DialogProps) {
         title,
         children,
         contentClassName,
+        contentProps,
         onConfirm,
         onCancel,
         ...dialogProps
@@ -46,15 +51,15 @@ export function Dialog(props: DialogProps) {
                 )
             }
 
-            <DialogContent className={`z-[100] ${contentClassName}`}>
-                <DialogHeader className={'px-6 py-3 border-b-1 border-solid border-gray-200'}>
+            <DialogContent {...contentProps} className={cn("z-100", contentClassName)}>
+                <DialogHeader className={'px-6 py-3 border-b border-solid border-gray-200'}>
                     <DialogTitle className={'flex items-center justify-between'}>
                         {title}
                     </DialogTitle>
                     <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
                 {children}
-                <DialogFooter className={`${footer === null && 'hidden'} border-t-1 border-solid border-gray-200 `}>
+                <DialogFooter className={`${footer === null && 'hidden'} border-t border-solid border-gray-200 `}>
                     {
                         footer === undefined ? (
                             <FooterButtons className={'px-6'} onCancel={onCancel} onConfirm={onConfirm}/>

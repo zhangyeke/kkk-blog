@@ -8,8 +8,7 @@
  */
 import { Metadata } from "next";
 import Header from "./components/Layout/Header";
-import SplashCursor from "@/components/bits/SplashCursor";
-import SakuraOverlay from "@/components/SakuraOverlay";
+import RouteFooter from "./components/Layout/RouteFooter";
 import { BackTop } from "@/components/BackTop";
 
 
@@ -29,17 +28,14 @@ export default async function BlogLayout({ children, drawer, footer }: Slots<'ch
     return (
 
         <>
-            <SakuraOverlay delay={200} />
-
             <section className={'flex flex-col min-h-screen'}>
 
-                <SplashCursor />
                 <Header />
                 <main className={'flex-1 relative flex flex-col'}>
                     {children}
                 </main>
                 <BackTop />
-                {footer}
+                <RouteFooter>{footer}</RouteFooter>
                 {drawer}
             </section>
         </>
