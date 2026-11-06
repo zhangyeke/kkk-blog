@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-05",
+  "mode": "production webpack build, HTTP only",
+  "checks": [
+    {
+      "path": "/",
+      "status": 308,
+      "location": "/blog",
+      "passed": true
+    },
+    {
+      "path": "/blog/article/write/42?draft=true",
+      "status": 307,
+      "location": "/login?callbackUrl=%2Fblog%2Farticle%2Fwrite%2F42%3Fdraft%3Dtrue",
+      "passed": true
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "location": null,
+      "passed": true
+    }
+  ]
+}

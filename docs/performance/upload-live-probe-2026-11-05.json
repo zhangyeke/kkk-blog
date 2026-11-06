@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-05",
+  "method": "One generated 1x1 PNG multipart POST per node; image field; no auth tokens or Origin/Referer overrides.",
+  "fileBytes": 68,
+  "results": [
+    {
+      "endpoint": "https://aapi.helioho.st/upload.php",
+      "status": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "success": false
+    },
+    {
+      "endpoint": "https://mtbed.netsons.org/upload.php",
+      "status": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "success": false
+    }
+  ]
+}

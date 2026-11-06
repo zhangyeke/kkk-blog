@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-05",
+  "node": "v24.22.1",
+  "baselineRef": "d699fc3c23c2184499d867fffe0a0db013a8255d",
+  "method": "Offline controlled benchmark; real service functions from the baseline commit and working tree; 6 synthetic articles; 30 ms per database operation; 1 warm-up + 7 runs. Not production page metrics.",
+  "articleBodyBytes": 18000,
+  "before": {
+    "medianMs": 618.68,
+    "samplesMs": [
+      661.78,
+      618.68,
+      693.81,
+      1346.49,
+      589.54,
+      403.04,
+      388.25
+    ],
+    "jsonBytes": 114650,
+    "gzipBytes": 978,
+    "serializedContentFields": 6
+  },
+  "after": {
+    "medianMs": 420.23,
+    "samplesMs": [
+      709.86,
+      581.13,
+      392.65,
+      417.65,
+      411.18,
+      596.38,
+      420.23
+    ],
+    "jsonBytes": 3332,
+    "gzipBytes": 490,
+    "serializedContentFields": 0
+  }
+}

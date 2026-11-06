@@ -1,0 +1,55 @@
+▲ Next.js 16.2.0 (webpack)
+- Environments: .env.production, .env
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 58s
+  Running TypeScript ...
+  Finished TypeScript in 37.2s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/26) ...
+  Generating static pages using 7 workers (6/26) 
+  Generating static pages using 7 workers (12/26) 
+  Generating static pages using 7 workers (19/26) 
+✓ Generating static pages using 7 workers (26/26) in 2.8s
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /_not-found
+├ ƒ /admin
+├ ƒ /admin/user
+├ ƒ /api/article/list
+├ ƒ /api/auth/[...nextAuth]
+├ ƒ /blog
+├ ƒ /blog/(.)article1/[id]
+├ ƒ /blog/(.)setting
+├ ƒ /blog/article
+├ ƒ /blog/article/[id]
+├ ƒ /blog/article/list
+├ ƒ /blog/article/write/[[...id]]
+├ ƒ /blog/bookmark
+├ ƒ /blog/index
+├ ƒ /blog/map
+├ ƒ /blog/me
+├ ƒ /blog/me/articles
+├ ƒ /blog/me/bookmark/edit
+├ ƒ /blog/me/edit
+├ ƒ /blog/me/favorite
+├ ƒ /blog/me/footprints/edit
+├ ƒ /blog/menu
+├ ƒ /blog/menu/[...slug]
+├ ƒ /blog/pictures
+├ ƒ /blog/setting
+├ ƒ /blog/videos
+├ ƒ /desktop
+├ ƒ /login
+├ ƒ /mdx
+└ ƒ /register
+
+
+ƒ Proxy (Middleware)
+
+ƒ  (Dynamic)  server-rendered on demand
+
