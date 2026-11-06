@@ -10,6 +10,11 @@ coverage
 
 # next.js
 .next/
+.next-performance*/
+.next-test-cache/
+.eslint-*.json
+.typecheck-*.log
+.build-*.log
 out/
 build
 

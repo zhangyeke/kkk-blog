@@ -1,112 +1,40 @@
-import * as fs from "fs"
-
-// https://github.com/francoismassart/eslint-plugin-tailwindcss/pull/381
-// import eslintPluginTailwindcss from "eslint-plugin-tailwindcss"
 import eslintPluginImport from "eslint-plugin-import"
 import eslintPluginNext from "@next/eslint-plugin-next"
 import typescriptEslint from "typescript-eslint"
 
-const eslintIgnore = [
-    ".git/",
-    ".next/",
-    "node_modules/",
-    "dist/",
-    "build/",
-    "coverage/",
-    "*.min.js",
-    "*.config.js",
-    "*.d.ts",
-]
-
-const config = typescriptEslint.config(
-    {
-        ignores: eslintIgnore,
+export default typescriptEslint.config(
+  {
+    ignores: [
+      ".git/",
+      ".next/",
+      ".next-performance*/",
+      ".next-test-cache/",
+      "node_modules/",
+      "dist/",
+      "build/",
+      "coverage/",
+      "playwright-report/",
+      "test-results/",
+      "*.min.js",
+      "*.config.js",
+      "**/*.d.ts",
+    ],
+  },
+  typescriptEslint.configs.recommended,
+  eslintPluginImport.flatConfigs.recommended,
+  {
+    plugins: { "@next/next": eslintPluginNext },
+    settings: {
+      "import/resolver": { typescript: true, node: true },
+      // Next.js resolves this framework-provided marker during compilation.
+      "import/core-modules": ["server-only"],
     },
-    //  https://github.com/francoismassart/eslint-plugin-tailwindcss/pull/381
-    // ...eslintPluginTailwindcss.configs["flat/recommended"],
-    typescriptEslint.configs.recommended,
-    eslintPluginImport.flatConfigs.recommended,
-
-    {
-        plugins: {
-            "@next/next": eslintPluginNext,
-            'react/jsx-no-useless-fragment': [2, {allowExpressions: true}]
-        },
-        rules: {
-            ...eslintPluginNext.configs.recommended.rules,
-            ...eslintPluginNext.configs["core-web-vitals"].rules,
-            // "@typescript-eslint/no-explicit-any": "off", //可以全局使用any类型
-            // "@typescript-eslint/no-unused-vars": "off", //允许全局使用未使用的变量
-        },
+    rules: {
+      ...eslintPluginNext.configs.recommended.rules,
+      ...eslintPluginNext.configs["core-web-vitals"].rules,
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "sort-imports": ["error", { ignoreCase: true, ignoreDeclarationSort: true }],
+      "import/order": "off",
     },
-    {
-        settings: {
-            tailwindcss: {
-                callees: ["classnames", "clsx", "ctl", "cn", "cva"],
-            },
-
-            "import/resolver": {
-                typescript: true,
-                node: true,
-            },
-        },
-        rules: {
-            "@typescript-eslint/no-unused-vars": [
-                "warn",
-                {
-                    argsIgnorePattern: "^_",
-                    varsIgnorePattern: "^_",
-                },
-            ],
-            "sort-imports": [
-                "error",
-                {
-                    ignoreCase: true,
-                    ignoreDeclarationSort: true,
-                },
-            ],
-            'import/order': 'off',
-            /*      "import/order": [
-                    "warn",
-                    {
-                      groups: ["external", "builtin", "internal", "sibling", "parent", "index"],
-                      pathGroups: [
-                        ...getDirectoriesToSort().map((singleDir) => ({
-                          pattern: `${singleDir}/!**`,
-                          group: "internal",
-                        })),
-                        {
-                          pattern: "env",
-                          group: "internal",
-                        },
-                        {
-                          pattern: "theme",
-                          group: "internal",
-                        },
-                        {
-                          pattern: "public/!**",
-                          group: "internal",
-                          position: "after",
-                        },
-                      ],
-                      pathGroupsExcludedImportTypes: ["internal"],
-                      alphabetize: {
-                        order: "asc",
-                        caseInsensitive: true,
-                      },
-                    },
-                  ],
-                */
-        },
-    }
+  }
 )
-
-function getDirectoriesToSort() {
-    const ignoredSortingDirectories = [".git", ".next", ".vscode", "node_modules"]
-    return fs
-        .readdirSync(process.cwd())
-        .filter((file) => fs.statSync(process.cwd() + "/" + file).isDirectory())
-        .filter((f) => !ignoredSortingDirectories.includes(f))
-}
-
-export default config
