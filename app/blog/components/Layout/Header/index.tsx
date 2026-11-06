@@ -42,6 +42,10 @@ export default async function HeaderContainer() {
                     name: "书签",
                     href: "/blog/bookmark"
                 },
+                {
+                    name: "江山时序",
+                    href: "/blog/jiangshan-map"
+                },
             ]
         },
         {

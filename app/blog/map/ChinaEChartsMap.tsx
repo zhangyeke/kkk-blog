@@ -8,8 +8,8 @@ import {
     buildECharts2DMapFromProjects,
     buildMap3DDataFromProjects,
     buildRegionGalleryForDrilledClick,
-    matchRegionNameInGeo,
     type MapRegionGalleryPayload,
+    matchRegionNameInGeo,
     type ProjectMapItem
 } from "@/lib/map-project-data";
 import { Button } from "@/components/ui/button";
