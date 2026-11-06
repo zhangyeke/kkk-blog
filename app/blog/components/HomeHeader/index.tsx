@@ -7,9 +7,7 @@ import {useAppStore} from "@/hooks";
 
 
 export default function HomeHeader() {
-    const {homeBanners} = useAppStore(
-        (state) => state,
-    )
+    const homeBanners = useAppStore((state) => state.homeBanners)
 
     /*
         const bannerData = await fetchPhotoWall({

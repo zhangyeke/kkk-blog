@@ -8,8 +8,8 @@
  */
 import withBundleAnalyzer from "@next/bundle-analyzer"
 import createMDX from "@next/mdx"
-import { type NextConfig, SizeLimit } from "next"
-import { env } from "./env.mjs"
+import { type NextConfig } from "next"
+import { imageUploadLimitBytes } from "./lib/image-upload-policy"
 
 const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
@@ -17,6 +17,8 @@ const withMDX = createMDX({
 })
 
 const config: NextConfig = {
+  // Allow isolated local builds without touching another running server's output.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   allowedDevOrigins: ["127.0.0.1", "192.168.2.235"],
   transpilePackages: ["next-mdx-remote"],
   images: {
@@ -37,8 +39,8 @@ const config: NextConfig = {
   },
   experimental: {
     serverActions: {
-      // 设置为您需要的限制，例如 10MB 或 50MB
-      bodySizeLimit: env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT as SizeLimit,
+      // File limit plus room for multipart fields and boundaries.
+      bodySizeLimit: imageUploadLimitBytes(process.env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT || "10mb") + 512 * 1024,
     },
   },
   // 配置‘ pageExtensions ’以包含markdown和MDX文件
@@ -63,4 +65,6 @@ const config: NextConfig = {
   ],
 }
 
-export default env.ANALYZE ? withBundleAnalyzer({ enabled: env.ANALYZE })(withMDX(config)) : withMDX(config)
+export default process.env.ANALYZE === "true"
+  ? withBundleAnalyzer({ enabled: true, openAnalyzer: false })(withMDX(config))
+  : withMDX(config)

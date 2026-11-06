@@ -24,6 +24,9 @@ export type PostWithUser<T = unknown> = Prisma.PostGetPayload<{
     include: typeof postWithUserInclude & T
 }> & { summary?: string }
 
+/** 列表卡片只接收摘要；正文仅由文章详情接口返回。 */
+export type PostListItem = Omit<PostWithUser, "content">
+
 export type PostWithFavorites = PostWithUser<{
     favorites: {
         where: {

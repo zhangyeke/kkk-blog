@@ -16,7 +16,8 @@ export const postCategorySchema = z.object({
 export type PostCategoryWithPosts = Prisma.PostCategoryGetPayload<{
     include: {
         posts: {
-            include: typeof postWithUserInclude
+            include: typeof postWithUserInclude,
+            omit: { content: true }
         }
     },
 }>;

@@ -1,14 +1,13 @@
 import {type ClassValue, clsx} from "clsx"
 import qs from "qs"
 
-import {remark} from 'remark'
-import strip from 'strip-markdown'
 import {toast} from "sonner";
 import {twMerge} from "tailwind-merge"
 import {get, set} from "lodash"
 import {uploadImage} from "@/service/fileUpload";
 import {env} from "@/env.mjs";
-import {backFailMessage, backImagePayloadLargeMessage, SUCCESS_CODE} from "./actionMessageBack";
+import {backFailMessage, SUCCESS_CODE} from "./actionMessageBack";
+import {imageUploadLimitBytes} from "./image-upload-policy";
 import {isNumber} from "./validator";
 
 /*
@@ -93,30 +92,22 @@ export function sleep(delay = 5000) {
  * @Params:
  */
 
-export function uploadImagePromise(image: File, isToast = true) {
-    return new Promise<string>(async (resolve, reject) => {
-            const MAX_SIZE = parseInt(env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT) * 1024 * 1024; // 将MB转换为字节
-            if (image.size > MAX_SIZE) {
-                const str = `图片大小超过限制，最大可上传 ${env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}`;
-                if (isToast) toast.error(str)
-                reject(backImagePayloadLargeMessage(str))
-                return
-            }
-            try {
-                const formData = new FormData()
-                formData.append('file', image)
-                const params = {
-                    dedup: true,
-                    album_id: 1516,
-                }
-                formData.append('params', JSON.stringify(params))
-                const res = await uploadImage(formData)
-                resolve(res ? res?.url : '')
-            } catch (err) {
-                reject(err)
-            }
+export async function uploadImagePromise(image: File, isToast = true): Promise<string> {
+    try {
+        if (image.size > imageUploadLimitBytes(env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT)) {
+            throw new Error(`图片大小超过限制，最大可上传 ${env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}`)
         }
-    )
+        const formData = new FormData()
+        formData.append('file', image)
+        const response = await uploadImage(formData)
+        if (response.code !== SUCCESS_CODE || !response.data?.url) {
+            throw new Error(response.message || '图片上传失败')
+        }
+        return response.data.url
+    } catch (error) {
+        if (isToast) toast.error(error instanceof Error ? error.message : '图片上传失败')
+        throw error
+    }
 }
 
 /*
@@ -150,17 +141,6 @@ export const addUnit = (num: number | string, unit = "px") => {
     if (typeof num === 'string') return num;
     return isNumber(num) ? `${num}${unit}` : '';
 }
-
-/*获取纯文本的markdown内容*/
-
-export async function getPlainText(content: string, length: number = 58) {
-    const file = await remark()
-        .use(strip) // 核心插件：去除所有 Markdown 格式
-        .process(content)
-
-    return String(file).trim().slice(0, length) + (content.length > length ? '...' : '')
-}
-
 
 /**
  * 统一异步包装执行器

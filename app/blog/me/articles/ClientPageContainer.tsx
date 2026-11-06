@@ -13,7 +13,7 @@ import { InfiniteScrollList } from "@/components/k-view/InfiniteScrollList";
 import ScrollElement from "@/components/scroll-animation";
 import Article from "@/app/blog/components/Article";
 import { PostCategory } from "@/types/postCategory";
-import { PostWithUser } from "@/types/post";
+import { PostListItem } from "@/types/post";
 import { getMePosts } from "@/service/post";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
@@ -40,7 +40,7 @@ export default function ClientPageContainer({ categoryList }: ClientPageContaine
     const handleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>, id: number) => {
         e.stopPropagation()
         e.preventDefault()
-        router.push(`/blog//article/write/${id}`)
+        router.push(`/blog/article/write/${id}`)
     }, [])
 
     return (
@@ -55,7 +55,7 @@ export default function ClientPageContainer({ categoryList }: ClientPageContaine
                 className={'lg:columns-3 md:columns-2 w-full'}
                 apiParams={apiParams}
                 fetchData={getMePosts}
-                renderItem={(item: PostWithUser, i) => (
+                renderItem={(item: PostListItem) => (
                     <ScrollElement
                         className={'mb-4'}
                         key={item.id}

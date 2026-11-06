@@ -29,8 +29,11 @@ export function useImageUpload({value, onUpload}: UseImageUploadProps = {}) {
                     uploadImagePromise(file).then(url => {
                         setPreviewUrl(url)
                         onUpload?.(url)
+                    }).catch(() => {
+                        // The shared uploader shows the error; keep the previous image for retry.
                     }).finally(() => {
                         setPending(false)
+                        if (fileInputRef.current) fileInputRef.current.value = ""
                     })
 
                 }

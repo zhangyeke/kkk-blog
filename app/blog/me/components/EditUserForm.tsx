@@ -69,8 +69,11 @@ export default function EditUserForm(props: EditUserFormProps) {
                             value: url
                         }
                     })
+                }).catch(() => {
+                    // The shared uploader displays the failure and preserves the current avatar.
                 }).finally(() => {
                     setUploadPending(false)
+                    event.target.value = ""
                 })
 
             }

@@ -206,7 +206,7 @@ export function imageUploadHandler(image: File) {
         loading: "正在上传图片...",
         success: () => '图片上传成功',
         error: (err) => {
-            return typeof err === 'function' ? err().message : '图片上传失败'
+            return err instanceof Error ? err.message : '图片上传失败'
         }
     })
     return uploadPromise

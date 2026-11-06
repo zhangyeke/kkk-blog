@@ -1,82 +1,119 @@
 "use server"
-import {env} from "env.mjs"
-import {UploadImageResponse} from "@/types/file";
-import {backSuccessMessage} from "@/lib/actionMessageBack";
 
-export async function uploadImage(params: FormData) {
-    try {
-        const res = await fetch(`${env.IMGBB_API_URL}/api/v3/upload`, {
-            method: "post",
-            headers: {
-                Authorization: `Bearer ${env.IMGBB_API_TOKEN}`,
-                // 'Content-Type': 'multipart/form-data', // 告诉服务器我们发送的是 JSON 格式数据
-                // 'Accept': 'application/json' // 可选：告诉服务器我们期望接收 JSON 格式数据
-            },
-            body: params,
-        })
-        const data = await res.json() as UploadImageResponse
-        if (data.code && data.code === 200) {
-            return data.data
-        } else {
-            return Promise.reject(new Error('图片上传失败'))
-        }
-    } catch {
-        return Promise.reject(new Error('图片上传失败'))
+import { env } from "@/env.mjs"
+import { ActionError, backAuthFailMessage, backMessage, backSuccessMessage } from "@/lib/actionMessageBack"
+import { imageFileExtension, imageUploadLimitBytes } from "@/lib/image-upload-policy"
+import { checkAuth } from "@/service/auth"
+import type { UploadImageResult } from "@/types/file"
+
+const mtbedEndpoints = {
+  primary: "https://aapi.helioho.st/upload.php",
+  secondary: "https://mtbed.netsons.org/upload.php",
+} as const
+const MTBED_MAX_BYTES = 20 * 1024 * 1024
+const imageMimeTypes = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  bmp: "image/bmp",
+  ico: "image/x-icon",
+  heic: "image/heic",
+} as const
+
+export async function uploadImage(params: FormData): Promise<UploadImageResult> {
+  // Authenticate before reading image bytes or sending anything upstream.
+  try {
+    await checkAuth()
+  } catch {
+    return backAuthFailMessage("请先登录再上传图片", null)
+  }
+
+  try {
+    if (!(params instanceof FormData)) throw new ActionError("上传参数不正确", 400)
+    const file = params.get("file")
+    if (!(file instanceof File) || file.size === 0) throw new ActionError("请选择非空的图片文件", 400)
+
+    const provider = env.IMAGE_UPLOAD_PROVIDER
+    const configuredLimit = imageUploadLimitBytes(env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT)
+    const maxBytes = provider === "mtbed" ? Math.min(configuredLimit, MTBED_MAX_BYTES) : configuredLimit
+    if (file.size > maxBytes) {
+      throw new ActionError(`图片超过大小限制，最大 ${maxBytes / 1024 / 1024} MB`, 413)
+    }
+    const extension = imageFileExtension(new Uint8Array(await file.slice(0, 32).arrayBuffer()))
+    if (!extension) throw new ActionError("不支持该图片格式，请使用 PNG、JPEG、GIF、WebP、BMP、ICO 或 HEIC 图片", 415)
+
+    const body = new FormData()
+    // The third-party page uses 'image'; the existing provider uses 'file'.
+    body.append(
+      provider === "mtbed" ? "image" : "file",
+      new Blob([file], { type: imageMimeTypes[extension] }),
+      `upload.${extension}`
+    )
+    const headers: Record<string, string> = { Accept: "application/json" }
+    let endpoint: string
+    if (provider === "mtbed") {
+      endpoint = mtbedEndpoints[env.MTBED_UPLOAD_SERVER]
+    } else {
+      endpoint = `${env.IMGBB_API_URL.replace(/\/$/, "")}/api/v3/upload`
+      headers.Authorization = `Bearer ${env.IMGBB_API_TOKEN}`
+      body.append("params", JSON.stringify({ dedup: true, album_id: 1516 }))
     }
 
-}
-
-/*
-interface UploadResult {
-    Jobs: string;
-    Name: string;
-    os: string;
-}
-export async function uploadToMeituan(
-    formData: FormData
-): Promise<UploadResult> {
-    const file = formData.get("file");
-
-    if (!(file instanceof File)) {
-        throw new Error("No file uploaded");
-    }
-
-
-    // 转发上传
-    const uploadForm = new FormData();
-    uploadForm.append("file", file);
-
-    const response = await fetch(
-        "https://pic-up.meituan.com/extrastorage/new/video?isHttps=true",
-        {
-            method: "POST",
-            headers: {
-                "client-id": "p5gfsvmw6qnwc45n000000000025bbf1",
-                "token": token,
-                "Origin": "https://czz.meituan.com",
-                "Referer": "https://czz.meituan.com/"
-            },
-            body: uploadForm
-        }
-    );
-
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body,
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(env.IMAGE_UPLOAD_TIMEOUT_MS),
+    })
     if (!response.ok) {
-        throw new Error(`Upload failed: ${response.status}`);
+      throw new ActionError(
+        response.status === 403
+          ? "图床拒绝了上传请求（403），请联系管理员检查上传源配置"
+          : `图床上传失败（HTTP ${response.status}），请稍后重试`,
+        502
+      )
     }
 
-    const data = await response.json();
-
-    if (!data.success) {
-        throw new Error("Upload failed");
+    let payload: unknown
+    try {
+      payload = await response.json()
+    } catch (error) {
+      if (isUploadTimeout(error)) throw error
+      throw new ActionError("图床返回的内容不是有效的 JSON，请联系管理员检查上传源", 502)
     }
-
-    return {
-        Jobs: data.data.originalLink,
-        Name: data.data.originalFileName,
-        os: "node-oss.zai1.com"
-    };
+    if (!isUploadResponse(payload)) throw new ActionError("图床未返回有效的图片地址", 502)
+    return backSuccessMessage("图片上传成功", { url: payload.data.url })
+  } catch (error) {
+    // Return serializable errors; production Server Actions hide thrown Error messages.
+    if (error instanceof ActionError) return backMessage(error.code, error.message, null)
+    if (isUploadTimeout(error)) {
+      return backMessage(504, "图片上传超时，请稍后重试", null)
+    }
+    return backMessage(502, "图片上传服务暂不可用，请稍后重试", null)
+  }
 }
 
+function isUploadTimeout(error: unknown): boolean {
+  return (
+    !!error &&
+    typeof error === "object" &&
+    "name" in error &&
+    (error.name === "TimeoutError" || error.name === "AbortError")
+  )
+}
 
-
-*/
+function isUploadResponse(value: unknown): value is { code: 200; data: { url: string } } {
+  if (!value || typeof value !== "object" || !("code" in value) || value.code !== 200 || !("data" in value))
+    return false
+  const data = value.data
+  if (!data || typeof data !== "object" || !("url" in data) || typeof data.url !== "string") return false
+  try {
+    const url = new URL(data.url)
+    return ["https:", "http:"].includes(url.protocol) && !url.username && !url.password
+  } catch {
+    return false
+  }
+}

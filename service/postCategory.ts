@@ -34,6 +34,8 @@ export async function getPostCategoryWithPosts(params?: Prisma.PostCategoryFindM
         const data = await prisma.postCategory.findMany({
             include: {
                 posts: {
+                    where: { status: 1 },
+                    omit: { content: true },
                     orderBy: {
                         createdAt: "desc"
                     },

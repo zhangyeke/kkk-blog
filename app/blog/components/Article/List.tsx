@@ -1,12 +1,12 @@
 "use client"
 import {useCallback} from "react";
-import {PostWithFavorites, PostWithUser} from "@/types/post";
+import {PostListItem, PostWithFavorites} from "@/types/post";
 import ScrollElement, {type ScrollElementProps} from "@/components/scroll-animation";
 import Vertical from "./Vertical"
 import Horizontal from "./Horizontal"
 
 interface ArticleListProps extends BaseComponentProps {
-    initialData: Array<PostWithFavorites | PostWithUser>
+    initialData: Array<PostWithFavorites | PostListItem>
     layout?: 'vertical' | 'horizontal'
     scrollAnimation?: boolean
     scrollProps?: Omit<ScrollElementProps, 'children'>
@@ -23,7 +23,7 @@ export default function List(props: ArticleListProps) {
     } = props;
 
 
-    const renderItem = useCallback((item: PostWithFavorites | PostWithUser, i: number) => {
+    const renderItem = useCallback((item: PostWithFavorites | PostListItem, i: number) => {
 
         const Item = ItemLayout[layout]
         if (scrollAnimation) {

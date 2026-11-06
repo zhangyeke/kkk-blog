@@ -1,6 +1,6 @@
 "use client"
 import React from "react"
-import {PostWithUser} from "@/types/post";
+import {PostListItem} from "@/types/post";
 import {CalendarRange, Star} from "lucide-react";
 import {dateFormat} from "@/lib/date";
 import { Image } from "@/components/k-view/Image";
@@ -10,7 +10,7 @@ import Link from "next/link";
 import {CategoryTag, Tag} from "@/app/blog/components/Article/Tag";
 
 type HorizontalProps = {
-    data: PostWithUser
+    data: PostListItem
     direction?: 'left' | 'right'
     cateClicked?: boolean
 }

@@ -1,12 +1,12 @@
 "use server"
-import { merge } from "lodash"
+import { cache } from "react"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
-import { addPostParams, PostWithFavorites, PostWithUser, postWithUserInclude } from "@/types/post"
+import { addPostParams, PostListItem, PostWithFavorites, postWithUserInclude } from "@/types/post"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
 import { checkAuth } from "@/service/auth"
 import { addPostSchema } from "@/validators/post"
-import { getPlainText } from "@/lib/utils"
+import { getPlainText } from "@/lib/markdown"
 import { after } from "next/server"
 import { auth } from "@/lib/auth"
 
@@ -36,19 +36,22 @@ export async function createPost(data: addPostParams) {
 export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
   try {
     const posts = await prisma.post.findMany({
+      where: { AND: [{ status: 1 }, params?.where || {}] },
+      orderBy: params?.orderBy || [{ createdAt: "desc" }, { id: "desc" }],
+      skip: params?.skip,
+      take: params?.take,
       include: postWithUserInclude,
-      ...params,
     })
 
     const postsWithSummary = (await Promise.all(
-      posts.map(async (post) => {
+      posts.map(async ({ content, ...post }) => {
         return {
           ...post,
           // 增加一个 summary 字段
-          summary: await getPlainText(post.content || ""),
+          summary: await getPlainText(content || ""),
         }
       })
-    )) as PostWithUser[]
+    )) as PostListItem[]
     return backSuccessMessage("获取文章列表成功", postsWithSummary)
   } catch {
     return backFailMessage("获取文章列表失败", [])
@@ -61,24 +64,14 @@ export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
 /*分页查询文章*/
 export async function getPostsByPage(params: Prisma.PostFindManyArgs & Paging) {
   try {
-    const { page, pageSize, ...data } = params
-
-    const posts = await getAllPosts({
-      ...merge(
-        {
-          // orderBy: {createdAt: 'desc'},
-          where: {
-            status: 1,
-          },
-        },
-        data
-      ),
-      skip: (page - 1) * pageSize, // 跳过前面的页数
-      take: pageSize, // 每页查多少条
-    })
-
-    // 通常还需要返回总数来计算总页数
-    const totalCount = await prisma.post.count()
+    const { page, pageSize, where: filter, orderBy } = params
+    validatePaging(page, pageSize)
+    const where: Prisma.PostWhereInput = { AND: [{ status: 1 }, filter || {}] }
+    const [posts, totalCount] = await Promise.all([
+      getAllPosts({ where, orderBy, skip: (page - 1) * pageSize, take: pageSize }),
+      prisma.post.count({ where }),
+    ])
+    if (posts.code !== 200) throw new Error(posts.message)
     return backSuccessMessage("获取文章列表成功", {
       list: posts.data,
       totalPages: Math.ceil(totalCount / pageSize),
@@ -99,24 +92,18 @@ export async function getMePosts(params: Prisma.PostWhereInput & Paging) {
     const user = await checkAuth()
     const { page, pageSize, ...where } = params
 
-    const mergedWhere = merge(
-      {
-        status: 1,
-        userId: user.id,
-      },
-      where
-    )
-
-    const posts = await getAllPosts({
-      where: mergedWhere,
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    })
-
-    const totalCount = await prisma.post.count({
-      where: mergedWhere,
-    })
+    validatePaging(page, pageSize)
+    const mergedWhere: Prisma.PostWhereInput = { AND: [{ userId: user.id, status: 1 }, where] }
+    const [posts, totalCount] = await Promise.all([
+      getAllPosts({
+        where: mergedWhere,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.post.count({ where: mergedWhere }),
+    ])
+    if (posts.code !== 200) throw new Error(posts.message)
 
     return backSuccessMessage("获取我的文章列表成功", {
       list: posts.data,
@@ -136,11 +123,12 @@ export async function getMePosts(params: Prisma.PostWhereInput & Paging) {
 export async function updatePost({ id, ...params }: addPostParams & { id: number }) {
   try {
     // 1. 拦截未登录（抛出 ActionError）
-    await checkAuth()
+    const user = await checkAuth()
+    if (!Number.isSafeInteger(id) || id <= 0) return backFailMessage("文章 ID 不合法")
     const data = addPostSchema.parse(params)
 
     const post = await prisma.post.update({
-      where: { id },
+      where: { id, userId: user.id },
       data,
     })
     return backSuccessMessage("更新文章成功", post)
@@ -150,8 +138,9 @@ export async function updatePost({ id, ...params }: addPostParams & { id: number
 }
 
 // 根据 ID 获取单篇文章
-export async function getPostById(id: number) {
+const readPostById = cache(async (id: number) => {
   try {
+    if (!Number.isSafeInteger(id) || id <= 0) return backFailMessage("文章不存在")
     // 1. 获取当前登录用户会话
     const session = await auth()
     const currentUserId = session?.user?.id
@@ -172,16 +161,21 @@ export async function getPostById(id: number) {
       },
     })) as PostWithFavorites
 
+    if (!post || (post.status !== 1 && post.userId !== currentUserId)) {
+      return backFailMessage("文章不存在")
+    }
+
     // 为了保持 PostWithUser 类型的整洁，我们可以解构掉 favorites
     const { favorites, ...postData } = post
     // 如果 favorites 数组长度大于 0，说明当前用户已收藏
     const isFavorite = Array.isArray(favorites) && favorites.length > 0
 
     after(async () => {
-      await prisma.post.update({
-        where: { id },
-        data: { pv: { increment: 1 } },
-      })
+      try {
+        await prisma.post.update({ where: { id }, data: { pv: { increment: 1 } } })
+      } catch {
+        console.error("[post] Failed to update view count", { id })
+      }
     })
 
     return backSuccessMessage("获取文章成功", {
@@ -190,6 +184,17 @@ export async function getPostById(id: number) {
     } as PostWithFavorites & { isFavorite: boolean })
   } catch {
     return backFailMessage("文章不存在")
+  }
+})
+
+// Metadata and the page body share one read and one view update per server render.
+export async function getPostById(id: number) {
+  return readPostById(id)
+}
+
+function validatePaging(page: number, pageSize: number) {
+  if (!Number.isSafeInteger(page) || page < 1 || !Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 50) {
+    throw new Error("分页参数不合法")
   }
 }
 

@@ -10,10 +10,12 @@ import { Image } from "@/components/k-view/Image";
 
 interface ImageUploadProps extends BaseComponentProps {
     onUpload?: (url: string) => void;
+    onRemove?: () => void;
+    showUrlInput?: boolean;
     value?: string;
 }
 
-export function ImageUpload({className, value, style, onUpload}: ImageUploadProps) {
+export function ImageUpload({className, value, style, onUpload, onRemove, showUrlInput = true}: ImageUploadProps) {
     const {
         pending,
         previewUrl,
@@ -28,6 +30,10 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
     })
 
     const [isDragging, setIsDragging] = useState(false)
+    const removeImage = () => {
+        handleRemove()
+        onRemove?.()
+    }
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
@@ -79,11 +85,11 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
                 <p className="text-sm text-muted-foreground">
                     最大可上传图片大小：{env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}
                 </p>
-                <Input
+                {showUrlInput && <Input
                     value={previewUrl}
                     placeholder={`输入已有的图片地址`}
                     onChange={(e) => onUpload?.(e.target.value)}
-                />
+                />}
             </div>
             {pending && <FixSpin text={'上传中...'}/>}
             <Input
@@ -141,7 +147,7 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
                                 type={'button'}
                                 size="sm"
                                 variant="destructive"
-                                onClick={handleRemove}
+                                onClick={removeImage}
                                 className="h-9 w-9 p-0"
                             >
                                 <Trash2 className="h-4 w-4"/>
@@ -152,7 +158,8 @@ export function ImageUpload({className, value, style, onUpload}: ImageUploadProp
                         <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                             <span className="truncate">{fileName}</span>
                             <button
-                                onClick={handleRemove}
+                                type="button"
+                                onClick={removeImage}
                                 className="ml-auto rounded-full p-1 hover:bg-muted"
                             >
                                 <X className="h-4 w-4"/>

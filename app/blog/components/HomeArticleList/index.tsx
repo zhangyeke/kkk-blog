@@ -4,12 +4,14 @@ import Article from "@/app/blog/components/Article";
 import { Empty } from "@/components/k-view/Empty";
 
 export default async function HomeArticleList() {
-    const postCategory = await getPostCategoryWithPosts();
-    const posts = await getPostsByPage({
+    const [postCategory, posts] = await Promise.all([
+        getPostCategoryWithPosts(),
+        getPostsByPage({
         page: 1,
         pageSize: 6,
         orderBy: {createdAt: 'desc'}
-    })
+        })
+    ])
 
 
     return (
