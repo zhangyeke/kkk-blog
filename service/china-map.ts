@@ -22,7 +22,19 @@ async function fetchFullGeoByAdcode(adcode: string): Promise<BaseResource<ChinaG
         return backFailMessage("区划 adcode 须为 6 位数字", null)
     }
     const url = `${mapBasePath()}/${key}_full.json`
-    const res = await fetch(url, {next: {revalidate: 86_400}})
+    let res: Response
+    try {
+        res = await fetch(url, {
+            next: {revalidate: 86_400},
+            signal: AbortSignal.timeout(15_000),
+        })
+    } catch {
+        return backFailMessage("地图数据加载超时，请检查网络后重试", null)
+    }
+    // 部分区划（如台湾省 710000）在数据源里没有 _full，属于「没有下级」而不是故障
+    if (res.status === 404) {
+        return backSuccessMessage("该区划没有下级数据", {type: "FeatureCollection", features: []} as ChinaGeoJSON)
+    }
     if (!res.ok) {
         return backFailMessage(`无法拉取地图数据: ${key}（HTTP ${res.status}）`, null)
     }

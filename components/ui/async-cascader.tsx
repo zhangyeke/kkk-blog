@@ -79,6 +79,8 @@ export function AsyncCascader<T>({
   const [columnMap, setColumnMap] = useState<Record<string, ColumnState<T>>>(
     {},
   );
+  /** 失败后重试：清掉该列并触发重新拉取 */
+  const [reloadToken, setReloadToken] = useState(0);
 
   const loadRef = useRef(loadData);
   loadRef.current = loadData;
@@ -155,7 +157,7 @@ export function AsyncCascader<T>({
           );
         });
     }
-  }, [open, activeKey, activePath]);
+  }, [open, activeKey, activePath, reloadToken]);
 
   const labelByValue = useMemo(() => {
     const map = new Map<string, string>();
@@ -231,6 +233,15 @@ export function AsyncCascader<T>({
     [onChange],
   );
 
+  const handleRetry = useCallback((key: string) => {
+    setColumnMap((prev) =>
+      produce(prev, (d) => {
+        delete d[key];
+      }),
+    );
+    setReloadToken((t) => t + 1);
+  }, []);
+
   const columnCount = activePath.length + 1;
 
   return (
@@ -303,7 +314,17 @@ export function AsyncCascader<T>({
                   <Spinner className="position-center absolute" />
                 )}
                 {col.error && (
-                  <Empty type="address" text="没有更多地区了" />
+                  <div className="flex flex-col items-center gap-2 px-3 py-6 text-center">
+                    <p className="text-xs text-muted-foreground">{col.error}</p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRetry(key)}
+                    >
+                      重试
+                    </Button>
+                  </div>
                 )}
                 {col.fetched && !col.error && col.options.length === 0 && (
                   <Empty type="address" text="没有更多地区了" />
