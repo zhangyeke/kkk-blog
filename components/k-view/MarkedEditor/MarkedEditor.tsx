@@ -8,7 +8,7 @@
  */
 "use client"
 import i18next from 'i18next'
-import {FC, useEffect, useRef} from 'react'
+import {FC, useCallback, useEffect, useMemo, useRef} from 'react'
 import '@mdxeditor/editor/style.css';
 import {
     MDXEditor,
@@ -17,7 +17,7 @@ import {
 } from "@mdxeditor/editor";
 import {useTheme} from "next-themes";
 
-import {ALL_PLUGINS, MDX_EDITOR_ZH_CN, toolbarConfig} from "./boilerplate"
+import {ALL_PLUGINS, createToolbarConfig, MDX_EDITOR_ZH_CN} from "./boilerplate"
 import {cn} from "@/lib/utils";
 
 interface EditorProps extends Omit<MDXEditorProps, 'markdown'> {
@@ -45,6 +45,25 @@ const MarkedEditor: FC<EditorProps> = ({value = '', onChange, className, ...prop
         }
     }, [value]);
 
+    /**
+     * 插入视频：落到编辑器当前光标处，由工具栏的「插入视频」按钮调用。
+     * 弹窗会抢走焦点导致编辑器没有选区，必须先 focus（mdxeditor 会在焦点恢复后再执行回调），
+     * 否则 insertMarkdown 会静默什么都不做。
+     */
+    const handleInsertVideo = useCallback((markdown: string) => {
+        const editor = editorRef.current
+        if (!editor) return
+        editor.focus(() => editor.insertMarkdown(markdown), {preventScroll: true})
+    }, [])
+
+    // 插件数组需要稳定引用，否则每次渲染都会让编辑器重建
+    const plugins = useMemo(
+        () => [
+            ...ALL_PLUGINS,
+            ...(props.readOnly ? [] : [toolbarPlugin(createToolbarConfig({onInsertVideo: handleInsertVideo}))]),
+        ],
+        [props.readOnly, handleInsertVideo]
+    )
 
     return (
         <MDXEditor
@@ -55,7 +74,7 @@ const MarkedEditor: FC<EditorProps> = ({value = '', onChange, className, ...prop
             translation={(key, defaultValue, interpolations) => i18next.t(key, defaultValue, interpolations) as string}
             className={cn(`relative custom-editor mdxeditor ${theme} max-w-full`, className)} // 使用 Tailwind Typography 优化预览样式
             // 插件系统：按需引入功能
-            plugins={[...ALL_PLUGINS, ...(props.readOnly ? [] : [toolbarPlugin(toolbarConfig)])]}
+            plugins={plugins}
         />
     )
 }

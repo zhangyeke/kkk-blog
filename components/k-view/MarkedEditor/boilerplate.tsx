@@ -37,6 +37,10 @@ import {
     UndoRedo
 } from '@mdxeditor/editor'
 import {uploadImagePromise} from "@/lib/utils";
+import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/image-upload-routes";
+import {UploadRouteSelect} from "@/components/ui/upload-route-select";
+import {VideoDirectiveDescriptor} from "./video-directive";
+import {InsertVideo} from "./InsertVideo";
 
 /*国际化语言包*/
 export const MDX_EDITOR_ZH_CN = {
@@ -200,8 +204,14 @@ export const virtuosoSampleSandpackConfig: SandpackConfig = {
     ]
 }
 
+/**
+ * 编辑器内图片上传的线路。`imageUploadHandler` 是交给 mdxeditor 的普通函数，
+ * 拿不到 React 状态，这里用一个模块级变量把工具栏里的选择桥接过去。
+ */
+let editorImageRoute: UploadRouteId = DEFAULT_UPLOAD_ROUTE
+
 export function imageUploadHandler(image: File) {
-    const uploadPromise = uploadImagePromise(image, false)
+    const uploadPromise = uploadImagePromise(image, false, editorImageRoute)
     toast.promise(uploadPromise, {
         loading: "正在上传图片...",
         success: () => '图片上传成功',
@@ -212,47 +222,20 @@ export function imageUploadHandler(image: File) {
     return uploadPromise
 }
 
-/*interface YoutubeDirectiveNode extends LeafDirective {
-    name: 'youtube'
-    attributes: { id: string }
-}*/
-
-/*
-export const YoutubeDirectiveDescriptor: DirectiveDescriptor<YoutubeDirectiveNode> = {
-    name: 'youtube',
-    type: 'leafDirective',
-    testNode(node) {
-        return node.name === 'youtube'
-    },
-    attributes: ['id'],
-    hasChildren: false,
-    Editor: ({ mdastNode, lexicalNode, parentEditor }) => {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <button
-                    onClick={() => {
-                        parentEditor.update(() => {
-                            lexicalNode.selectNext()
-                            lexicalNode.remove()
-                        })
-                    }}
-                >
-                    delete
-                </button>
-                <iframe
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${mdastNode.attributes.id}`}
-                    title="YouTube video player"
-                    style={{ border: 0 }}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                ></iframe>
-            </div>
-        )
-    }
+/** 工具栏上的图片上传线路选择，和「插入图片」按钮挨着放 */
+function EditorImageRouteSelect() {
+    const [route, setRoute] = React.useState<UploadRouteId>(editorImageRoute)
+    return (
+        <UploadRouteSelect
+            value={route}
+            onChange={(next) => {
+                editorImageRoute = next
+                setRoute(next)
+            }}
+            className="px-1"
+        />
+    )
 }
-*/
-
 
 function whenInAdmonition(editorInFocus: EditorInFocus | null) {
     const node = editorInFocus?.rootNode
@@ -263,7 +246,11 @@ function whenInAdmonition(editorInFocus: EditorInFocus | null) {
     return ['note', 'tip', 'danger', 'info', 'caution'].includes((node as DirectiveNode).getMdastNode().name)
 }
 
-export const toolbarConfig = {
+/**
+ * 工具栏配置。插入视频需要拿到编辑器实例（`editorRef.insertMarkdown`），
+ * 所以这里做成工厂，由 MarkedEditor 注入回调。
+ */
+export const createToolbarConfig = ({onInsertVideo}: {onInsertVideo: (markdown: string) => void}) => ({
     toolbarContents: () => (
         <ConditionalContents
             options={[
@@ -294,7 +281,9 @@ export const toolbarConfig = {
                             <Separator/>
 
                             <CreateLink/>
+                            <EditorImageRouteSelect/>
                             <InsertImage/>
+                            <InsertVideo onInsert={onInsertVideo}/>
 
                             <Separator/>
 
@@ -330,7 +319,7 @@ export const toolbarConfig = {
 
 
     )
-}
+})
 
 
 export const ALL_PLUGINS = [
@@ -361,7 +350,7 @@ export const ALL_PLUGINS = [
     }),
     directivesPlugin({
         directiveDescriptors: [
-            // YoutubeDirectiveDescriptor,
+            VideoDirectiveDescriptor,
             AdmonitionDirectiveDescriptor
         ]
     }),
