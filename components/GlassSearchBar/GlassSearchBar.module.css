@@ -1,0 +1,12 @@
+/*
+ * 面板仍是组件内部的绝对定位元素（不脱离文档流，不 portal），
+ * 只是视觉上做成一片浮在页面之上的磨砂玻璃：透明度、投影、圆角、材质都在 index.tsx 里。
+ * 这里只保留定位、层级与合成提示。
+ */
+.panel {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  will-change: transform, opacity, filter;
+}
