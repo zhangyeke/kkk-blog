@@ -5,9 +5,8 @@ import { checkAuth } from "@/service/auth"
 
 jest.mock("@/env.mjs", () => ({
   env: {
-    IMAGE_UPLOAD_PROVIDER: "default",
-    MTBED_UPLOAD_SERVER: "primary",
-    IMAGE_UPLOAD_TIMEOUT_MS: 15000,
+    MTBED_UPLOAD_URL_PRIMARY: "https://aapi.helioho.st/upload.php",
+    MTBED_UPLOAD_URL_SECONDARY: "https://mtbed.netsons.org/upload.php",
     NEXT_PUBLIC_IMG_UPLOAD_LIMIT: "3mb",
     IMGBB_API_URL: "https://existing.example",
     IMGBB_API_TOKEN: "test-token",
@@ -17,8 +16,8 @@ jest.mock("@/service/auth", () => ({ checkAuth: jest.fn() }))
 
 const fetchMock = jest.fn()
 const uploadEnv = env as {
-  IMAGE_UPLOAD_PROVIDER: "default" | "mtbed"
-  MTBED_UPLOAD_SERVER: "primary" | "secondary"
+  MTBED_UPLOAD_URL_PRIMARY: string
+  MTBED_UPLOAD_URL_SECONDARY: string
   NEXT_PUBLIC_IMG_UPLOAD_LIMIT: string
 }
 const originalFetch = global.fetch
@@ -37,8 +36,8 @@ function success(url = "https://images.example/image.png") {
 beforeEach(() => {
   jest.clearAllMocks()
   global.fetch = fetchMock
-  uploadEnv.IMAGE_UPLOAD_PROVIDER = "default"
-  uploadEnv.MTBED_UPLOAD_SERVER = "primary"
+  uploadEnv.MTBED_UPLOAD_URL_PRIMARY = "https://aapi.helioho.st/upload.php"
+  uploadEnv.MTBED_UPLOAD_URL_SECONDARY = "https://mtbed.netsons.org/upload.php"
   uploadEnv.NEXT_PUBLIC_IMG_UPLOAD_LIMIT = "3mb"
   jest.mocked(checkAuth).mockResolvedValue({ id: "owner" } as Awaited<ReturnType<typeof checkAuth>>)
   fetchMock.mockResolvedValue(success())
@@ -47,8 +46,10 @@ afterAll(() => {
   global.fetch = originalFetch
 })
 
-test("keeps the existing provider and its authorization and server-owned album settings", async () => {
+test("uses the existing provider only when the client explicitly asks for it", async () => {
   const params = form()
+  params.append("route", "default")
+  // 旧的 provider 字段必须继续被忽略，线路只认 route
   params.append("provider", "mtbed")
   params.append("params", '{"album_id":999}')
   const response = await uploadImage(params)
@@ -64,20 +65,57 @@ test("keeps the existing provider and its authorization and server-owned album s
 })
 
 test.each([
-  ["primary", "https://aapi.helioho.st/upload.php"],
-  ["secondary", "https://mtbed.netsons.org/upload.php"],
-] as const)("uses the %s backup node with the image field and no existing credentials", async (server, endpoint) => {
-  uploadEnv.IMAGE_UPLOAD_PROVIDER = "mtbed"
-  uploadEnv.MTBED_UPLOAD_SERVER = server
-  expect((await uploadImage(form())).code).toBe(200)
+  ["mtbed-primary", "https://aapi.helioho.st/upload.php"],
+  ["mtbed-secondary", "https://mtbed.netsons.org/upload.php"],
+] as const)("uses the %s route with the image field and source headers", async (route, endpoint) => {
+  const params = form()
+  params.append("route", route)
+  expect((await uploadImage(params)).code).toBe(200)
   const [url, request] = fetchMock.mock.calls[0]!
   expect(url).toBe(endpoint)
   expect(request.body.get("image")).toBeInstanceOf(File)
   expect(request.body.get("params")).toBeNull()
   expect(request.body.get("file")).toBeNull()
+  // 上游按来源头防盗链，缺了会 403；但绝不能带上默认源的令牌
   expect(request.headers.Authorization).toBeUndefined()
-  expect(request.headers.Origin).toBeUndefined()
-  expect(request.headers.Referer).toBeUndefined()
+  expect(request.headers.Referer).toBe("https://695402.xyz/mt/")
+  expect(request.headers.Origin).toBe("https://695402.xyz")
+  expect(request.headers["User-Agent"]).toContain("Mozilla/5.0")
+})
+
+test("defaults to the backup primary node and falls back to it for unknown routes", async () => {
+  uploadEnv.MTBED_UPLOAD_URL_PRIMARY = "https://env-primary.example/upload.php"
+  uploadEnv.MTBED_UPLOAD_URL_SECONDARY = "https://env-secondary.example/upload.php"
+  // 同一个 Response 的 body 只能读一次，这里每次调用都构造新的响应
+  fetchMock.mockImplementation(() => Promise.resolve(success()))
+
+  const withRoute = (route?: string) => {
+    const params = form()
+    if (route) params.append("route", route)
+    return params
+  }
+  const endpointOf = () => fetchMock.mock.calls[0]![0]
+
+  // 不传线路
+  expect((await uploadImage(withRoute())).code).toBe(200)
+  expect(endpointOf()).toBe("https://env-primary.example/upload.php")
+
+  fetchMock.mockClear()
+  expect((await uploadImage(withRoute("mtbed-secondary"))).code).toBe(200)
+  expect(endpointOf()).toBe("https://env-secondary.example/upload.php")
+
+  fetchMock.mockClear()
+  expect((await uploadImage(withRoute("mtbed-primary"))).code).toBe(200)
+  expect(endpointOf()).toBe("https://env-primary.example/upload.php")
+
+  fetchMock.mockClear()
+  expect((await uploadImage(withRoute("default"))).code).toBe(200)
+  expect(endpointOf()).toBe("https://existing.example/api/v3/upload")
+
+  // 客户端不能指定任意地址：非法线路回退到默认线路
+  fetchMock.mockClear()
+  expect((await uploadImage(withRoute("https://evil.example/upload"))).code).toBe(200)
+  expect(endpointOf()).toBe("https://env-primary.example/upload.php")
 })
 
 test("unauthenticated uploads never reach the provider", async () => {
@@ -108,7 +146,6 @@ test("validates the configured size before reading or uploading image bytes", as
 })
 
 test("the backup source caps each file at 20 MB even with a higher app limit", async () => {
-  uploadEnv.IMAGE_UPLOAD_PROVIDER = "mtbed"
   uploadEnv.NEXT_PUBLIC_IMG_UPLOAD_LIMIT = "25mb"
   const file = new File([png], "large.png")
   const params = form(file)
@@ -119,13 +156,12 @@ test("the backup source caps each file at 20 MB even with a higher app limit", a
 
 test("normalizes extension and MIME using actual bytes", async () => {
   await uploadImage(form(new File([png], "wrong.html", { type: "text/html" })))
-  const file = fetchMock.mock.calls[0]![1].body.get("file") as File
+  const file = fetchMock.mock.calls[0]![1].body.get("image") as File
   expect(file.name).toBe("upload.png")
   expect(file.type).toBe("image/png")
 })
 
 test("returns a useful 403 error without retrying or leaking upstream HTML", async () => {
-  uploadEnv.IMAGE_UPLOAD_PROVIDER = "mtbed"
   fetchMock.mockResolvedValueOnce(new Response("private upstream details", { status: 403 }))
   expect(await uploadImage(form())).toEqual({ code: 502, message: expect.stringContaining("403"), data: null })
   expect(fetchMock).toHaveBeenCalledTimes(1)

@@ -1,16 +1,19 @@
 import {ChangeEvent, useCallback, useEffect, useRef, useState} from "react";
 import {uploadImagePromise} from "@/lib/utils";
+import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/image-upload-routes";
 
 interface UseImageUploadProps {
     value?: string;
     onUpload?: (url: string) => void;
+    /** 上传线路；不传则沿用服务端默认 */
+    route?: UploadRouteId;
 }
 
 interface FileChangeEvent {
     target: { files: Array<File> };
 }
 
-export function useImageUpload({value, onUpload}: UseImageUploadProps = {}) {
+export function useImageUpload({value, onUpload, route = DEFAULT_UPLOAD_ROUTE}: UseImageUploadProps = {}) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [previewUrl, setPreviewUrl] = useState<string>(value || '');
     const [fileName, setFileName] = useState<string | null>(null);
@@ -26,7 +29,7 @@ export function useImageUpload({value, onUpload}: UseImageUploadProps = {}) {
                 if (file) {
                     setFileName(file.name);
                     setPending(true)
-                    uploadImagePromise(file).then(url => {
+                    uploadImagePromise(file, true, route).then(url => {
                         setPreviewUrl(url)
                         onUpload?.(url)
                     }).catch(() => {
@@ -39,7 +42,7 @@ export function useImageUpload({value, onUpload}: UseImageUploadProps = {}) {
                 }
             }
             ,
-            [onUpload],
+            [onUpload, route],
         )
     ;
 

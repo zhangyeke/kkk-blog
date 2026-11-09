@@ -8,6 +8,7 @@ import {uploadImage} from "@/service/fileUpload";
 import {env} from "@/env.mjs";
 import {backFailMessage, SUCCESS_CODE} from "./actionMessageBack";
 import {imageUploadLimitBytes} from "./image-upload-policy";
+import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "./image-upload-routes";
 import {isNumber} from "./validator";
 
 /*
@@ -92,13 +93,18 @@ export function sleep(delay = 5000) {
  * @Params:
  */
 
-export async function uploadImagePromise(image: File, isToast = true): Promise<string> {
+export async function uploadImagePromise(
+    image: File,
+    isToast = true,
+    route: UploadRouteId = DEFAULT_UPLOAD_ROUTE,
+): Promise<string> {
     try {
         if (image.size > imageUploadLimitBytes(env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT)) {
             throw new Error(`图片大小超过限制，最大可上传 ${env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}`)
         }
         const formData = new FormData()
         formData.append('file', image)
+        formData.append('route', route)
         const response = await uploadImage(formData)
         if (response.code !== SUCCESS_CODE || !response.data?.url) {
             throw new Error(response.message || '图片上传失败')

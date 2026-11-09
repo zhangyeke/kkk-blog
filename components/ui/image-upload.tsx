@@ -1,10 +1,14 @@
+"use client"
+
 import React, {useCallback, useState} from "react"
 import {env} from "env.mjs"
 import {ImagePlus, Trash2, Upload, X} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import {useImageUpload} from "@/hooks/use-image-upload"
 import {cn} from "@/lib/utils"
+import {DEFAULT_UPLOAD_ROUTE, UPLOAD_ROUTES, type UploadRouteId} from "@/lib/image-upload-routes"
 import { FixSpin } from "@/components/k-view/Loader";
 import { Image } from "@/components/k-view/Image";
 
@@ -12,10 +16,21 @@ interface ImageUploadProps extends BaseComponentProps {
     onUpload?: (url: string) => void;
     onRemove?: () => void;
     showUrlInput?: boolean;
+    /** 是否显示上传线路选择；默认显示 */
+    showRouteSelect?: boolean;
     value?: string;
 }
 
-export function ImageUpload({className, value, style, onUpload, onRemove, showUrlInput = true}: ImageUploadProps) {
+export function ImageUpload({
+    className,
+    value,
+    style,
+    onUpload,
+    onRemove,
+    showUrlInput = true,
+    showRouteSelect = true,
+}: ImageUploadProps) {
+    const [route, setRoute] = useState<UploadRouteId>(DEFAULT_UPLOAD_ROUTE)
     const {
         pending,
         previewUrl,
@@ -26,7 +41,8 @@ export function ImageUpload({className, value, style, onUpload, onRemove, showUr
         handleRemove,
     } = useImageUpload({
         onUpload,
-        value
+        value,
+        route,
     })
 
     const [isDragging, setIsDragging] = useState(false)
@@ -82,9 +98,36 @@ export function ImageUpload({className, value, style, onUpload, onRemove, showUr
                 {/*<p className="text-sm text-muted-foreground">*/}
                 {/*    支持的图片格式: JPG, PNG, GIF*/}
                 {/*</p>*/}
-                <p className="text-sm text-muted-foreground">
-                    最大可上传图片大小：{env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm text-muted-foreground">
+                        最大可上传图片大小：{env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}
+                    </p>
+                    {showRouteSelect && (
+                        <div className="flex shrink-0 items-center gap-1.5">
+                            <span className="text-xs text-muted-foreground">上传线路</span>
+                            <Select
+                                value={route}
+                                onValueChange={(next) => setRoute(next as UploadRouteId)}
+                                disabled={pending}
+                            >
+                                <SelectTrigger
+                                    size="sm"
+                                    aria-label="上传线路"
+                                    className="h-7 w-auto gap-1 px-2 text-xs"
+                                >
+                                    <SelectValue/>
+                                </SelectTrigger>
+                                <SelectContent position="popper" align="end">
+                                    {UPLOAD_ROUTES.map((option) => (
+                                        <SelectItem key={option.id} value={option.id} className="text-xs">
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
                 {showUrlInput && <Input
                     value={previewUrl}
                     placeholder={`输入已有的图片地址`}

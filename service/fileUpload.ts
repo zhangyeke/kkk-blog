@@ -6,9 +6,34 @@ import { imageFileExtension, imageUploadLimitBytes } from "@/lib/image-upload-po
 import { checkAuth } from "@/service/auth"
 import type { UploadImageResult } from "@/types/file"
 
-const mtbedEndpoints = {
-  primary: "https://aapi.helioho.st/upload.php",
-  secondary: "https://mtbed.netsons.org/upload.php",
+/** 单次上游请求超时 */
+const UPLOAD_TIMEOUT_MS = 15000
+
+/** 默认图床（imgbb 兼容接口）的上传地址 */
+function defaultEndpoint() {
+  return `${env.IMGBB_API_URL.replace(/\/$/, "")}/api/v3/upload`
+}
+
+/**
+ * 线路解析：客户端只能传固定 id，真实地址一律由服务端环境变量决定。
+ * 未传或传了非法值时，回退到默认线路（备用图床主节点）。
+ */
+function resolveUploadRoute(requested: unknown) {
+  if (requested === "default") return { provider: "default" as const, endpoint: defaultEndpoint() }
+  if (requested === "mtbed-secondary")
+    return { provider: "mtbed" as const, endpoint: env.MTBED_UPLOAD_URL_SECONDARY }
+  return { provider: "mtbed" as const, endpoint: env.MTBED_UPLOAD_URL_PRIMARY }
+}
+
+/**
+ * 备用源按来源头做防盗链校验：不带 Referer/Origin 时主备节点都会直接返回 403，
+ * 带上后返回 200 与图片地址。仅用于该第三方源，不影响默认源。
+ */
+const MTBED_SOURCE = {
+  referer: "https://695402.xyz/mt/",
+  origin: "https://695402.xyz",
+  userAgent:
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
 } as const
 const MTBED_MAX_BYTES = 20 * 1024 * 1024
 const imageMimeTypes = {
@@ -34,7 +59,7 @@ export async function uploadImage(params: FormData): Promise<UploadImageResult> 
     const file = params.get("file")
     if (!(file instanceof File) || file.size === 0) throw new ActionError("请选择非空的图片文件", 400)
 
-    const provider = env.IMAGE_UPLOAD_PROVIDER
+    const { provider, endpoint } = resolveUploadRoute(params.get("route"))
     const configuredLimit = imageUploadLimitBytes(env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT)
     const maxBytes = provider === "mtbed" ? Math.min(configuredLimit, MTBED_MAX_BYTES) : configuredLimit
     if (file.size > maxBytes) {
@@ -51,11 +76,11 @@ export async function uploadImage(params: FormData): Promise<UploadImageResult> 
       `upload.${extension}`
     )
     const headers: Record<string, string> = { Accept: "application/json" }
-    let endpoint: string
     if (provider === "mtbed") {
-      endpoint = mtbedEndpoints[env.MTBED_UPLOAD_SERVER]
+      headers.Referer = MTBED_SOURCE.referer
+      headers.Origin = MTBED_SOURCE.origin
+      headers["User-Agent"] = MTBED_SOURCE.userAgent
     } else {
-      endpoint = `${env.IMGBB_API_URL.replace(/\/$/, "")}/api/v3/upload`
       headers.Authorization = `Bearer ${env.IMGBB_API_TOKEN}`
       body.append("params", JSON.stringify({ dedup: true, album_id: 1516 }))
     }
@@ -66,7 +91,7 @@ export async function uploadImage(params: FormData): Promise<UploadImageResult> 
       body,
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(env.IMAGE_UPLOAD_TIMEOUT_MS),
+      signal: AbortSignal.timeout(UPLOAD_TIMEOUT_MS),
     })
     if (!response.ok) {
       throw new ActionError(
