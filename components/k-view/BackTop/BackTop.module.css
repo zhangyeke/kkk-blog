@@ -1,0 +1,200 @@
+.button {
+  --ink: color-mix(in oklab, var(--primary) 42%, var(--foreground));
+  --paper: color-mix(in oklab, var(--primary) 12%, var(--background));
+  --fold: color-mix(in oklab, var(--primary) 37%, var(--background));
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  position: fixed;
+  right: max(1.25rem, env(safe-area-inset-right));
+  bottom: max(12.5%, env(safe-area-inset-bottom));
+  z-index: 50;
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  place-items: center;
+  isolation: isolate;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.dock {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--ink) 24%, transparent);
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 50% 20%, var(--paper), var(--background) 75%);
+  box-shadow: inset 0 0 0 3px var(--background), 0 5px 16px color-mix(in oklab, var(--foreground) 13%, transparent);
+}
+
+.shadow {
+  position: absolute;
+  bottom: 9px;
+  width: 20px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .14;
+  transition: transform 180ms var(--ease-out), opacity 180ms ease;
+}
+
+.carrier,
+.check {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.carrier {
+  width: 36px;
+  height: 36px;
+}
+
+.plane {
+  width: 100%;
+  height: 100%;
+  transform: translateY(2px) rotate(-17deg);
+  transition: transform 200ms var(--ease-out);
+}
+
+.ticket {
+  position: absolute;
+  inset-inline-end: calc(100% + .55rem);
+  padding: .36rem .65rem;
+  border: 1px solid var(--border);
+  border-radius: .45rem;
+  color: var(--foreground);
+  background: var(--background);
+  font-size: .75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(5px);
+  transition: transform 180ms var(--ease-out), opacity 150ms ease;
+  pointer-events: none;
+}
+
+.check {
+  width: 1.5rem;
+  opacity: 0;
+  transform: scale(.72);
+  transition: opacity 180ms ease, transform 240ms var(--ease-out);
+}
+
+.wake {
+  position: absolute;
+  top: 85%;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(var(--fold), transparent);
+  opacity: 0;
+  transform-origin: top;
+}
+
+.speedLines {
+  position: absolute;
+  top: -24px;
+  left: calc(50% - 38px);
+  width: 76px;
+  height: 88px;
+  color: color-mix(in oklab, var(--ink) 70%, var(--primary));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.button:focus-visible .ticket,
+.button[data-phase="arrived"] .ticket {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button[data-phase="idle"]:hover .ticket {
+    opacity: 1;
+    transform: none;
+  }
+
+  .button[data-phase="idle"]:hover .plane {
+    transform: translateY(4px) rotate(-14deg);
+  }
+
+  .button[data-phase="idle"]:hover .shadow {
+    transform: scaleX(1.12);
+    opacity: .18;
+  }
+}
+
+.button[data-phase="flight"] .carrier {
+  animation: departure 1060ms linear both;
+}
+
+.button[data-phase="flight"] .plane {
+  transform: none;
+  transition: none;
+}
+
+.button[data-phase="flight"] .wake {
+  animation: slipstream 730ms ease-out 115ms both;
+}
+
+.button[data-phase="flight"] .speedLines {
+  animation: launch-lines 340ms var(--ease-out) 95ms both;
+}
+
+.button[data-phase="flight"] :is(.shadow, .ticket),
+.button[data-phase="arrived"] :is(.shadow, .carrier) {
+  opacity: 0;
+}
+
+.button[data-phase="arrived"] .check {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes departure {
+  0% { transform: translate(0, 2px) rotate(-17deg); animation-timing-function: ease-out; }
+  9% { transform: translate(1px, 6px) rotate(-11deg) scale(.97); animation-timing-function: cubic-bezier(.46, .05, .54, .68); }
+  24% { transform: translate(-2vw, -19dvh) rotate(-15deg) scale(1.08); animation-timing-function: cubic-bezier(.26, .28, .67, .89); }
+  44% { transform: translate(-14vw, -53dvh) rotate(-30deg) scale(.81); }
+  68% { transform: translate(-42vw, -77dvh) rotate(-56deg) scale(.37); opacity: 1; }
+  84% { transform: translate(-64vw, -85dvh) rotate(-68deg) scale(.16); opacity: .84; }
+  100% { transform: translate(-82vw, calc(-87.5dvh - 8px)) rotate(-80deg) scale(.04); opacity: 0; }
+}
+
+@keyframes launch-lines {
+  0% { opacity: 0; transform: translateY(4px) scaleY(.45); }
+  22% { opacity: .82; }
+  100% { opacity: 0; transform: translateY(-32px) scaleY(1.28); }
+}
+
+@keyframes slipstream {
+  0% { opacity: 0; transform: scaleY(.1); }
+  32% { opacity: .7; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button .ticket,
+  .button .check,
+  .button .shadow,
+  .button .plane {
+    transition: none;
+  }
+
+  .button[data-phase="idle"]:hover .plane {
+    transform: translateY(2px) rotate(-17deg);
+  }
+
+  .button[data-phase="flight"] :is(.carrier, .wake, .speedLines) {
+    animation: none;
+  }
+}

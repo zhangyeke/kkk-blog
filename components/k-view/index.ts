@@ -37,3 +37,5 @@ export { LikeIcon, type LikeIconProps } from "./LikeButton/LikeIcon"
 export { RegionCascader, type RegionCascaderProps } from "./RegionCascader"
 
 export { Section } from "./Section"
+
+export { BackTop } from "./BackTop"
