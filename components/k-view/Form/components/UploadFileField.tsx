@@ -1,7 +1,9 @@
 "use client"
 import React from "react";
 import { FileUploadCard, UploadedFile, uploadedFileFromRemoteUrl } from "@/components/ui/file-upload-card";
+import { UploadRouteSelect } from "@/components/ui/upload-route-select";
 import { uploadImagePromise } from "@/lib/utils";
+import { DEFAULT_UPLOAD_ROUTE, type UploadRouteId } from "@/lib/image-upload-routes";
 import { CustomControlProps } from "../type";
 import { Textarea } from "@/components/ui/textarea"
 
@@ -22,6 +24,7 @@ function valueUrlsKey(value: unknown): string {
 }
 
 export default function UploadFileField({ onChange, name, value, ...props }: CustomControlProps) {
+    const [route, setRoute] = React.useState<UploadRouteId>(DEFAULT_UPLOAD_ROUTE)
     const [files, setFiles] = React.useState<UploadedFile[]>(() =>
         urlsFromValue(value).map((href, i) => uploadedFileFromRemoteUrl(href, i)),
     );
@@ -55,7 +58,7 @@ export default function UploadFileField({ onChange, name, value, ...props }: Cus
         for (const item of newItems) {
             const { file, id } = item;
             if (!file.type.startsWith("image/")) continue;
-            uploadImagePromise(file, true)
+            uploadImagePromise(file, true, route)
                 .then((url) => {
                     setFiles((prev) =>
                         prev.map((row) =>
@@ -84,10 +87,15 @@ export default function UploadFileField({ onChange, name, value, ...props }: Cus
         setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
     };
 
+    const uploading = files.some((f) => f.status === "uploading")
+
     return (
         <FileUploadCard
             files={files}
             {...props}
+            headerAction={
+                <UploadRouteSelect value={route} onChange={setRoute} disabled={uploading}/>
+            }
             onFilesChange={handleFilesChange}
             onFileRemove={handleFileRemove}
         />

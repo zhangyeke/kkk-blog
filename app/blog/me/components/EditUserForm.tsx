@@ -20,6 +20,8 @@ import { FixSpin } from "@/components/k-view/Loader";
 import { Image } from "@/components/k-view/Image";
 import { Button } from "@/components/ui/button";
 import { uploadImagePromise } from "@/lib/utils";
+import { UploadRouteSelect } from "@/components/ui/upload-route-select";
+import { DEFAULT_UPLOAD_ROUTE, type UploadRouteId } from "@/lib/image-upload-routes";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { updateAuth } from "@/service/auth";
 import { useRouter } from "next/navigation";
@@ -35,6 +37,7 @@ export default function EditUserForm(props: EditUserFormProps) {
 
     const [pending, setPending] = useState(false)
     const [uploadPending, setUploadPending] = useState(false)
+    const [uploadRoute, setUploadRoute] = useState<UploadRouteId>(DEFAULT_UPLOAD_ROUTE)
 
 
     const form = useForm<UpdateUserSchema>({
@@ -63,7 +66,7 @@ export default function EditUserForm(props: EditUserFormProps) {
             const file = event.target.files?.[0];
             if (file) {
                 setUploadPending(true)
-                uploadImagePromise(file).then(url => {
+                uploadImagePromise(file, true, uploadRoute).then(url => {
                     onChange({
                         target: {
                             value: url
@@ -77,7 +80,7 @@ export default function EditUserForm(props: EditUserFormProps) {
                 })
 
             }
-        }, [setUploadPending])
+        }, [uploadRoute])
 
     const handleRandomAvatar = useCallback(async (onChange: (t: { target: { value: string } }) => void) => {
         try {
@@ -132,6 +135,11 @@ export default function EditUserForm(props: EditUserFormProps) {
                                     </div>
                                 </FormControl>
                                 <FormMessage />
+                                <UploadRouteSelect
+                                    value={uploadRoute}
+                                    onChange={setUploadRoute}
+                                    disabled={uploadPending}
+                                />
                             </FormItem>
                         )
                     }}

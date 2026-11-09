@@ -123,6 +123,8 @@ interface FileUploadCardProps extends HTMLMotionProps<"div"> {
      */
     accept?: string;
     placeholder?: string;
+    /** 标题行右侧的自定义内容（如上传线路选择） */
+    headerAction?: React.ReactNode;
 
 }
 
@@ -130,7 +132,7 @@ interface FileUploadCardProps extends HTMLMotionProps<"div"> {
  * 文件上传卡片：支持点击选择、拖放、多文件，并展示每项进度与完成状态。
  */
 export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardProps>(
-    ({ className, files = [], onFilesChange, onFileRemove, onClose, accept,placeholder = '选择并上传您所选择的文件', ...props }, ref) => {
+    ({ className, files = [], onFilesChange, onFileRemove, onClose, accept, placeholder = '选择并上传您所选择的文件', headerAction, ...props }, ref) => {
 
         /** 拖放区是否处于 drag-over 高亮 */
         const [isDragging, setIsDragging] = React.useState(false);
@@ -290,7 +292,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
             >
                 <div className="p-6">
                     {/* 标题区 + 可选关闭 */}
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 flex items-center justify-center rounded-full bg-muted">
                                 <UploadCloud className="w-6 h-6 text-muted-foreground" />
@@ -302,11 +304,14 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                                 </p>
                             </div>
                         </div>
-                        {onClose && (
-                            <Button variant="ghost" size="icon" className="rounded-full w-8 h-8" onClick={onClose}>
-                                <X className="w-4 h-4" />
-                            </Button>
-                        )}
+                        <div className="flex shrink-0 items-center gap-2">
+                            {headerAction}
+                            {onClose && (
+                                <Button variant="ghost" size="icon" className="rounded-full w-8 h-8" onClick={onClose}>
+                                    <X className="w-4 h-4" />
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center">

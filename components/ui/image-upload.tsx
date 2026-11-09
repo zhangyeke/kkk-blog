@@ -5,10 +5,10 @@ import {env} from "env.mjs"
 import {ImagePlus, Trash2, Upload, X} from "lucide-react"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+import {UploadRouteSelect} from "@/components/ui/upload-route-select"
 import {useImageUpload} from "@/hooks/use-image-upload"
 import {cn} from "@/lib/utils"
-import {DEFAULT_UPLOAD_ROUTE, UPLOAD_ROUTES, type UploadRouteId} from "@/lib/image-upload-routes"
+import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/image-upload-routes"
 import { FixSpin } from "@/components/k-view/Loader";
 import { Image } from "@/components/k-view/Image";
 
@@ -103,29 +103,12 @@ export function ImageUpload({
                         最大可上传图片大小：{env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}
                     </p>
                     {showRouteSelect && (
-                        <div className="flex shrink-0 items-center gap-1.5">
-                            <span className="text-xs text-muted-foreground">上传线路</span>
-                            <Select
-                                value={route}
-                                onValueChange={(next) => setRoute(next as UploadRouteId)}
-                                disabled={pending}
-                            >
-                                <SelectTrigger
-                                    size="sm"
-                                    aria-label="上传线路"
-                                    className="h-7 w-auto gap-1 px-2 text-xs"
-                                >
-                                    <SelectValue/>
-                                </SelectTrigger>
-                                <SelectContent position="popper" align="end">
-                                    {UPLOAD_ROUTES.map((option) => (
-                                        <SelectItem key={option.id} value={option.id} className="text-xs">
-                                            {option.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        <UploadRouteSelect
+                            value={route}
+                            onChange={setRoute}
+                            disabled={pending}
+                            className="shrink-0"
+                        />
                     )}
                 </div>
                 {showUrlInput && <Input

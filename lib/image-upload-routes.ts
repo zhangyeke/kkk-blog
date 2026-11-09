@@ -5,9 +5,9 @@
  * 默认走备用图床的主节点；「现有图床」需要用户在界面上显式选择。
  */
 export const UPLOAD_ROUTES = [
-  { id: "mtbed-primary", label: "备用 · 主节点" },
-  { id: "mtbed-secondary", label: "备用 · 备节点" },
-  { id: "default", label: "现有图床" },
+  { id: "mtbed-primary", label: "主节点" },
+  { id: "mtbed-secondary", label: "备用节点" },
+  // { id: "default", label: "现有图床" },
 ] as const
 
 export type UploadRouteId = (typeof UPLOAD_ROUTES)[number]["id"]
