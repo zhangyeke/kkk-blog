@@ -39,4 +39,6 @@ storybook-static/
 /.npm-only-allow
 /generated/prisma
 
-/generated/prisma
+# 构建缓存与工具状态，不入库
+*.tsbuildinfo
+/.workbuddy-ai/
