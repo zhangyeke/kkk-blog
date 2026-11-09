@@ -7,7 +7,7 @@ export interface SpinnerProps extends BaseComponentProps {
 
 export const Spinner = ({text, className, style}: SpinnerProps) => {
     return (
-        <div className={'flex-center flex-col text-primary'}>
+        <div className={'flex-center flex-col text-primary py-2'}>
             <Loader
                 role="status"
                 aria-label="Loading"
