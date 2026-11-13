@@ -82,6 +82,8 @@ model Bookmark {
   icon       String?          @default("")
   /// 0：禁用 1：正常
   status     Int              @default(1)
+  /// 前台书签的累计点击量
+  clickCount Int              @default(0)
   userId     String           @db.Uuid
   categoryId Int
   createdAt  DateTime         @default(now()) @db.Timestamp(6)
@@ -102,9 +104,15 @@ model Footprint {
   area      Int?
   address   String?
   album     String[] @default([])
+  /// 拍摄/地点坐标，存 WGS-84 原始坐标系；渲染时按境内/境外决定是否转 GCJ-02
+  lat       Float?
+  lng       Float?
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lat, lng])
 }
 
 model Favorite {
@@ -149,4 +157,69 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+/// 后台角色。code 是业务主键 —— User.roles 逗号串里存的就是 code。
+model Role {
+  id          Int              @id @default(autoincrement())
+  /// 唯一标识：superAdmin / admin / user / editor…；创建后不可修改
+  code        String           @unique(map: "Role_code_key")
+  /// 显示名（内置角色也允许改）
+  name        String
+  description String?
+  /// 内置角色：不可删除、不可停用、不可改 code
+  isBuiltin   Boolean          @default(false)
+  /// 0：停用 1：正常
+  status      Int              @default(1)
+  /// 数据范围：true = 全量，false = 仅自己（喂给 resolveScope）
+  scopeAll    Boolean          @default(false)
+  sort        Int              @default(0)
+  createdAt   DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  permissions RolePermission[]
+
+  @@index([status, sort])
+}
+
+/// 后台菜单树：目录(dir)/菜单(menu)/按钮(button) 同表。
+/// permissionKey 是权限判定唯一标识，RolePermission.permissionKey 直接指向它。
+/// 目录 permissionKey 为 null（纯分组）；菜单/按钮必须非空（service 层强制）。
+model AdminMenu {
+  id            Int       @id @default(autoincrement())
+  parentId      Int?
+  name          String
+  type          String    @db.VarChar(16)
+  icon          String?
+  path          String?
+  component     String?
+  componentName String?
+  permissionKey String?   @unique(map: "AdminMenu_permissionKey_key")
+  sort          Int       @default(0)
+  status        Int       @default(1)
+  visible       Boolean   @default(true)
+  alwaysShow    Boolean   @default(false)
+  keepAlive     Boolean   @default(false)
+  isBuiltin     Boolean   @default(false)
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+
+  parent   AdminMenu?  @relation("AdminMenuTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children AdminMenu[] @relation("AdminMenuTree")
+
+  @@index([parentId, sort])
+  @@index([type, status, visible])
+  @@index([status, sort])
+}
+
+/// 角色 → 权限 key 的授权关系。key 取值由代码字典定义，DB 只存关系。
+model RolePermission {
+  id            Int      @id @default(autoincrement())
+  /// 引用 Role.code（不是 id）—— 判定时手上只有 code
+  roleCode      String
+  /// page:<AdminPage> | action:<AdminAction>，如 page:posts / action:post:delete
+  permissionKey String
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  role          Role     @relation(fields: [roleCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([roleCode, permissionKey], map: "RolePermission_roleCode_permissionKey_key")
 }
