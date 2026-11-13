@@ -58,3 +58,19 @@ export const addPostSchema = z.object({
     ),
 })
 
+/**
+ * 文章状态：0 下架 / 1 正常 / 2 草稿。
+ * 刻意不放进 `addPostSchema` —— 那个 schema 同时驱动 autoform 渲染，
+ * 加进去会多渲染一个表单控件。状态由底部按钮决定，走这个独立 schema 校验。
+ */
+export const postStatusSchema = z.coerce.number().int().min(0).max(2)
+
+/**
+ * 提交载荷 = 表单字段 + 可选 status。
+ * 表单仍然用 `addPostSchema`（不含 status），服务端用这个解析。
+ */
+export const postPayloadSchema = addPostSchema.extend({
+    status: postStatusSchema.optional(),
+})
+export type PostPayload = z.infer<typeof postPayloadSchema>
+

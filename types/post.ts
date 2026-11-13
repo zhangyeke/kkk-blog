@@ -1,10 +1,11 @@
-import {z} from "zod";
-import {addPostSchema} from "@/validators/post";
+import type {PostPayload} from "@/validators/post";
 import {Prisma} from "@prisma/client";
 
 export type {Post} from "@prisma/client"
+export type {PostPayload}
 
-export type addPostParams = z.infer<typeof addPostSchema>
+// 旧名保留，避免其他调用点报错；语义扩为「表单字段 + 可选 status」
+export type addPostParams = PostPayload
 
 export const postWithUserInclude = {
     category: true,
