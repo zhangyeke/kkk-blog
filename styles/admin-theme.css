@@ -1,0 +1,331 @@
+/*
+ * 后台主题预设。
+ *
+ * 两条硬约束：
+ * 1. **作用域只在 `.admin-shell` 内**——所有变量都挂在这个类上，不写 :root，
+ *    所以后台换肤不会影响博客主页（博客用的是 :root 上那套）。
+ * 2. 除了后台专用 token（--adm-*），还覆盖站点的语义 token
+ *    （--background / --foreground / --card / --border / --primary …），
+ *    这样 k-view 里的 DataTable、Button、Empty 等组件会自动跟随主题，
+ *    不需要每个组件都改一遍。
+ *
+ * 新增一套主题 = 复制一个块，改 12 个值，不需要动任何组件。
+ */
+
+.admin-shell {
+    --adm-serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", SimSun, serif;
+}
+
+/* ============ 1. 和纸文库（默认） ============ */
+.admin-shell,
+.admin-shell[data-preset="paper"] {
+    --adm-paper: #f7f3ea;
+    --adm-paper-2: #fffdf8;
+    --adm-paper-3: #f0ebdf;
+    --adm-ink: #2a2620;
+    --adm-ink-2: #4f483d;
+    --adm-ink-3: #7a7264;
+    --adm-line: #e5ddcc;
+    --adm-line-2: #efe9db;
+    --adm-c1: #3d4a6d;
+    --adm-c2: #dd8397;
+    --adm-c3: #7b9a72;
+    --adm-c4: #d5a03f;
+}
+
+.dark .admin-shell,
+.dark .admin-shell[data-preset="paper"] {
+    --adm-paper: #191713;
+    --adm-paper-2: #211e19;
+    --adm-paper-3: #262219;
+    --adm-ink: #efe9dc;
+    --adm-ink-2: #c9c0b0;
+    --adm-ink-3: #9a9182;
+    --adm-line: #332e26;
+    --adm-line-2: #2a261f;
+    --adm-c1: #93a5cf;
+    --adm-c2: #e79cae;
+    --adm-c3: #8fb585;
+    --adm-c4: #e0b256;
+}
+
+/* ============ 2. 夜行霓虹 ============ */
+.admin-shell[data-preset="neon"] {
+    --adm-paper: #f3f5f9; --adm-paper-2: #ffffff; --adm-paper-3: #e9edf5;
+    --adm-ink: #10131b; --adm-ink-2: #3b4356; --adm-ink-3: #6b7387;
+    --adm-line: #dde3ef; --adm-line-2: #e9eef7;
+    --adm-c1: #2563eb; --adm-c2: #ff3d8b; --adm-c3: #0ea47a; --adm-c4: #e8930c;
+}
+.dark .admin-shell[data-preset="neon"] {
+    --adm-paper: #080a10; --adm-paper-2: #0e1119; --adm-paper-3: #151a25;
+    --adm-ink: #e9edf8; --adm-ink-2: #b6c0d6; --adm-ink-3: #8b95ab;
+    --adm-line: #212838; --adm-line-2: #1a202c;
+    --adm-c1: #4d8dff; --adm-c2: #ff5fa2; --adm-c3: #2ee6a8; --adm-c4: #ffc14d;
+}
+
+/* ============ 3. 苔绿 ============ */
+.admin-shell[data-preset="moss"] {
+    --adm-paper: #eef3ec; --adm-paper-2: #fbfdfa; --adm-paper-3: #e3ebe0;
+    --adm-ink: #1e2a22; --adm-ink-2: #41544a; --adm-ink-3: #6c7d70;
+    --adm-line: #d6e2d2; --adm-line-2: #e2ebde;
+    --adm-c1: #2f6b4f; --adm-c2: #c07a3e; --adm-c3: #4f9a6a; --adm-c4: #d9a441;
+}
+.dark .admin-shell[data-preset="moss"] {
+    --adm-paper: #10150f; --adm-paper-2: #161d16; --adm-paper-3: #1c251c;
+    --adm-ink: #e6efe6; --adm-ink-2: #c2d1c4; --adm-ink-3: #93a496;
+    --adm-line: #27322a; --adm-line-2: #1e2720;
+    --adm-c1: #7fbf9a; --adm-c2: #e0a06a; --adm-c3: #8fd0a6; --adm-c4: #e5bb66;
+}
+
+/* ============ 4. 黄昏 ============ */
+.admin-shell[data-preset="dusk"] {
+    --adm-paper: #f6ede2; --adm-paper-2: #fffaf4; --adm-paper-3: #efe2d2;
+    --adm-ink: #2c2019; --adm-ink-2: #56453a; --adm-ink-3: #7d6a58;
+    --adm-line: #e8d9c6; --adm-line-2: #f1e7da;
+    --adm-c1: #b4531f; --adm-c2: #2f7d7a; --adm-c3: #6f8f4a; --adm-c4: #d98b28;
+}
+.dark .admin-shell[data-preset="dusk"] {
+    --adm-paper: #191310; --adm-paper-2: #211914; --adm-paper-3: #291f19;
+    --adm-ink: #f2e6d8; --adm-ink-2: #d3bea8; --adm-ink-3: #a89478;
+    --adm-line: #34271e; --adm-line-2: #291e17;
+    --adm-c1: #e08a4f; --adm-c2: #5cb3ae; --adm-c3: #a3c46f; --adm-c4: #f0b04a;
+}
+
+/* ============ 5. 薄荷 ============ */
+.admin-shell[data-preset="mint"] {
+    --adm-paper: #eef7f4; --adm-paper-2: #fcfffe; --adm-paper-3: #e2f0eb;
+    --adm-ink: #16211e; --adm-ink-2: #3c4f49; --adm-ink-3: #6b827b;
+    --adm-line: #d3e6df; --adm-line-2: #e0efea;
+    --adm-c1: #0f766e; --adm-c2: #f97362; --adm-c3: #16a34a; --adm-c4: #eab308;
+}
+.dark .admin-shell[data-preset="mint"] {
+    --adm-paper: #0b1512; --adm-paper-2: #101d19; --adm-paper-3: #162620;
+    --adm-ink: #e3f2ed; --adm-ink-2: #bcd4cc; --adm-ink-3: #8aa69d;
+    --adm-line: #1f332c; --adm-line-2: #172721;
+    --adm-c1: #4fd1c5; --adm-c2: #ff8f7d; --adm-c3: #4ade80; --adm-c4: #facc15;
+}
+
+/* ============ 6. 墨白（高对比） ============ */
+.admin-shell[data-preset="ink"] {
+    --adm-paper: #f5f5f4; --adm-paper-2: #ffffff; --adm-paper-3: #ececeb;
+    --adm-ink: #0a0a0a; --adm-ink-2: #3f3f46; --adm-ink-3: #6e6e78;
+    --adm-line: #dededb; --adm-line-2: #e8e8e5;
+    --adm-c1: #18181b; --adm-c2: #dc2626; --adm-c3: #16a34a; --adm-c4: #ca8a04;
+}
+.dark .admin-shell[data-preset="ink"] {
+    --adm-paper: #0a0a0a; --adm-paper-2: #121212; --adm-paper-3: #1a1a1a;
+    --adm-ink: #f4f4f5; --adm-ink-2: #c4c4cc; --adm-ink-3: #94949e;
+    --adm-line: #262626; --adm-line-2: #1e1e1e;
+    --adm-c1: #f4f4f5; --adm-c2: #ef4444; --adm-c3: #22c55e; --adm-c4: #eab308;
+    --adm-action-state-tint: var(--adm-ink-3);
+}
+
+/* ============ 7. 樱粉 ============ */
+.admin-shell[data-preset="sakura"] {
+    --adm-paper: #fdf2f4; --adm-paper-2: #fffafb; --adm-paper-3: #f9e5ea;
+    --adm-ink: #2a1a1f; --adm-ink-2: #57404a; --adm-ink-3: #82656f;
+    --adm-line: #f0d6dd; --adm-line-2: #f7e6ea;
+    --adm-c1: #9d2f52; --adm-c2: #db2777; --adm-c3: #4d7c5f; --adm-c4: #c98a2e;
+}
+.dark .admin-shell[data-preset="sakura"] {
+    --adm-paper: #171013; --adm-paper-2: #1f1519; --adm-paper-3: #271b20;
+    --adm-ink: #f7e8ed; --adm-ink-2: #d6bcc5; --adm-ink-3: #a98d98;
+    --adm-line: #33242b; --adm-line-2: #271b20;
+    --adm-c1: #e08aa6; --adm-c2: #f472b6; --adm-c3: #86b39a; --adm-c4: #d9a441;
+}
+
+/* ============ 8. 海盐 ============ */
+.admin-shell[data-preset="salt"] {
+    --adm-paper: #f1f5f8; --adm-paper-2: #fbfdff; --adm-paper-3: #e6edf3;
+    --adm-ink: #12212c; --adm-ink-2: #3d5265; --adm-ink-3: #6d8494;
+    --adm-line: #d8e2ea; --adm-line-2: #e4ecf2;
+    --adm-c1: #1d4ed8; --adm-c2: #0ea5e9; --adm-c3: #0d9488; --adm-c4: #f59e0b;
+}
+.dark .admin-shell[data-preset="salt"] {
+    --adm-paper: #0a1017; --adm-paper-2: #0f1821; --adm-paper-3: #15202b;
+    --adm-ink: #e2eef7; --adm-ink-2: #bcd2e2; --adm-ink-3: #8ba4b5;
+    --adm-line: #1d2b38; --adm-line-2: #15212c;
+    --adm-c1: #60a5fa; --adm-c2: #38bdf8; --adm-c3: #2dd4bf; --adm-c4: #fbbf24;
+}
+
+/* ============ 9. 砖红 ============ */
+.admin-shell[data-preset="brick"] {
+    --adm-paper: #f6f1ec; --adm-paper-2: #fffcf8; --adm-paper-3: #eee6dd;
+    --adm-ink: #241a14; --adm-ink-2: #4f3f33; --adm-ink-3: #7d6a58;
+    --adm-line: #e2d6c8; --adm-line-2: #eee5da;
+    --adm-c1: #7c2d12; --adm-c2: #b91c1c; --adm-c3: #4d7c0f; --adm-c4: #a16207;
+}
+.dark .admin-shell[data-preset="brick"] {
+    --adm-paper: #16100c; --adm-paper-2: #1d1611; --adm-paper-3: #251c16;
+    --adm-ink: #f2e6d9; --adm-ink-2: #d4bfa9; --adm-ink-3: #a89078;
+    --adm-line: #30241b; --adm-line-2: #241a13;
+    --adm-c1: #f97316; --adm-c2: #f87171; --adm-c3: #a3e635; --adm-c4: #eab308;
+}
+
+/* ============ 把后台 token 映射到站点语义 token ============ */
+.admin-shell {
+    --background: var(--adm-paper);
+    --foreground: var(--adm-ink);
+    --card: var(--adm-paper-2);
+    --popover: var(--adm-paper-2);
+    --secondary: var(--adm-paper-3);
+    --muted: var(--adm-paper-3);
+    --muted-foreground: var(--adm-ink-3);
+    --accent: var(--adm-paper-3);
+    --border: var(--adm-line);
+    --input: var(--adm-line);
+    --primary: var(--adm-c1);
+    --primary-foreground: var(--adm-paper-2);
+    --ring: var(--adm-c1);
+    --adm-action-state-tint: var(--adm-ink);
+    --adm-action-hover: color-mix(in oklab, var(--primary) 90%, var(--adm-action-state-tint));
+    --adm-action-active: color-mix(in oklab, var(--primary) 82%, var(--adm-action-state-tint));
+
+    background: var(--adm-paper);
+    color: var(--adm-ink);
+    font-family: var(--sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 主题切换时让子元素跟着过渡，但不要污染动画属性 */
+.admin-shell :where(.adm-surface) {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* 衬线标题工具类 */
+.adm-serif {
+    font-family: var(--adm-serif);
+    letter-spacing: 0.08em;
+}
+
+/* 后台滚动条 */
+.admin-shell *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.admin-shell *::-webkit-scrollbar-thumb {
+    background: var(--adm-line);
+    border-radius: 8px;
+    border: 3px solid var(--adm-paper);
+}
+
+/* ============ 动画 ============ */
+
+/* 进度环：从满圈收到目标值，只跑一次 */
+@keyframes admRingFrom {
+    from { stroke-dashoffset: 270; }
+}
+.adm-ring-arc {
+    animation: admRingFrom 1.3s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+/* 卡片入场：位移 + 淡入，配合 --i 做 stagger */
+@keyframes admRise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+.adm-rise {
+    animation: admRise .5s cubic-bezier(.16, 1, .3, 1) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .adm-ring-arc,
+    .adm-rise {
+        animation: none !important;
+    }
+}
+
+/* 弹窗 Portal 通过 admin-shell 和 data-preset 继承当前主题。 */
+.admin-shell.admin-dialog-content {
+    min-width: 0;
+    max-width: min(calc(100vw - var(--adm-dialog-gutter, 2rem)), var(--adm-dialog-max-width, 100vw));
+    gap: 0;
+    padding: 0;
+    border: 1px solid var(--adm-line);
+    border-radius: calc(var(--radius) + 4px);
+    background: var(--adm-paper-2);
+}
+
+.admin-article-dialog {
+    --adm-dialog-gutter: 1rem;
+    --adm-dialog-max-width: 880px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - var(--adm-dialog-gutter));
+    max-height: calc(100dvh - 1rem);
+    overflow: hidden;
+}
+
+.admin-shell .admin-dialog-input {
+    height: 2rem;
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+}
+
+.admin-shell .admin-dialog-input:focus-visible:not([aria-invalid="true"]) {
+    border-color: var(--adm-c1);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+@layer components {
+    .admin-dialog-cancel,
+    .admin-dialog-submit {
+        height: 2rem;
+        border-radius: calc(var(--radius) - 2px);
+        cursor: pointer;
+        font-size: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
+        transition: background-color 150ms, border-color 150ms, color 150ms;
+    }
+
+    .admin-dialog-cancel {
+        padding-inline: 0.875rem;
+        border: 1px solid var(--adm-line);
+        color: var(--adm-ink-2);
+    }
+
+    .admin-dialog-cancel:enabled:hover {
+        background-color: var(--adm-paper-3);
+    }
+
+    .admin-dialog-submit {
+        padding-inline: 1rem;
+    }
+
+    .admin-dialog-cancel:disabled,
+    .admin-dialog-submit:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+    }
+}
+
+/* 主操作和当前页码共用后台主题的强调色。 */
+.admin-shell :is(
+    .adm-action,
+    .admin-dialog-submit,
+    [data-slot="button"][data-variant="default"],
+    [data-slot="data-table-page"][aria-current="page"]
+) {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+}
+
+.admin-shell [data-slot="data-table-page"][aria-current="page"] {
+    border-color: var(--primary);
+}
+
+@media (hover: hover) {
+    .admin-shell :is(.adm-action, .admin-dialog-submit, [data-slot="button"][data-variant="default"]):enabled:hover,
+    .admin-shell a.adm-action:hover {
+        background-color: var(--adm-action-hover);
+    }
+}
+
+.admin-shell :is(.adm-action, .admin-dialog-submit, [data-slot="button"][data-variant="default"]):active:not(:disabled) {
+    background-color: var(--adm-action-active);
+}
+
+.admin-shell :is(.adm-action, .admin-dialog-submit, [data-slot="button"][data-variant="default"]):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
