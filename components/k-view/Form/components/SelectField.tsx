@@ -1,45 +1,64 @@
+import React from "react"
+
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import {AutoFormFieldProps} from "@autoform/react";
+} from "@/components/ui/select"
+import { cn } from "@/lib/utils"
+import type { CustomControlProps } from "../type"
 
-import React from "react";
+type SelectOption = { label: string; value: string }
 
-export const SelectField: React.FC<AutoFormFieldProps> = ({
-                                                              field,
-                                                              inputProps,
-                                                              error,
-                                                              id,
-                                                          }) => {
-    const {key, ...props} = inputProps;
+/** Controlled select field used by schema-driven forms. */
+export const SelectField: React.FC<CustomControlProps> = (props) => {
+    const {
+        name,
+        value,
+        onChange,
+        onBlur,
+        ref,
+        disabled,
+        placeholder,
+        options = [],
+        className,
+        style,
+        id,
+        "aria-describedby": describedBy,
+        "aria-invalid": invalid,
+        "aria-label": ariaLabel,
+    } = props
+
     return (
         <Select
-            {...props}
-            onValueChange={(value) => {
-                const syntheticEvent = {
-                    target: {
-                        value,
-                        name: field.key,
-                    },
-                } as React.ChangeEvent<HTMLInputElement>;
-                props.onChange(syntheticEvent);
-            }}
-            defaultValue={field.default}
+            name={name}
+            value={value == null ? "" : String(value)}
+            onValueChange={onChange}
+            disabled={disabled}
         >
-            <SelectTrigger  id={id} className={error ? "border-destructive" : ""}>
-                <SelectValue placeholder={props.placeholder ?? "Select an option"}/>
+            <SelectTrigger
+                ref={ref}
+                id={id}
+                name={name}
+                onBlur={onBlur}
+                disabled={disabled}
+                aria-label={ariaLabel}
+                aria-describedby={describedBy}
+                aria-invalid={invalid}
+                className={cn("h-8", className)}
+                style={style}
+            >
+                <SelectValue placeholder={placeholder ?? "Select an option"} />
             </SelectTrigger>
             <SelectContent>
-                {(field.options || []).map(([key, label]) => (
-                    <SelectItem key={key} value={key}>
-                        {label}
+                {(options as SelectOption[]).map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                        {option.label}
                     </SelectItem>
                 ))}
             </SelectContent>
         </Select>
-    );
-};
+    )
+}

@@ -8,48 +8,63 @@
  */
 "use client"
 import React from "react"
-import {StringField} from "./StringField";
-import {TextareaField} from "./TextareaField";
-import {ImageUploadField} from "./ImageUploadField";
-import {RemoteSelect} from "./RemoteSelectField";
-import {MarkedField} from "./MarkedField";
-import {NumberField} from "./NumberField";
-import UploadFileField from "./UploadFileField";
-import {RegionCascaderField} from "./RegionCascader";
-import {CustomControlProps} from "../type";
-
+import { StringField } from "./StringField"
+import { SelectField } from "./SelectField"
+import { TextareaField } from "./TextareaField"
+import { ImageUploadField } from "./ImageUploadField"
+import { RemoteSelect } from "./RemoteSelectField"
+import { MarkedField } from "./MarkedField"
+import { NumberField } from "./NumberField"
+import UploadFileField from "./UploadFileField"
+import { RegionCascaderField } from "./RegionCascader"
+import type { CustomControlProps } from "../type"
+import { IconPickerField } from "./IconPickerField"
+import { SegmentedControl } from "./SegmentedControl"
+import { GeoCoordinatesField } from "./GeoCoordinatesField"
 export const FieldComponents = {
-    string: StringField,
-    number: NumberField,
-    // boolean: BooleanField,
-    // date: DateField,
-    // select: SelectField,
-    textarea: TextareaField,
-    uploadFiles: UploadFileField,
-    imageUpload: ImageUploadField,
-    remoteSelect: RemoteSelect,
-    markdown: MarkedField,
-    regionCascader: RegionCascaderField
+  string: StringField,
+  select: SelectField,
+  number: NumberField,
+  // boolean: BooleanField,
+  // date: DateField,
+  textarea: TextareaField,
+  uploadFiles: UploadFileField,
+  imageUpload: ImageUploadField,
+  remoteSelect: RemoteSelect,
+  markdown: MarkedField,
+  regionCascader: RegionCascaderField,
+  iconPicker: IconPickerField,
+  statusSegment: SegmentedControl,
+  geoCoordinates: GeoCoordinatesField,
 } as const
 
 export type FieldComponentsType = keyof typeof FieldComponents
 
-
 export type ControlProps = {
-    type: FieldComponentsType | string,
-    attrs: CustomControlProps
-    formComponents?: {
-        [key: string]: (props: CustomControlProps) => React.ReactNode
-    }
+  type: FieldComponentsType | string
+  attrs: CustomControlProps
+  id?: string
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean
+  formComponents?: {
+    [key: string]: (props: CustomControlProps) => React.ReactNode
+  }
 }
 
-export function Control({type, attrs, formComponents}: ControlProps) {
-    const allComponent = {
-        ...FieldComponents,
-        ...formComponents
-    }
-    const Component = allComponent[type];
-    if (!Component) return null
+export function Control({
+  type,
+  attrs,
+  formComponents,
+  id,
+  "aria-describedby": describedBy,
+  "aria-invalid": invalid,
+}: ControlProps) {
+  const allComponent = {
+    ...FieldComponents,
+    ...formComponents,
+  }
+  const Component = allComponent[type]
+  if (!Component) return null
 
-    return <Component {...attrs} />;
+  return <Component {...attrs} id={id} aria-describedby={describedBy} aria-invalid={invalid} />
 }

@@ -11,6 +11,7 @@ import {
     DrawerTrigger,
     Drawer as ShadDrawer
 } from "@/components/ui/drawer";
+import {cn} from "@/lib/utils";
 import {FooterButtons} from "./FooterButtons";
 
 
@@ -19,6 +20,7 @@ export type DrawerProps = {
     description?: React.ReactNode
     trigger?: React.ReactNode
     showCloseIcon?: boolean
+    contentClassName?: string
     footer?: React.ReactNode,
     onConfirm?: () => void
     onCancel?: () => void
@@ -28,6 +30,7 @@ export function Drawer(props: DrawerProps) {
     const {
         description,
         showCloseIcon = true,
+        contentClassName,
         trigger,
         footer,
         title,
@@ -46,7 +49,7 @@ export function Drawer(props: DrawerProps) {
                 )
             }
 
-            <DrawerContent className={'z-[1001]'}>
+            <DrawerContent className={cn("z-[1001]", contentClassName)}>
                 <DrawerHeader className={'border-b-1 border-solid border-gray-200'}>
                     <DrawerTitle className={'flex items-center justify-between'}>
                         {title}

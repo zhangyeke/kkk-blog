@@ -37,8 +37,7 @@ import {
     UndoRedo
 } from '@mdxeditor/editor'
 import {uploadImagePromise} from "@/lib/utils";
-import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/image-upload-routes";
-import {UploadRouteSelect} from "@/components/ui/upload-route-select";
+import {EditorImageDialog} from "./EditorImageDialog";
 import {VideoDirectiveDescriptor} from "./video-directive";
 import {InsertVideo} from "./InsertVideo";
 
@@ -204,14 +203,9 @@ export const virtuosoSampleSandpackConfig: SandpackConfig = {
     ]
 }
 
-/**
- * 编辑器内图片上传的线路。`imageUploadHandler` 是交给 mdxeditor 的普通函数，
- * 拿不到 React 状态，这里用一个模块级变量把工具栏里的选择桥接过去。
- */
-let editorImageRoute: UploadRouteId = DEFAULT_UPLOAD_ROUTE
-
-export function imageUploadHandler(image: File) {
-    const uploadPromise = uploadImagePromise(image, false, editorImageRoute)
+/** 处理直接粘贴或拖入编辑区的图片。工具栏弹窗由 UploadFileField 上传。 */
+function imageUploadHandler(image: File) {
+    const uploadPromise = uploadImagePromise(image, false)
     toast.promise(uploadPromise, {
         loading: "正在上传图片...",
         success: () => '图片上传成功',
@@ -220,21 +214,6 @@ export function imageUploadHandler(image: File) {
         }
     })
     return uploadPromise
-}
-
-/** 工具栏上的图片上传线路选择，和「插入图片」按钮挨着放 */
-function EditorImageRouteSelect() {
-    const [route, setRoute] = React.useState<UploadRouteId>(editorImageRoute)
-    return (
-        <UploadRouteSelect
-            value={route}
-            onChange={(next) => {
-                editorImageRoute = next
-                setRoute(next)
-            }}
-            className="px-1"
-        />
-    )
 }
 
 function whenInAdmonition(editorInFocus: EditorInFocus | null) {
@@ -281,7 +260,6 @@ export const createToolbarConfig = ({onInsertVideo}: {onInsertVideo: (markdown: 
                             <Separator/>
 
                             <CreateLink/>
-                            <EditorImageRouteSelect/>
                             <InsertImage/>
                             <InsertVideo onInsert={onInsertVideo}/>
 
@@ -330,8 +308,7 @@ export const ALL_PLUGINS = [
     linkPlugin(),
     linkDialogPlugin(),
     imagePlugin({
-        // 可选图片地址
-        imageAutocompleteSuggestions: [],
+        ImageDialog: EditorImageDialog,
         imageUploadHandler
     }),
     tablePlugin(),

@@ -1,6 +1,13 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 
+.copy-text-highlight:hover,
+.copy-text-highlight:focus-visible,
+.copy-text-highlight:hover *,
+.copy-text-highlight:focus-visible * {
+    color: color-mix(in oklab, var(--adm-c1, var(--foreground)) 68%, transparent) !important;
+}
+
 @plugin "@tailwindcss/typography";
 /*
   ---break---

@@ -15,6 +15,34 @@ export const dateFormat = (time?: number | Date | null | string, format: string 
   return isSeconds ? dayjs.unix(time).format(format) : dayjs(time).format(format)
 }
 
+export function formatDate(value: Date | string | null | undefined): string {
+  if (!value) return "—"
+  const date = typeof value === "string" ? new Date(value) : value
+  if (Number.isNaN(date.getTime())) return "—"
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+export function formatRelative(value: Date | string | null | undefined): string {
+  if (!value) return "—"
+  const date = typeof value === "string" ? new Date(value) : value
+  if (Number.isNaN(date.getTime())) return "—"
+
+  const diff = Date.now() - date.getTime()
+  const minute = 60_000
+  const hour = 60 * minute
+  const day = 24 * hour
+
+  if (diff < minute) return "刚刚"
+  if (diff < hour) return `${Math.floor(diff / minute)} 分钟前`
+  if (diff < day) return `${Math.floor(diff / hour)} 小时前`
+  if (diff < 7 * day) return `${Math.floor(diff / day)} 天前`
+  return formatDate(date)
+}
+
 /**
  * 判断传入的日期是否在“今天”之后 (忽略具体时分秒)
  * 适用于：日期选择器禁用逻辑等

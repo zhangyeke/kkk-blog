@@ -17,8 +17,12 @@ export interface CopyTextProps extends BaseComponentProps, Omit<React.HTMLAttrib
     successMessage?: string;
     /** 是否禁用复制行为 */
     disabled?: boolean;
-    /** 是否在右侧显示复制状态图标 */
+    /** 是否显示复制图标 */
     showIcon?: boolean;
+    /** 是否仅在鼠标移入或键盘聚焦时显示复制图标 */
+    showIconOnHover?: boolean;
+    /** 是否在鼠标移入或键盘聚焦时高亮文本容器 */
+    highlightOnHover?: boolean;
     /** 复制成功后的回调，返回已复制的文本 */
     onCopy?: (text: string) => void;
 }
@@ -32,9 +36,12 @@ export const CopyText = (props: CopyTextProps) => {
         copyLabel = "点击复制",
         successMessage = "复制成功",
         disabled = false,
-        showIcon = false,
+        showIcon = true,
+        showIconOnHover = true,
+        highlightOnHover = true,
         onCopy,
         onClick,
+        onKeyDown,
         ...restProps
     } = props;
 
@@ -69,22 +76,42 @@ export const CopyText = (props: CopyTextProps) => {
         onClick?.(event);
     };
 
+    const handleKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
+        onKeyDown?.(event);
+        if (event.defaultPrevented || disabled || event.repeat) return;
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            performCopy();
+        }
+    };
+
     return (
         <div
             role="button"
+            aria-disabled={disabled}
             tabIndex={disabled ? -1 : 0}
             title={copyLabel}
             className={cn(
-                "inline-flex cursor-pointer items-center gap-x-1 transition-opacity",
+                "group inline-flex cursor-pointer items-center gap-x-1 rounded-sm transition-colors",
+                highlightOnHover && "copy-text-highlight",
                 disabled && "cursor-not-allowed opacity-60",
                 className
             )}
             style={style}
             {...restProps}
             onClick={handleClick}
+            onKeyDown={handleKeyDown}
         >
             {children}
-            {showIcon && <Copy className="size-4"/>}
+            {showIcon && (
+                <Copy
+                    aria-hidden="true"
+                    className={cn(
+                        "size-4 shrink-0 transition-opacity",
+                        showIconOnHover && "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100",
+                    )}
+                />
+            )}
         </div>
     );
 };

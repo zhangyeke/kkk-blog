@@ -1,3 +1,5 @@
+import type { ReactNode } from "react"
+
 import {Image} from "@/components/k-view/Image"
 import {cn} from "@/lib/utils";
 
@@ -43,16 +45,22 @@ export type EmptyType =
 export type EmptyProps = {
     type?: EmptyType;
     text?: string;
+    description?: ReactNode;
     imageClass?: string;
 } & BaseComponentProps & Partial<ContainerProps>
 
-export function Empty({type = 'data', text, children, className, imageClass, style}: EmptyProps) {
+export function Empty({type = 'data', text, description, children, className, imageClass, style}: EmptyProps) {
     const index = placeholderImages.findIndex(item => item.name === type)
     const item = placeholderImages[index]
     return (
         <div style={style} className={cn('flex-center flex-col gap-y-2 text-sm text-gray-500 py-5', className)}>
-            {children ? children : <Image src={item?.path} alt={type} className={cn('size-[150px]', imageClass)}/>}
-            {children ? undefined : text || item?.tips}
+            {children ? children : (
+                <>
+                    <Image src={item?.path} alt={type} className={cn('size-[150px]', imageClass)}/>
+                    <span>{text || item?.tips}</span>
+                    {description && <span className="text-xs text-muted-foreground md:text-sm">{description}</span>}
+                </>
+            )}
         </div>
     )
 }

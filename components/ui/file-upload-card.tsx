@@ -350,7 +350,7 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                             onChange={handleFileSelect}
                         />
                         <UploadCloud className="w-10 h-10 text-muted-foreground mb-4" />
-                        <p className="font-semibold text-foreground">选择一个文件或将其拖放到此处</p>
+                        <p className="font-semibold text-foreground">选择文件或将其拖放到此处</p>
                         <p className="text-xs text-muted-foreground mt-1">
                             单文件不超过 {env.NEXT_PUBLIC_IMG_UPLOAD_LIMIT}
                             {acceptTrimmed ? "，类型以当前选择为准" : ""}
@@ -409,8 +409,9 @@ export const FileUploadCard = React.forwardRef<HTMLDivElement, FileUploadCardPro
                                                     <span className={cn(
                                                         { "text-primary": file.status === 'uploading' },
                                                         { "text-green-500": file.status === 'completed' },
+                                                        { "text-destructive": file.status === 'error' },
                                                     )}>
-                                                        {file.status === 'uploading' ? `Uploading...` : 'Completed'}
+                                                        {{ uploading: "上传中…", completed: "已完成", error: "上传失败" }[file.status]}
                                                     </span>
                                                 </div>
                                                 {file.status === 'uploading' &&

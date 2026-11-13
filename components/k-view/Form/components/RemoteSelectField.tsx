@@ -1,6 +1,6 @@
-import React, {useMemo} from "react";
+import React, {useCallback, useMemo} from "react";
 import {AsyncSelect} from "@/components/ui/async-select";
-import {getDeepValue, isStringNumber, str2num} from "@/lib/utils"
+import { getDeepValue, isStringNumber, str2num} from "@/lib/utils"
 import {CustomControlProps} from "../type";
 
 export interface FetchSearchParams<T> {
@@ -15,7 +15,7 @@ export interface FetchSearchParams<T> {
 // 数据请求api
 const fetchSearch = async <T, >({api, query, prop, primaryKey}: FetchSearchParams<T>) => {
     try {
-        if (!api) return
+        if (!api) return []
         const key = isStringNumber(query) ? primaryKey : prop
         if (query && key) {
             const res = await api({
@@ -40,34 +40,53 @@ function DisplayLabel<T>({item, keyName}: { item: T, keyName: string }) {
 
 
 export function RemoteSelect(props: CustomControlProps) {
-    const {name, label, value, api, labelKey, valueKey, onChange} = props
+    const {
+        name,
+        label,
+        value,
+        api,
+        labelKey,
+        valueKey,
+        onChange,
+        options: providedOptions,
+        preload,
+        ...selectProps
+    } = props
+    const options = providedOptions as Record<string, unknown>[] | undefined
 
     const labelKeyName = useMemo(() => (labelKey || name) as string, [labelKey, name])
     const valueKeyName = useMemo(() => (valueKey || name) as string, [valueKey, name])
-    // triggerClassName={error ? "border-destructive" : ""}
-    return (
-        <>
-            <AsyncSelect
-                fetcher={(query) => fetchSearch({api, query, prop: labelKeyName, primaryKey: valueKeyName})}
-                renderOption={(item) => (
-                    <DisplayLabel item={item} keyName={labelKeyName}/>
-                )}
-                getOptionValue={(item) => String(getDeepValue(item, valueKeyName))}
-                getDisplayValue={(item) => (
-                    <DisplayLabel item={item} keyName={labelKeyName}/>
-                )}
-                width={'100%'}
-                {...props}
-                value={String(value)}
-                label={String(label || 'name')}
-                onChange={(v) => onChange({
-                    target: {
-                        name,
-                        value: str2num(v)
-                    }
-                })}
-            />
-        </>
+    const fetcher = useCallback(
+        (query?: string) => options
+            ? Promise.resolve(options)
+            : fetchSearch({api, query, prop: labelKeyName, primaryKey: valueKeyName}),
+        [api, labelKeyName, options, valueKeyName],
+    )
+    const filterFn = useCallback(
+        (item: Record<string, unknown>, query: string) =>
+            String(getDeepValue(item, labelKeyName) ?? "").toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+        [labelKeyName],
+    )
 
+    return (
+        <AsyncSelect<Record<string, unknown>>
+            fetcher={fetcher}
+            filterFn={filterFn}
+            preload={options ? true : preload}
+            renderOption={(item) => <DisplayLabel item={item} keyName={labelKeyName}/>}
+            getOptionValue={(item) => String(getDeepValue(item, valueKeyName))}
+            getDisplayValue={(item) => <DisplayLabel item={item} keyName={labelKeyName}/>}
+            width="100%"
+            {...selectProps}
+            className={selectProps.className}
+            value={String(value ?? "")}
+            label={String(label || "name")}
+            onChange={(nextValue) => onChange({
+                target: {
+                    name,
+                    value: str2num(nextValue),
+                },
+            })}
+        />
     );
 }

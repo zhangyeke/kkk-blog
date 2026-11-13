@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Draft, produce } from "immer";
-import { ChevronRight, ChevronsUpDown, Loader2, X } from "lucide-react";
+import { ChevronRight, ChevronsUpDown, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Popover,
   PopoverContent,
@@ -18,6 +19,15 @@ function pathKey(path: string[]) {
   return path.length ? path.join("\u0001") : "__root__";
 }
 
+function parsePathValue(value: string): string[] | null {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) && parsed.every((item) => typeof item === "string") ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface AsyncCascaderProps<T> extends BaseComponentProps {
   /**
    * 根据父路径加载下一级选项。`pathPrefix` 为从根到当前父节点的 value 序列，
@@ -26,11 +36,17 @@ export interface AsyncCascaderProps<T> extends BaseComponentProps {
   loadData: (pathPrefix: string[]) => Promise<T[]>;
   /** 已选路径，每一项为对应级的 value */
   value: string[];
+  /** 已知选项名称，供已有 value 在选项尚未加载时即时显示 */
+  valueLabelMap?: Readonly<Record<string, string>>;
   onChange: (path: string[]) => void;
   getOptionValue: (option: T) => string;
   getOptionLabel: (option: T) => React.ReactNode;
   /** 为 true 时表示叶子，点击直接选中并关闭；不传则点击后再请求子级，空列表视为叶子 */
   isLeaf?: (option: T) => boolean;
+  /** 是否允许在展开分支的同时，直接确认选择当前层级 */
+  allowParentSelection?: boolean;
+  /** 开始允许确认父级的路径深度，从根级起按 1 计数 */
+  minParentSelectionDepth?: number;
   renderOption?: (option: T) => React.ReactNode;
   placeholder?: string;
   disabled?: boolean;
@@ -61,10 +77,13 @@ function optionText<T>(
 export function AsyncCascader<T>({
   loadData,
   value,
+  valueLabelMap,
   onChange,
   getOptionValue,
   getOptionLabel,
   isLeaf,
+  allowParentSelection = false,
+  minParentSelectionDepth = 1,
   renderOption,
   placeholder = "请选择",
   disabled = false,
@@ -85,6 +104,7 @@ export function AsyncCascader<T>({
   const loadRef = useRef(loadData);
   loadRef.current = loadData;
 
+  const loadingPathsRef = useRef(new Set<string>());
   const columnRef = useRef(columnMap);
   columnRef.current = columnMap;
 
@@ -115,7 +135,9 @@ export function AsyncCascader<T>({
     for (let i = 0; i < count; i++) {
       const prefix = activePath.slice(0, i);
       const key = pathKey(prefix);
-      if (snap[key]?.fetched || snap[key]?.loading) continue;
+      if (snap[key]?.fetched || snap[key]?.loading || loadingPathsRef.current.has(key)) continue;
+
+      loadingPathsRef.current.add(key);
 
       setColumnMap((prev) => {
         if (prev[key]?.fetched || prev[key]?.loading) return prev;
@@ -155,6 +177,9 @@ export function AsyncCascader<T>({
               };
             }),
           );
+        })
+        .finally(() => {
+          loadingPathsRef.current.delete(key);
         });
     }
   }, [open, activeKey, activePath, reloadToken]);
@@ -177,10 +202,15 @@ export function AsyncCascader<T>({
     setOpen(false);
   }, [onChange]);
 
+  const handleParentSelection = useCallback((serializedPath: string) => {
+    const path = parsePathValue(serializedPath);
+    if (path) finalize(path);
+  }, [finalize]);
+
   const displayText = useMemo(() => {
     if (!value.length) return null;
-    return value.map((v) => labelByValue.get(v) ?? v).join(separator);
-  }, [value, labelByValue, separator]);
+    return value.map((v) => labelByValue.get(v) ?? valueLabelMap?.[v] ?? v).join(separator);
+  }, [value, valueLabelMap, labelByValue, separator]);
 
   const handlePick = useCallback(
     (columnIndex: number, option: T) => {
@@ -288,11 +318,11 @@ export function AsyncCascader<T>({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 overflow-hidden"
+        className="z-[1050] w-auto max-w-[calc(100vw-1rem)] overflow-x-auto overscroll-contain p-0"
         align="start"
         sideOffset={4}
       >
-        <div className="flex max-h-72 bg-popover text-popover-foreground">
+        <div className="flex w-max max-w-none max-h-72 bg-popover text-popover-foreground">
           {Array.from({ length: columnCount }, (_, i) => {
             const prefix = activePath.slice(0, i);
             const key = pathKey(prefix);
@@ -303,6 +333,7 @@ export function AsyncCascader<T>({
               options: [],
             };
             const selectedAtLevel = activePath[i];
+            const selectedParentValue = value.length === i + 1 ? JSON.stringify(value) : "";
 
             return (
               <div
@@ -329,36 +360,52 @@ export function AsyncCascader<T>({
                 {col.fetched && !col.error && col.options.length === 0 && (
                   <Empty type="address" text="没有更多地区了" />
                 )}
-                <ul className="py-1">
-                  {col.options.map((opt) => {
-                    const ov = getOptionValue(opt);
-                    const active = selectedAtLevel === ov;
-                    const leaf = isLeaf?.(opt) ?? false;
-                    const showArrow = !leaf;
+                <RadioGroup
+                  aria-label={`选择第${i + 1}级地区`}
+                  className="gap-0 py-1"
+                  value={selectedParentValue}
+                  onValueChange={handleParentSelection}
+                >
+                  <ul>
+                    {col.options.map((opt) => {
+                      const ov = getOptionValue(opt);
+                      const active = selectedAtLevel === ov;
+                      const leaf = isLeaf?.(opt) ?? false;
+                      const nextPath = activePath.slice(0, i).concat(ov);
+                      const canSelectParent = allowParentSelection && !leaf && nextPath.length >= minParentSelectionDepth;
+                      const label = optionText(opt, getOptionValue, getOptionLabel);
+                      const showArrow = !leaf;
 
-                    return (
-                      <li key={ov}>
-                        <button
-                          type="button"
-                          className={cn(
-                            "w-full flex items-center gap-1 px-3 py-2 text-sm text-left outline-none",
-                            "hover:bg-accent hover:text-accent-foreground",
-                            active &&
-                            "bg-accent text-accent-foreground font-medium",
-                          )}
-                          onClick={() => handlePick(i, opt)}
-                        >
-                          <span className="flex-1 min-w-0 truncate">
-                            {renderOption?.(opt) ?? getOptionLabel(opt)}
-                          </span>
-                          {showArrow && (
-                            <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
-                          )}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
+                      return (
+                        <li key={ov}>
+                          <div className="flex items-center">
+                            <button
+                              type="button"
+                              className={cn(
+                                "min-w-0 flex-1 flex items-center gap-1 px-3 py-2 text-sm text-left outline-none",
+                                "hover:bg-accent hover:text-accent-foreground",
+                                active && "bg-accent text-accent-foreground font-medium",
+                              )}
+                              onClick={() => handlePick(i, opt)}
+                            >
+                              <span className="flex-1 min-w-0 truncate">
+                                {renderOption?.(opt) ?? getOptionLabel(opt)}
+                              </span>
+                              {showArrow && <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />}
+                            </button>
+                            {canSelectParent && (
+                              <RadioGroupItem
+                                value={JSON.stringify(nextPath)}
+                                aria-label={`选择${label}`}
+                                className="mr-3 cursor-pointer"
+                              />
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </RadioGroup>
               </div>
             );
           })}

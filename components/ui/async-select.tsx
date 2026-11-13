@@ -59,6 +59,9 @@ export interface AsyncSelectProps<T> {
     className?: string;
     /** Custom trigger button class names */
     triggerClassName?: string;
+    triggerStyle?: React.CSSProperties;
+    contentStyle?: React.CSSProperties;
+    popoverContentDataAttributes?: { "data-preset"?: string };
     /** Custom no results message */
     noResultsMessage?: string;
     /** Allow clearing the selection */
@@ -82,6 +85,9 @@ export function AsyncSelect<T>({
                                    width = "200px",
                                    className,
                                    triggerClassName,
+                                   triggerStyle,
+                                   contentStyle,
+                                   popoverContentDataAttributes,
                                    noResultsMessage,
                                    clearable = true,
                                }: AsyncSelectProps<T>) {
@@ -156,7 +162,7 @@ export function AsyncSelect<T>({
                         disabled && "opacity-50 cursor-not-allowed",
                         triggerClassName
                     )}
-                    style={{width: width}}
+                    style={{width, ...triggerStyle}}
                     disabled={loading || disabled}
                 >
                     {selectedOption ? (
@@ -167,8 +173,12 @@ export function AsyncSelect<T>({
                     <ChevronsUpDown className="opacity-50" size={10}/>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent style={{width: width}} className={cn("p-0", className)}>
-                <Command>
+            <PopoverContent
+                {...popoverContentDataAttributes}
+                style={{width, ...contentStyle}}
+                className={cn("p-0", className)}
+            >
+                <Command shouldFilter={false}>
                     <div className="relative border-b w-full md:min-w-100">
                         <Search
                             className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"/>

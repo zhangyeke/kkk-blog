@@ -22,6 +22,10 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
+export function formatNumber(value: number | null | undefined): string {
+    return (value ?? 0).toLocaleString("en-US")
+}
+
 /*
  * @Author: EDY
  * @Date: 2025/9/15

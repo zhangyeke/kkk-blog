@@ -20,8 +20,11 @@ export type DialogProps = {
     description?: React.ReactNode
     trigger?: React.ReactNode
     footer?: React.ReactNode
+    headerClassName?: string
+    titleClassName?: string
     contentClassName?: string
     contentProps?: Omit<React.ComponentProps<typeof DialogContent>, "children" | "className"> & {
+        "data-preset"?: string
         "data-vaul-no-drag"?: boolean
     }
     onConfirm?: () => void
@@ -35,12 +38,18 @@ export function Dialog(props: DialogProps) {
         footer,
         title,
         children,
+        headerClassName,
+        titleClassName,
         contentClassName,
         contentProps,
         onConfirm,
         onCancel,
         ...dialogProps
     } = props;
+    const hasDescription = description !== null && description !== undefined && description !== false && description !== "";
+    const contentAccessibilityProps = !hasDescription && !contentProps?.["aria-describedby"]
+        ? { "aria-describedby": undefined }
+        : {};
     return (
         <ShadDialog {...dialogProps}>
             {
@@ -51,12 +60,12 @@ export function Dialog(props: DialogProps) {
                 )
             }
 
-            <DialogContent {...contentProps} className={cn("z-100", contentClassName)}>
-                <DialogHeader className={'px-6 py-3 border-b border-solid border-gray-200'}>
-                    <DialogTitle className={'flex items-center justify-between'}>
+            <DialogContent {...contentProps} {...contentAccessibilityProps} className={cn("z-100", contentClassName)}>
+                <DialogHeader className={cn("px-6 py-3 border-b border-solid border-gray-200", headerClassName)}>
+                    <DialogTitle className={cn("flex items-center justify-between", titleClassName)}>
                         {title}
                     </DialogTitle>
-                    <DialogDescription>{description}</DialogDescription>
+                    {hasDescription && <DialogDescription>{description}</DialogDescription>}
                 </DialogHeader>
                 {children}
                 <DialogFooter className={`${footer === null && 'hidden'} border-t border-solid border-gray-200 `}>
