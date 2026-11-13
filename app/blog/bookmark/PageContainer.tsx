@@ -155,6 +155,9 @@ const Bookmarks = ({ bookmarks }: { bookmarks: BookmarkCategoryWithBookmarks["bo
           rel="noreferrer"
           href={item.url}
           key={item.id}
+          onClick={() => {
+            void fetch(`/api/bookmarks/${item.id}/click`, { method: "POST", keepalive: true }).catch(() => undefined)
+          }}
           className="group bg-card hover:bg-primary/50 flex h-28 cursor-pointer items-center rounded-lg p-4 shadow-sm transition-all duration-500 hover:shadow-lg"
         >
           <span className="inline-flex size-14 min-w-14 shrink-0 origin-top-left scale-100 overflow-hidden opacity-100 transition-all duration-500 ease-out group-hover:w-0 group-hover:min-w-0 group-hover:scale-0 group-hover:opacity-0 motion-reduce:transition-none motion-reduce:group-hover:h-14 motion-reduce:group-hover:w-14 motion-reduce:group-hover:min-w-14 motion-reduce:group-hover:scale-100 motion-reduce:group-hover:opacity-100">

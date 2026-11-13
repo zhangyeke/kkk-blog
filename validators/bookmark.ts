@@ -24,7 +24,7 @@ export const addBookmarkSchema = z.object({
         },
       })
     ),
-  categoryId: z.number({ message: "请选择书签分类" }).superRefine(
+  categoryId: z.number({ message: "请选择书签分类" }).min(1, "请选择书签分类").superRefine(
     fieldConfig({
       label: "书签分类",
       fieldType: "remoteSelect",
@@ -60,18 +60,16 @@ export const addBookmarkSchema = z.object({
         },
       })
     ),
-    icon: z.string().optional().superRefine(
+  icon: z
+    .string()
+    .optional()
+    .superRefine(
       fieldConfig({
-          label: "书签图标",
-          fieldType: "imageUpload",
-          inputProps: {
-              placeholder: '请上传书签图标',
-          }
+        label: "书签图标",
+        fieldType: "imageUpload",
+        inputProps: {
+          placeholder: "请上传书签图标",
+        },
       })
-  ),
-})
-
-export const addBookmarkCategorySchema = z.object({
-  name: z.string().min(1, "名称不能为空").max(100),
-  status: z.coerce.number().int().min(0).max(1).optional(),
+    ),
 })
