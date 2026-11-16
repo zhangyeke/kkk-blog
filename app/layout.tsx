@@ -10,6 +10,7 @@
 import "styles/tailwind.css"
 import "styles/iconfont.css"
 import { globalFont, h1Font } from "@/assets/fonts"
+import { RenderDialogProvider } from "@/components/k-view/Popup/useRenderDialog"
 import { Toaster } from "@/components/ui/sonner"
 import WebVitals from "@/components/WebVitals/WebVitals";
 import { AppStoreProvider, ThemeProvider } from "@/providers";
@@ -39,7 +40,7 @@ export default async function RootLayout({ children }: ContainerProps) {
                         defaultTheme="light"
                         disableTransitionOnChange
                     >
-                        {children}
+                        <RenderDialogProvider>{children}</RenderDialogProvider>
                         <BlogEffects />
                         <Toaster position="top-center" richColors duration={1500} />
                     </ThemeProvider>

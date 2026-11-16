@@ -40,9 +40,13 @@ export default function BlogEffects() {
   }, [])
 
   const isBlog = pathname === "/blog" || pathname?.startsWith("/blog/")
+  /** 照片墙是强滚动叙事页，飘落花瓣会和视差/推近抢注意力，本页让位 */
+  const isPhotoWall = pathname?.startsWith("/blog/pictures")
+  /** 后台是长时间盯着看的工具界面，装饰性动效一律关掉 */
+  const isAdmin = pathname?.startsWith("/admin")
   return (
     <>
-      {gates.falling && <FallingOverlay running={gates.visible} />}
+      {gates.falling && !isPhotoWall && !isAdmin && <FallingOverlay running={gates.visible} />}
       {gates.cursor && gates.visible && trackMouse && isBlog && <SplashCursor />}
     </>
   )

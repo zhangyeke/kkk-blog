@@ -24,6 +24,10 @@ export default async function HeaderContainer() {
                 {
                     name: "起始页",
                     href: "/blog/index"
+                },
+                {
+                    name: "后台管理",
+                    href: "/admin"
                 }
             ]
         },
