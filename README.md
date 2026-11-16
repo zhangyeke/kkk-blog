@@ -162,7 +162,6 @@ bolg
 ├─ env.mjs
 ├─ eslint.config.mjs
 ├─ git-conventional-commits.yaml
-├─ graph.svg
 ├─ instrumentation.ts
 ├─ jest.config.js
 ├─ jest.setup.js
