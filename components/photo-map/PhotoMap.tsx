@@ -1,13 +1,12 @@
 "use client"
 
 import React from "react"
+import dynamic from "next/dynamic"
 import { Images, PanelRightOpen } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Empty } from "@/components/k-view/Empty"
 import { Spinner } from "@/components/k-view/Loader/Spinner"
 import { Drawer } from "@/components/k-view/Popup/Drawer"
-import { GalleryModal } from "@/components/GalleryModal"
-import { PhotoWallDesktop } from "@/components/photo-wall/PhotoWallDesktop"
 import { cn } from "@/lib/utils"
 import { countPhotos } from "@/lib/photo-wall"
 import { clusterByGrid, type ClusterPoint, clusterPolicy } from "@/lib/geo/cluster"
@@ -17,6 +16,21 @@ import styles from "./PhotoMap.module.css"
 import { type AMapMapInstance, type AMapMarkerInstance, type AMapNamespace, loadAMap } from "./amap-loader"
 
 const PLACEHOLDER = "/images/placeholder/image_placeholder.png"
+const GalleryModal = dynamic(
+  () => import("@/components/GalleryModal").then((module) => module.GalleryModal),
+  { ssr: false },
+)
+const PhotoWallSidebar = dynamic(
+  () => import("@/components/photo-wall/PhotoWallDesktop").then((module) => module.PhotoWallDesktop),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex min-h-0 flex-1 items-center justify-center" role="status">
+        <Spinner text="照片和地点加载中…" />
+      </div>
+    ),
+  },
+)
 
 /**
  * 高德官方内置底图样式（不需要在控制台额外开通）。
@@ -25,8 +39,6 @@ const PLACEHOLDER = "/images/placeholder/image_placeholder.png"
  */
 const MAP_STYLE_LIGHT = "amap://styles/normal"
 const MAP_STYLE_DARK = "amap://styles/dark"
-const PhotoWallSidebar = React.memo(PhotoWallDesktop)
-
 function currentMapStyle(): string {
   if (typeof document === "undefined") return MAP_STYLE_LIGHT
   return document.documentElement.classList.contains("dark") ? MAP_STYLE_DARK : MAP_STYLE_LIGHT
@@ -80,11 +92,17 @@ export function PhotoMap({
   const [clusterTotal, setClusterTotal] = React.useState(0)
   const [gallery, setGallery] = React.useState<GalleryState | null>(null)
   const [isSpotDrawerOpen, setIsSpotDrawerOpen] = React.useState(false)
+  const [hasOpenedSpotDrawer, setHasOpenedSpotDrawer] = React.useState(false)
 
   pointsRef.current = points
 
   const pointsById = React.useMemo(() => new Map(points.map((point) => [point.id, point])), [points])
   const photoCount = React.useMemo(() => countPhotos(spots), [spots])
+
+  function handleSpotDrawerOpenChange(open: boolean) {
+    setIsSpotDrawerOpen(open)
+    if (open) setHasOpenedSpotDrawer(true)
+  }
 
   const handleLocateSpot = React.useCallback((spot: PhotoSpot) => {
     const point = pointsById.get(spot.id)
@@ -295,7 +313,7 @@ export function PhotoMap({
         <Drawer
           direction="right"
           open={isSpotDrawerOpen}
-          onOpenChange={setIsSpotDrawerOpen}
+          onOpenChange={handleSpotDrawerOpenChange}
           title="照片与地点"
           description={`${spots.length} 个地点 · ${photoCount} 张照片`}
           footer={null}
@@ -325,14 +343,16 @@ export function PhotoMap({
             </button>
           }
         >
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <PhotoWallSidebar
-              spots={spots}
-              layout="sidebar"
-              onLocateSpot={handleLocateSpot}
-              galleryZIndex={1102}
-            />
-          </div>
+          {hasOpenedSpotDrawer && (
+            <div className="min-h-0 flex-1 overflow-hidden">
+              <PhotoWallSidebar
+                spots={spots}
+                layout="sidebar"
+                onLocateSpot={handleLocateSpot}
+                galleryZIndex={1102}
+              />
+            </div>
+          )}
         </Drawer>
       )}
 

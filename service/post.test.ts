@@ -62,7 +62,16 @@ test("starts list and filtered count concurrently; does not serialize article co
   expect(response.code).toBe(200)
   expect(response.data.totalPages).toBe(3)
   expect(response.data.list[0]).toEqual({ id: 1, summary: "摘要" })
-  expect(findMany).toHaveBeenCalledWith(expect.objectContaining({ skip: 6, take: 6 }))
+  expect(findMany).toHaveBeenCalledWith(expect.objectContaining({
+    skip: 6,
+    take: 6,
+    select: expect.objectContaining({
+      id: true,
+      content: true,
+      category: { select: { name: true } },
+      user: { select: { name: true, avatar: true } },
+    }),
+  }))
 })
 
 test.each([

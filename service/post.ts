@@ -2,7 +2,7 @@
 import { cache } from "react"
 import { Prisma } from "@prisma/client"
 import prisma from "@/lib/prisma"
-import { PostListItem, PostPayload, PostWithFavorites, postWithUserInclude } from "@/types/post"
+import { PostListItem, postListSelect, PostPayload, PostWithFavorites, postWithUserInclude } from "@/types/post"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
 import { checkAuth } from "@/service/auth"
 import { postPayloadSchema } from "@/validators/post"
@@ -48,7 +48,7 @@ export async function getAllPosts(params?: Prisma.PostFindManyArgs) {
       orderBy: params?.orderBy || [{ createdAt: "desc" }, { id: "desc" }],
       skip: params?.skip,
       take: params?.take,
-      include: postWithUserInclude,
+      select: postListSelect,
     })
 
     const postsWithSummary = (await Promise.all(
