@@ -15,10 +15,10 @@ export const addFootprintSchema = z.object({
     fieldConfig({
       label: "足迹地区",
       fieldType: "regionCascader",
-      // description:"",//用于在输入框下方添加提示信息
-      // order: -1,//排序
       inputProps: {
         placeholder: "请选择足迹地区",
+        allowParentSelection: true,
+        minParentSelectionDepth: 2,
       },
     })
   ),
@@ -36,6 +36,19 @@ export const addFootprintSchema = z.object({
         },
       })
     ),
+  coordinates: z
+    .object({
+      lng: z.string().trim(),
+      lat: z.string().trim(),
+    })
+    .optional()
+    .superRefine(
+      fieldConfig({
+        label: "经纬度",
+        description: "填写详细地点并选择地区后，可通过高德地图获取坐标",
+        fieldType: "geoCoordinates",
+      })
+    ),
   album: z.array(z.string().url("请上传正确的图片地址")).superRefine(
     fieldConfig({
       label: "图集",
@@ -47,5 +60,36 @@ export const addFootprintSchema = z.object({
       },
     })
   ),
+}).superRefine((values, ctx) => {
+  const longitude = values.coordinates?.lng ?? ""
+  const latitude = values.coordinates?.lat ?? ""
+
+  if (!longitude && !latitude) return
+
+  if (!longitude || !latitude) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["coordinates"],
+      message: "经度和纬度需要同时填写",
+    })
+    return
+  }
+
+  const lng = Number(longitude)
+  const lat = Number(latitude)
+  if (!Number.isFinite(lng) || lng < -180 || lng > 180) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["coordinates"],
+      message: "经度范围应为 -180 至 180",
+    })
+  }
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["coordinates"],
+      message: "纬度范围应为 -90 至 90",
+    })
+  }
 })
 

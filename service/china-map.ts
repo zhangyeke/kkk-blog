@@ -132,3 +132,43 @@ export async function loadRegionCascaderData(pathPrefix: string[]): Promise<Regi
     const geo = await getGeoCached(digits)
     return chinaGeoToRegionList(geo)
 }
+
+/**
+ * 将足迹保存的省 / 市 / 区 adcode 路径转换为地区名称。
+ * 每个父级只请求一次；单个区划数据加载失败时保留其余级别的名称。
+ */
+export async function getRegionPathLabels(paths: string[][]): Promise<string[]> {
+    const normalizedPaths = paths.map((path) => path.slice(0, 3))
+    if (normalizedPaths.length === 0) return []
+
+    const parentPaths = new Map<string, string[]>()
+    parentPaths.set("", [])
+    for (const path of normalizedPaths) {
+        if (path.length >= 2) {
+            const provincePath = path.slice(0, 1)
+            parentPaths.set(provincePath.join("/"), provincePath)
+        }
+        if (path.length >= 3) {
+            const cityPath = path.slice(0, 2)
+            parentPaths.set(cityPath.join("/"), cityPath)
+        }
+    }
+
+    const nameByCode = new Map<string, string>()
+    const pendingPaths = [...parentPaths.values()]
+    const workerCount = Math.min(8, pendingPaths.length)
+    await Promise.all(Array.from({length: workerCount}, async () => {
+        while (pendingPaths.length > 0) {
+            const parentPath = pendingPaths.shift()
+            if (!parentPath) continue
+            try {
+                const options = await loadRegionCascaderData(parentPath)
+                for (const option of options) nameByCode.set(option.id, option.name)
+            } catch {
+                // 地图数据源临时不可用时，调用方仍可用 adcode 展示地区信息。
+            }
+        }
+    }))
+
+    return normalizedPaths.map((path) => path.map((code) => nameByCode.get(code) ?? code).join(" / "))
+}

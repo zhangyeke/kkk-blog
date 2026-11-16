@@ -29,6 +29,12 @@ export default function EditFootprintsForm() {
     <Form
       ref={formInstance}
       schema={addFootprintSchema}
+      defaultValues={{
+        regionCode: [],
+        address: "",
+        coordinates: { lng: "", lat: "" },
+        album: [],
+      }}
       withSubmit={false}
     >
       <FooterButtons >

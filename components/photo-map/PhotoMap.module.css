@@ -1,0 +1,14 @@
+/*
+ * 全屏地图页专用样式。
+ */
+
+/* 隐藏高德的 logo 与版权条，让地图真正铺满视口。
+ * 注意：高德开放平台的服务条款通常要求保留标识，隐藏属于自行承担风险的做法。 */
+.map :global(.amap-logo),
+.map :global(.amap-copyright) {
+    display: none !important;
+}
+
+.map :global(.amap-copyright-container) {
+    display: none !important;
+}
