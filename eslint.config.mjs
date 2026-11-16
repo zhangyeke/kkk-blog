@@ -15,6 +15,7 @@ export default typescriptEslint.config(
       "coverage/",
       "playwright-report/",
       "test-results/",
+      "public/jiangshan-atlas/**",
       "*.min.js",
       "*.config.js",
       "**/*.d.ts",

@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "lastUpdate": "2026-11-12",
+  "projectPath": "D:/项目/kkk-blog",
+  "modules": {
+    "code-style": {
+      "version": 1,
+      "items": 27,
+      "hash": "ff0e13700e7f"
+    },
+    "ui-style": {
+      "version": 1,
+      "items": 40,
+      "hash": "83ef6c764598"
+    },
+    "architecture": {
+      "version": 1,
+      "items": 28,
+      "hash": "d7cfacd9751e"
+    },
+    "api-spec": {
+      "version": 1,
+      "items": 22,
+      "hash": "84a06679ebfd"
+    },
+    "sql-spec": {
+      "version": 1,
+      "items": 19,
+      "hash": "089ea6d8a117"
+    },
+    "git-spec": {
+      "version": 1,
+      "items": 12,
+      "hash": "b47e74636515"
+    }
+  }
+}
