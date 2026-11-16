@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-16",
+  "node": "v20.20.2",
+  "next": "16.2.0",
+  "baselineRef": "fac5121adb08227a2ed61aa210096de4bb34e56b",
+  "candidateRef": "705fdc38fde05d0266cad229a40143b0dc99924b",
+  "method": "Isolated production builds via NEXT_DIST_DIR=.next-performance-before/after and next build --webpack; compares the /blog/pictures/map route entry JavaScript file only.",
+  "scope": "Excludes shared/runtime chunks, CSS, server output, dynamic chunks, browser cache and transfer negotiation. Gzip sizes use Node zlib defaults.",
+  "before": {
+    "file": "page-295143522d19fb69.js",
+    "bytes": 18841,
+    "gzipBytes": 7013
+  },
+  "after": {
+    "file": "page-a8c7213c4a2edd4e.js",
+    "bytes": 16038,
+    "gzipBytes": 5751
+  },
+  "change": {
+    "bytes": -2803,
+    "percent": -14.88,
+    "gzipBytes": -1262,
+    "gzipPercent": -18
+  }
+}
