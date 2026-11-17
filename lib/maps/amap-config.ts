@@ -3,6 +3,9 @@ import "server-only"
 import { getAdminSettingValues } from "@/lib/admin/settings-store"
 
 const AMAP_SETTING_GROUP = "gaode_map_config"
+// The existing production settings group was created with this stable key typo.
+// Keep it as a fallback so its saved values remain readable without a data migration.
+const LEGACY_AMAP_SETTING_GROUP = "gaodi_map_config"
 
 export type AMapSettings = {
   jsKey: string
@@ -39,11 +42,19 @@ function readEndpoint(value: unknown, hostname: string, pathname: string): strin
 
 /** Read the AMap credentials and endpoints from the admin settings group. */
 export async function getAMapSettings(): Promise<AMapSettings> {
-  const values = await getAdminSettingValues(AMAP_SETTING_GROUP)
+  const [values, legacyValues] = await Promise.all([
+    getAdminSettingValues(AMAP_SETTING_GROUP),
+    getAdminSettingValues(LEGACY_AMAP_SETTING_GROUP),
+  ])
+
+  const readSetting = (key: string) => readString(values[key]) || readString(legacyValues[key])
+  const readConfiguredEndpoint = (key: string, hostname: string, pathname: string) =>
+    readEndpoint(values[key], hostname, pathname) || readEndpoint(legacyValues[key], hostname, pathname)
+
   return {
-    jsKey: readString(values.api_js_key),
-    jsUrl: readEndpoint(values.gaode_api_js_url, "webapi.amap.com", "/maps"),
-    webKey: readString(values.gaode_web_key),
-    webUrl: readEndpoint(values.gaode_web_url, "restapi.amap.com", "/v3/geocode/geo"),
+    jsKey: readSetting("api_js_key"),
+    jsUrl: readConfiguredEndpoint("gaode_api_js_url", "webapi.amap.com", "/maps"),
+    webKey: readSetting("gaode_web_key"),
+    webUrl: readConfiguredEndpoint("gaode_web_url", "restapi.amap.com", "/v3/geocode/geo"),
   }
 }
