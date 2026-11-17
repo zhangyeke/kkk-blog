@@ -104,7 +104,7 @@ export function Form(props: FormProps & BaseComponentProps) {
   })
   // Subscribe only to fields that affect other fields. Most forms need no
   // whole-form subscription, which avoids rerendering every field per keystroke.
-  useWatch({control: form.control, name: watchFields})
+  useWatch({ control: form.control, name: watchFields })
   const values = form.getValues() as FieldValues
 
   React.useImperativeHandle(ref, () => form)
@@ -166,8 +166,8 @@ export function Form(props: FormProps & BaseComponentProps) {
 
   return (
     <ShadForm {...form}>
-      <form className={cn("space-y-4 px-6", className)} style={style} onSubmit={handleFormSubmit}>
-        <div className={fieldsClassName}>{formFields}</div>
+      <form className={cn("px-6", className)} style={style} onSubmit={handleFormSubmit}>
+        <div className={cn("flex flex-col space-y-4", fieldsClassName)}>{formFields}</div>
         {children}
         {withSubmit && (
           <Button type="button" onClick={handleSubmitClick}>
