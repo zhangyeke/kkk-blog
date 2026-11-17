@@ -37,23 +37,6 @@ export const env = createEnv({
         ),
         POEM_API_URL: z.string().url(),
         MAP_BASE_URL: z.string().url(),
-        /**
-         * 高德 JS API key。**服务端变量**：不加 NEXT_PUBLIC_ 前缀，
-         * 由 Server Component 读出后作为 prop 传给客户端地图组件，
-         * 因此不会编译进客户端 bundle，也不会进 git。
-         * 设为 optional：缺 key 时页面显示配置提示，而不是构建失败。
-         */
-        GAODI_MAP_KEY: z.string().optional(),
-        /** 高德 Web 服务 API key，用于服务端地址地理编码；不要使用 NEXT_PUBLIC_ 前缀 */
-        GAODI_WEB_SERVICE_KEY: z.string().optional(),
-        /** 高德 JS API 2.0 安全密钥（可选）。配置后需在加载脚本前注入 _AMapSecurityConfig */
-        GAODI_SECURITY_CODE: z.string().optional(),
-        /**
-         * 高德自定义地图样式 ID（可选）。填了就切回矢量底图并用该样式，
-         * 不再叠卫星影像。格式：`amap://styles/xxxxxx` 或纯 ID。
-         * 只有自定义样式能同时做到「蔚蓝海水 + 绿土陆地」。
-         */
-        GAODI_MAP_STYLE: z.string().optional(),
         // API_URL: z.string().url(),
         // REQUEST_URL: z.string(),
     },
@@ -78,10 +61,6 @@ export const env = createEnv({
         AL_API_URL: process.env.AL_API_URL,
         POEM_API_URL: process.env.POEM_API_URL,
         MAP_BASE_URL: process.env.MAP_BASE_URL,
-        GAODI_MAP_KEY: process.env.GAODI_MAP_KEY,
-        GAODI_WEB_SERVICE_KEY: process.env.GAODI_WEB_SERVICE_KEY,
-        GAODI_SECURITY_CODE: process.env.GAODI_SECURITY_CODE,
-        GAODI_MAP_STYLE: process.env.GAODI_MAP_STYLE,
         IMGBB_API_TOKEN: process.env.IMGBB_API_TOKEN,
         IMGBB_API_URL: process.env.IMGBB_API_URL,
         MTBED_UPLOAD_URL_PRIMARY: process.env.MTBED_UPLOAD_URL_PRIMARY,

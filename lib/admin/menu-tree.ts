@@ -2,7 +2,7 @@
  * 后台菜单树的纯函数层（Edge 安全，无 IO、无 Prisma、无 server-only）。
  *
  * 这里只做「行 → 树 → 导航 / 路径索引」的纯变换，任何地方都能 import：
- * - RSC 里由 lib/admin-menu-store 喂 DB 行进来；
+ * - RSC 里由 lib/admin/menu-store 喂 DB 行进来；
  * - 中间件（Edge）里由快照接口拿到的 path 索引直接用；
  * - 单元测试里直接喂 ADMIN_MENU_SEED。
  *
@@ -11,8 +11,8 @@
  * 「中间件放行、页面拦截」这种割裂。
  */
 
-import {hasPermission, type PermissionMatrix} from "@/lib/permissions"
-import type {AdminMenuRow, MenuType} from "@/lib/admin-menu-seed"
+import {hasPermission, type PermissionMatrix} from "@/lib/admin/permissions"
+import type {AdminMenuRow, MenuType} from "@/lib/admin/menu-seed"
 
 /** 树节点：行 + 深度（一级 = 1） + 子节点 */
 export type AdminMenuNode = {
@@ -24,7 +24,7 @@ export type AdminMenuNode = {
 /**
  * 侧栏导航项（渲染用）。
  *
- * 与 lib/permissions.ts 里那个旧的 AdminNavItem **不是同一个东西**：
+ * 与 lib/admin/permissions.ts 里那个旧的 AdminNavItem **不是同一个东西**：
  * 旧的是写死的静态表，这里的由菜单树 + 权限矩阵实时算出来。
  */
 export type AdminNavItem = {
@@ -326,7 +326,7 @@ export function filterNav(
 }
 
 /**
- * 当前路径命中的导航节点，供面包屑显示「设置 / 偏好」。
+ * 当前路径命中的导航节点，供面包屑显示设置下的当前子菜单。
  *
  * 匹配优先级：二级项精确命中 → 一级项精确命中 → 最长 href 前缀命中（详情页）。
  * 全部未命中返回 `{root: null, child: null}`。

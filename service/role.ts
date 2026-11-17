@@ -5,9 +5,10 @@ import { revalidatePath } from "next/cache"
 import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { z, type ZodError } from "zod"
 
+import type { AdminRoleFilter, AdminStatusFilter } from "@/assets/enumerate/global"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import { requireAction, requirePageAccess } from "@/lib/admin-guard"
-import { getPermissionKeySet } from "@/lib/admin-menu-store"
+import { requireAction, requirePageAccess } from "@/lib/admin/guard"
+import { getAllPermissionKeySet } from "@/lib/admin/menu-store"
 import prisma from "@/lib/prisma"
 import { createRoleSchema, updateRoleSchema } from "@/validators/role"
 
@@ -127,7 +128,7 @@ function revalidateRoleSurfaces(): void {
  * 查 `editor` 会命中 `editor2`，结果只能当近似值用。
  *
  * 这里改为「一次读回 roles 列，在内存里按逗号精确 split 后计数」：
- * - 语义与 lib/permissions.ts 的 parseRoles 完全一致（同一套拆分规则）；
+ * - 语义与 lib/admin/permissions.ts 的 parseRoles 完全一致（同一套拆分规则）；
  * - 只 select 一列，传输量极小；角色管理页是低频页面，一次全表扫描可接受。
  * 若将来用户表到十万级，再改成「roles 建索引 + 按角色 count」的专用查询。
  */
@@ -165,8 +166,8 @@ async function loadMemberCounts(): Promise<Map<string, number>> {
  */
 export async function getRoleListView(params?: {
     keyword?: string
-    type?: "all" | "builtin" | "custom"
-    status?: string
+    type?: AdminRoleFilter
+    status?: AdminStatusFilter
 }): Promise<BaseResource<RoleListView>> {
     try {
         await requirePageAccess("roles")
@@ -260,7 +261,7 @@ export async function getRoleMenuKeys(code: string): Promise<BaseResource<string
         })
         if (!existing) return backFailMessage("角色不存在，可能已被删除", [])
 
-        const knownKeys = await getPermissionKeySet()
+        const knownKeys = await getAllPermissionKeySet()
         if (roleCode === SUPER_ADMIN) {
             return backSuccessMessage("超级管理员拥有全部权限", [...knownKeys])
         }
@@ -473,7 +474,7 @@ export async function saveRolePermissions(input: {
         })
         if (!existing) return backFailMessage("角色不存在，可能已被删除")
 
-        const knownKeys = await getPermissionKeySet()
+        const knownKeys = await getAllPermissionKeySet()
         const keys = Array.from(
             new Set(submitted.filter((key): key is string => typeof key === "string" && knownKeys.has(key))),
         )

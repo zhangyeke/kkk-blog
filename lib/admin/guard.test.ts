@@ -1,10 +1,10 @@
 /** @jest-environment node */
-import { requireAction } from "./admin-guard"
-import { ActionError } from "./actionMessageBack"
-import { auth } from "./auth"
+import { requireAction } from "./guard"
+import { ActionError } from "../actionMessageBack"
+import { auth } from "../auth"
 import { getAllowedKeys, getPermissionRoles } from "./permission-store"
 
-jest.mock("./auth", () => ({auth: jest.fn()}))
+jest.mock("../auth", () => ({auth: jest.fn()}))
 jest.mock("./permission-store", () => ({
     getAllowedKeys: jest.fn(),
     getPermissionRoles: jest.fn(),

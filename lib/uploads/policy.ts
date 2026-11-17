@@ -1,4 +1,13 @@
 /** Shared by the client precheck and the authoritative server validation. */
+/** Upload destinations are represented by fixed IDs; the server controls target URLs. */
+export const UPLOAD_ROUTES = [
+  { id: "mtbed-primary", label: "主节点" },
+  { id: "mtbed-secondary", label: "备用节点" },
+] as const
+
+export type UploadRouteId = (typeof UPLOAD_ROUTES)[number]["id"]
+export const DEFAULT_UPLOAD_ROUTE: UploadRouteId = "mtbed-primary"
+
 export function imageUploadLimitBytes(value: string): number {
   const match = /^(\d+(?:\.\d+)?)\s*(b|kb|kib|mb|mib|gb|gib)?$/i.exec(value.trim())
   if (!match) throw new Error("图片上传大小限制配置无效，请联系管理员")

@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache"
 import { isRedirectError } from "next/dist/client/components/redirect-error"
 
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import { requireAction } from "@/lib/admin-guard"
-import { getPermissionKeySet } from "@/lib/admin-menu-store"
+import { requireAction } from "@/lib/admin/guard"
+import { getPermissionKeySet } from "@/lib/admin/menu-store"
 import prisma from "@/lib/prisma"
 import { savePermissionMatrixSchema } from "@/validators/role"
 

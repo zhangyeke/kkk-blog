@@ -1,5 +1,5 @@
 import {env} from "env.mjs"
-import Request from "@/lib/Request"
+import { Request } from "@/lib/http"
 import {FetchMaterialParams, MaterialResource, PhotoMaterial, VideoMaterial} from "@/types/material";
 
 const http = new Request({

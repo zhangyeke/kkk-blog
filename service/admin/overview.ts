@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client"
 
 import prisma from "@/lib/prisma"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import type { DataScope } from "@/lib/permissions"
+import type { DataScope } from "@/lib/admin/permissions"
 
 export type AdminOverview = {
   postTotal: number

@@ -1,5 +1,5 @@
 import type { PhotoFilter, PhotoProvinceGroup, PhotoSpot } from "@/types/photo-wall"
-import type { FootprintRowForMap } from "@/lib/geo/map-points"
+import type { FootprintRowForMap } from "@/lib/maps/geo/map-points"
 
 /** 过滤空串 / 非字符串 / 重复项，保持原始顺序 */
 export function normalizePhotos(album: readonly (string | null | undefined)[]): string[] {

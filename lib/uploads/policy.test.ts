@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { imageFileExtension, imageUploadLimitBytes } from "./image-upload-policy"
+import { imageFileExtension, imageUploadLimitBytes } from "./policy"
 
 test.each([
   ["3mb", 3 * 1024 ** 2],

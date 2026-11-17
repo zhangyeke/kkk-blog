@@ -8,26 +8,30 @@
  * 所以只能用 React.cache：请求级 memo，一次请求内多个调用点共用一次查库，
  * 请求结束即失效，没有 TTL。
  *
- * 侧栏和菜单管理页优先读取 AdminMenu 表；数据库还未建表、连接失败或菜单表为空时，
- * 使用与 SQL 种子一致的 ADMIN_MENU_SEED，保证后台导航仍可用。
+ * 侧栏和菜单管理页优先读取 AdminMenu 表；数据库还未建表或连接失败时，
+ * 使用与 SQL 种子一致的 ADMIN_MENU_SEED，保证后台导航仍可用。成功读取到空表时尊重空表，
+ * 避免管理员删除全部菜单后又被种子数据恢复。
  */
 
 import "server-only"
 
 import { cache } from "react"
 
-import { ADMIN_MENU_SEED, type AdminMenuRow, type MenuType } from "@/lib/admin-menu-seed"
-import { type AdminMenuNode, type AdminNavItem, buildMenuTree, filterNav } from "@/lib/menu-tree"
-import { getPermissionMatrix, getPermissionRoles } from "@/lib/permission-store"
+import { ADMIN_MENU_TYPES, type AdminMenuPosition, type AdminMenuSurface } from "@/assets/enumerate/global"
+import { ADMIN_MENU_SEED, type AdminMenuRow, BLOG_MENU_SEED, type MenuType } from "@/lib/admin/menu-seed"
+import { type AdminMenuNode, type AdminNavItem, buildMenuTree, filterNav } from "@/lib/admin/menu-tree"
+import { getPermissionMatrix, getPermissionRoles } from "@/lib/admin/permission-store"
 import prisma from "@/lib/prisma"
-import { parseRoles } from "@/lib/permissions"
+import { parseRoles } from "@/lib/admin/permissions"
 
 /** 合法的节点类型集合，用于把 DB 里的 String 收窄成 MenuType（脏数据兜底为 menu） */
-const MENU_TYPE_SET: ReadonlySet<string> = new Set<MenuType>(["dir", "menu", "button"])
+const MENU_TYPE_SET: ReadonlySet<string> = new Set(ADMIN_MENU_TYPES)
 
 /** Prisma 查询出来的行（只声明用得到的字段，避免把 createdAt/updatedAt 带出去） */
 type AdminMenuRecord = {
   id: number
+  surface: AdminMenuSurface
+  position: AdminMenuPosition
   parentId: number | null
   name: string
   type: string
@@ -48,6 +52,8 @@ type AdminMenuRecord = {
 function toRow(record: AdminMenuRecord): AdminMenuRow {
   return {
     id: record.id,
+    surface: record.surface,
+    position: record.position,
     parentId: record.parentId,
     name: record.name,
     type: MENU_TYPE_SET.has(record.type) ? (record.type as MenuType) : "menu",
@@ -71,6 +77,8 @@ export async function loadMenuRowsRequired(): Promise<AdminMenuRow[]> {
     orderBy: [{ sort: "asc" }, { id: "asc" }],
     select: {
       id: true,
+      surface: true,
+      position: true,
       parentId: true,
       name: true,
       type: true,
@@ -87,25 +95,29 @@ export async function loadMenuRowsRequired(): Promise<AdminMenuRow[]> {
       isBuiltin: true,
     },
   })
-  if (rows.length === 0) throw new Error("AdminMenu 为空，无法执行菜单管理操作")
   return rows.map(toRow)
 }
 
 /**
- * 数据库菜单读取。React.cache 包装后供单个 RSC 请求复用；数据库暂不可用或菜单表为空时，
- * 后台导航与权限 key 集合回退到内置种子。
+ * 数据库菜单读取。React.cache 包装后供单个 RSC 请求复用；数据库暂不可用时回退到内置种子。
+ * 空表视为管理员删除了全部菜单，保持为空以免已删除菜单被种子重新创建。
  */
-export async function loadMenuRowsRaw(): Promise<AdminMenuRow[]> {
+export async function loadAllMenuRowsRaw(): Promise<AdminMenuRow[]> {
   try {
     return await loadMenuRowsRequired()
   } catch (error) {
     console.error("[admin-menu-store] 读取 AdminMenu 失败，使用内置菜单种子", error)
-    return [...ADMIN_MENU_SEED]
+    return [...ADMIN_MENU_SEED, ...BLOG_MENU_SEED]
   }
 }
 
-/** 菜单行（请求级缓存）。RSC 里多处调用只查一次库，下一个请求重新查 → 改完立刻生效 */
-export const getMenuRows = cache(loadMenuRowsRaw)
+/** 所有范围的菜单行（请求级缓存），供权限编辑和博客导航读取。 */
+export const getAllMenuRows = cache(loadAllMenuRowsRaw)
+
+/** 指定后台 / 博客范围的菜单行。默认保持旧调用方只读取后台菜单。 */
+export const getMenuRows = cache(async (surface: AdminMenuSurface = "ADMIN"): Promise<AdminMenuRow[]> =>
+  (await getAllMenuRows()).filter((row) => row.surface === surface)
+)
 
 /** 菜单树（请求级缓存） */
 export const getMenuTree = cache(async (): Promise<AdminMenuNode[]> => buildMenuTree(await getMenuRows()))
@@ -118,7 +130,9 @@ export const getMenuTree = cache(async (): Promise<AdminMenuNode[]> => buildMenu
 export const getNavForUser = cache(async (roles: string | null | undefined): Promise<AdminNavItem[]> => {
   const [tree, matrix, roleRows] = await Promise.all([getMenuTree(), getPermissionMatrix(), getPermissionRoles()])
   const activeCodes = new Set(roleRows.filter((row) => row.status === 1).map((row) => row.code))
-  const activeRoles = parseRoles(roles).filter((role) => role === "superAdmin" || activeCodes.has(role)).join(",")
+  const activeRoleList = parseRoles(roles).filter((role) => role === "superAdmin" || activeCodes.has(role))
+  if (activeRoleList.length === 0) return []
+  const activeRoles = activeRoleList.join(",")
   return filterNav(tree, matrix, activeRoles)
 })
 
@@ -127,11 +141,28 @@ export const getNavForUser = cache(async (roles: string | null | undefined): Pro
  *
  * 数据库正常时，权限 key 完全来自数据库菜单行，避免已删除菜单权限继续生效。
  */
-export const getPermissionKeySet = cache(async (): Promise<Set<string>> => {
-  const rows = await getMenuRows()
+export const getAllPermissionKeySet = cache(async (): Promise<Set<string>> => {
+  const [rows, categories] = await Promise.all([
+    getAllMenuRows(),
+    prisma.postCategory.findMany({ select: { id: true } }).catch(() => []),
+  ])
   const keys = new Set<string>()
   for (const row of rows) {
     if (row.status === 1 && row.permissionKey) keys.add(row.permissionKey)
   }
+  for (const category of categories) {
+    keys.add(`blog:category:${category.id}`)
+  }
+  return keys
+})
+
+export const getPermissionKeySet = cache(async (): Promise<Set<string>> => {
+  const [rows, categories] = await Promise.all([
+    getAllMenuRows(),
+    prisma.postCategory.findMany({ where: { status: 1 }, select: { id: true } }).catch(() => []),
+  ])
+  const keys = new Set<string>()
+  for (const row of rows) if (row.status === 1 && row.permissionKey) keys.add(row.permissionKey)
+  for (const category of categories) keys.add(`blog:category:${category.id}`)
   return keys
 })

@@ -2,11 +2,11 @@ import NextAuth, { type NextAuthConfig } from "next-auth"
 import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import { env } from "@/env.mjs"
-import { prismaAuthAdapter } from "./prisma-auth-adapter"
+import { prismaAuthAdapter } from "./prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { compareSync } from "bcrypt-ts-edge"
 
-import prisma from "./prisma"
+import prisma from "@/lib/prisma"
 import { getUserByEmail, updateUser } from "@/service/user"
 
 const config = {

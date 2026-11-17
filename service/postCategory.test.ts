@@ -7,7 +7,7 @@ jest.mock("@/lib/prisma", () => ({
     default: {postCategory: {findMany: jest.fn()}},
 }))
 jest.mock("next/cache", () => ({revalidatePath: jest.fn()}))
-jest.mock("@/lib/admin-guard", () => ({requireAction: jest.fn(), requirePageAccess: jest.fn()}))
+jest.mock("@/lib/admin/guard", () => ({requireAction: jest.fn(), requirePageAccess: jest.fn()}))
 
 const findMany = jest.mocked(prisma.postCategory.findMany)
 

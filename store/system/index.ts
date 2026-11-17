@@ -1,6 +1,6 @@
 import {env} from "env.mjs"
 
-import {setDeepValue} from "@/lib/utils";
+import {setDeepValue} from "@/lib/object";
 import {StoreCreator} from "../utils";
 import { clampFallingSpeed, type FallingDirection, type FallingPattern, fallingSpeed } from "@/lib/falling-patterns"
 

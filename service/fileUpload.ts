@@ -2,7 +2,7 @@
 
 import { env } from "@/env.mjs"
 import { ActionError, backAuthFailMessage, backMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import { imageFileExtension, imageUploadLimitBytes } from "@/lib/image-upload-policy"
+import { imageFileExtension, imageUploadLimitBytes } from "@/lib/uploads/policy"
 import { checkAuth } from "@/service/auth"
 import type { UploadImageResult } from "@/types/file"
 

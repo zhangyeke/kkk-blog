@@ -6,66 +6,21 @@
  * 服务端守卫使用默认矩阵与内置菜单种子兜底。
  *
  * 权限分三层，缺一不可：
- * 1. 页面级 —— 路由守卫（proxy.ts / lib/admin-guard.ts 的 requirePageAccess）
+ * 1. 页面级 —— 路由守卫（proxy.ts / lib/admin/guard.ts 的 requirePageAccess）
  * 2. 按钮级 —— withPermission / <Can>（components/admin/with-permission.tsx）
  * 3. 数据级 —— 各领域 service 按 scope 过滤（前两层都是"看得到界面"，这层才是"拿得到数据"）
  *
  * 静态页面/动作策略同时用于构造 DEFAULT_PERMISSION_MATRIX，作为数据库不可用时的兜底。
  */
 
-/*
- * 注意：这里只做 **type-only** import。
- * menu-tree 在运行时 import 了本文件的 hasPermission，
- * 用 `import type` 保证编译后被擦除，不产生运行时循环依赖。
- */
-/** 内置角色 code。自定义角色用 Role 类型（string 分支）承载 */
-export type BuiltinRole = "superAdmin" | "admin" | "user"
+/* The shared enum catalog is dependency-free; only the menu tree's matrix type is erased. */
+import { BUILTIN_ROLE_CODES } from "@/assets/enumerate/global"
+import type { AdminAction, AdminPage, BuiltinRole } from "@/assets/enumerate/global"
 
-/** (string & {}) 保留字面量补全，同时容纳自定义角色 code */
+/** Role codes include built-ins while retaining completion for custom database roles. */
 export type Role = BuiltinRole | (string & {})
-
-/**
- * 后台页面标识，与路由一一对应。
- *
- * 说明：本类型描述的是「代码里已知的页面 code」，**不是**运行时权限全集。
- * 运行时真相是 AdminMenu 表（菜单/按钮的 permissionKey），
- * 这里保留字面量只为类型补全与内置默认矩阵的生成。
- */
-export type AdminPage =
-    | "dashboard"
-    | "posts"
-    | "postCategories"
-    | "bookmarks"
-    | "bookmarkCategories"
-    | "footprints"
-    | "users"
-    | "roles"
-    | "settings"
-    | "preferences"
-    | "menus"
-
-/** 按钮级动作 */
-export type AdminAction =
-    | "post:create"
-    | "post:update"
-    | "post:delete"
-    | "postCategory:create"
-    | "postCategory:update"
-    | "postCategory:delete"
-    | "bookmark:create"
-    | "bookmark:update"
-    | "bookmark:delete"
-    | "bookmarkCategory:create"
-    | "bookmarkCategory:update"
-    | "bookmarkCategory:delete"
-    | "footprint:create"
-    | "footprint:update"
-    | "footprint:delete"
-    | "user:manage"
-    | "settings:update"
-
 /** 内置角色顺序（菜单列、权限矩阵列都按这个顺序渲染） */
-export const BUILTIN_ROLES: readonly BuiltinRole[] = ["superAdmin", "admin", "user"]
+export const BUILTIN_ROLES: readonly BuiltinRole[] = BUILTIN_ROLE_CODES
 
 /** 内置角色的中文显示名。自定义角色走 roleLabel 的 names 参数 */
 export const BUILTIN_ROLE_LABELS: Record<BuiltinRole, string> = {
@@ -125,7 +80,7 @@ export function actionKey(action: AdminAction | (string & {})): string {
  * 页面访问项（10 项，全部归在「页面访问」组）。
  *
  * @deprecated 静态兼容策略，不作为生产授权来源。
- * 运行时「有哪些页面权限」由 AdminMenu 表决定，见 lib/admin-menu-store.ts。
+ * 运行时「有哪些页面权限」由 AdminMenu 表决定，见 lib/admin/menu-store.ts。
  */
 export const PAGE_ITEMS: readonly PermissionItem<AdminPage>[] = [
     {key: pageKey("dashboard"), code: "dashboard", label: "概览", group: "页面访问", order: 1},
@@ -137,12 +92,11 @@ export const PAGE_ITEMS: readonly PermissionItem<AdminPage>[] = [
     {key: pageKey("users"), code: "users", label: "用户", group: "页面访问", order: 6},
     {key: pageKey("roles"), code: "roles", label: "角色管理", group: "页面访问", order: 7},
     {key: pageKey("settings"), code: "settings", label: "设置", group: "页面访问", order: 8},
-    {key: pageKey("preferences"), code: "preferences", label: "偏好", group: "页面访问", order: 9},
     {key: pageKey("menus"), code: "menus", label: "权限管理", group: "页面访问", order: 10},
 ]
 
 /**
- * 按钮动作项（13 项，按归属页面分组）。
+ * 按钮动作项，按归属页面分组。
  *
  * @deprecated 静态兼容策略，不作为生产授权来源。
  * 运行时「有哪些动作权限」由 AdminMenu 表的 button 行决定。
@@ -230,7 +184,7 @@ export const ACTION_ITEMS: readonly PermissionItem<AdminAction>[] = [
     },
 ]
 
-/** 内置权限 key：10 页面 + 13 动作 = 23 */
+/** 内置权限 key：10 页面 + 17 动作 = 27 */
 export const ALL_PERMISSION_KEYS: readonly string[] = [
     ...PAGE_ITEMS.map((item) => item.key),
     ...ACTION_ITEMS.map((item) => item.key),
@@ -265,7 +219,6 @@ export const PAGE_ACCESS: Record<AdminPage, Role[]> = {
     users: OWNER,
     roles: OWNER,
     settings: OWNER,
-    preferences: OWNER,
     menus: OWNER,
 }
 
@@ -312,6 +265,9 @@ function buildDefaultMatrix(): PermissionMatrix {
         }
         matrix[role] = keys
     }
+    // The personal profile entry remains available to ordinary signed-in users
+    // when the permission tables are empty or temporarily unavailable.
+    matrix.user = [...(matrix.user ?? []), "blog:account:home"]
     return matrix
 }
 

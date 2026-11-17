@@ -7,9 +7,9 @@ import type { Prisma } from "@prisma/client"
 
 import prisma from "@/lib/prisma"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import { requireAction } from "@/lib/admin-guard"
+import { requireAction } from "@/lib/admin/guard"
 import { normalizePaging, type Paging } from "@/lib/paging"
-import type { DataScope } from "@/lib/permissions"
+import type { DataScope } from "@/lib/admin/permissions"
 import { adminUserFormSchema } from "@/validators/user"
 
 export type AdminUserRow = {
@@ -18,6 +18,7 @@ export type AdminUserRow = {
   email: string
   avatar: string | null
   roles: string
+  loginProviders: string[]
   createdAt: Date
   postCount: number
 }
@@ -171,6 +172,7 @@ export async function getAdminUsers(scope: DataScope, options?: AdminUserFilter)
           email: true,
           avatar: true,
           roles: true,
+          accounts: { select: { provider: true } },
           createdAt: true,
           _count: { select: { posts: true } },
         },
@@ -186,6 +188,7 @@ export async function getAdminUsers(scope: DataScope, options?: AdminUserFilter)
       email: row.email,
       avatar: row.avatar,
       roles: row.roles,
+      loginProviders: [...new Set(row.accounts.map((account) => account.provider))],
       createdAt: row.createdAt,
       postCount: row._count.posts,
     }))

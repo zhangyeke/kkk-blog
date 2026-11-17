@@ -4,10 +4,11 @@ import {revalidatePath} from "next/cache";
 import {isRedirectError} from "next/dist/client/components/redirect-error";
 import prisma from '@/lib/prisma'
 import {backFailMessage, backSuccessMessage} from "@/lib/actionMessageBack";
-import {requireAction, requirePageAccess} from "@/lib/admin-guard";
+import {requireAction, requirePageAccess} from "@/lib/admin/guard";
 import {normalizePaging} from "@/lib/paging";
 import {PostCategoryWithPosts} from "@/types/postCategory";
 import {postWithUserInclude} from "@/types/post";
+import type {AdminStatusFilter} from "@/assets/enumerate/global";
 
 export async function createPostCategory() {
 
@@ -133,6 +134,8 @@ function revalidateCategorySurfaces(): void {
     revalidatePath("/admin/posts/categories")
     revalidatePath("/admin/posts")
     revalidatePath("/blog", "layout")
+    revalidatePath("/blog/article/list")
+    revalidatePath("/sitemap.xml")
 }
 
 /**
@@ -142,7 +145,7 @@ function revalidateCategorySurfaces(): void {
  * 因此只校验页面权限，不需要额外接收数据范围参数。
  */
 export async function getAdminPostCategoryList(
-    params?: { keyword?: string; status?: string; page?: number; pageSize?: number },
+    params?: { keyword?: string; status?: AdminStatusFilter; page?: number; pageSize?: number },
 ): Promise<BaseResource<AdminPostCategoryList>> {
     const EMPTY: AdminPostCategoryList = {list: [], total: 0, page: 1, pageSize: 10, totalPages: 1};
     try {
@@ -215,7 +218,16 @@ export async function createAdminPostCategory(input: {
         const icon = typeof input?.icon === "string" && input.icon.trim() !== "" ? input.icon.trim() : null
         const status = input?.status === 0 ? 0 : 1
 
-        await prisma.postCategory.create({data: {name, icon, status}})
+        await prisma.$transaction(async (tx) => {
+            const category = await tx.postCategory.create({data: {name, icon, status}})
+            const userRole = await tx.role.findUnique({where: {code: "user"}, select: {code: true}})
+            if (userRole) {
+                await tx.rolePermission.createMany({
+                    data: [{roleCode: userRole.code, permissionKey: `blog:category:${category.id}`}],
+                    skipDuplicates: true,
+                })
+            }
+        })
 
         revalidateCategorySurfaces()
         return backSuccessMessage("分类已创建")
@@ -293,7 +305,10 @@ export async function deleteAdminPostCategory(id: number): Promise<BaseResource<
             return backFailMessage(`该分类下还有 ${postCount} 篇文章，请先迁移或删除`)
         }
 
-        await prisma.postCategory.delete({where: {id}})
+        await prisma.$transaction(async (tx) => {
+            await tx.rolePermission.deleteMany({where: {permissionKey: `blog:category:${id}`}})
+            await tx.postCategory.delete({where: {id}})
+        })
 
         revalidateCategorySurfaces()
         return backSuccessMessage(`已删除分类「${existing.name}」`)

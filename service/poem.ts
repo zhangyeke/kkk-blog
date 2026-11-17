@@ -1,6 +1,6 @@
 "use server";
 import {env} from "env.mjs";
-import Request from "@/lib/Request";
+import { Request } from "@/lib/http";
 import type {Poem, PoemResponse} from "@/types/Poem";
 
 const baseUrl = env.POEM_API_URL.replace(/\/+$/, "");

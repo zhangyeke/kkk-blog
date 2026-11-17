@@ -3,15 +3,15 @@ import "server-only"
 
 import { cache } from "react"
 
-import { getMenuRows, getPermissionKeySet } from "@/lib/admin-menu-store"
+import type { AdminAction } from "@/assets/enumerate/global"
+import { getPermissionKeySet } from "@/lib/admin/menu-store"
 import {
     ACTION_ITEMS,
-    type AdminAction,
     DEFAULT_PERMISSION_MATRIX,
     parseRoles,
     type PermissionMatrix,
     resolveAllowedKeys,
-} from "@/lib/permissions"
+} from "@/lib/admin/permissions"
 import prisma from "@/lib/prisma"
 
 /** 角色元信息（给侧栏 / 403 页 / 权限管理页显示自定义角色名用） */
@@ -28,13 +28,13 @@ export type PermissionRoleRow = {
 /** DB 中的授权行只接受当前菜单树真实存在的 permissionKey。 */
 async function loadPermissionMatrix(): Promise<PermissionMatrix> {
     try {
-        const [rows, menuRows, roles] = await Promise.all([
+        const [rows, activeKeys, roles] = await Promise.all([
             prisma.rolePermission.findMany({select: {roleCode: true, permissionKey: true}}),
-            getMenuRows(),
+            getPermissionKeySet(),
             getPermissionRoles(),
         ])
 
-        const knownKeys = new Set(menuRows.flatMap((row) => row.status === 1 && row.permissionKey ? [row.permissionKey] : []))
+        const knownKeys = activeKeys
         const activeRoleCodes = new Set(roles.filter((role) => role.status === 1).map((role) => role.code))
         const matrix: PermissionMatrix = {}
         for (const row of rows) {
@@ -95,8 +95,10 @@ export const getAllowedKeys = cache(async (roles: string | null | undefined): Pr
         hasPersistedPermissionKey(footprintUpdateKey),
     ])
     const activeRoleCodes = new Set(roleRows.filter((role) => role.status === 1).map((role) => role.code))
-    const activeRoles = parseRoles(roles).filter((role) => role === "superAdmin" || activeRoleCodes.has(role)).join(",")
-    const allowedKeys = resolveAllowedKeys(matrix, activeRoles, [...allKeys])
+    const activeRoleList = parseRoles(roles).filter((role) => role === "superAdmin" || activeRoleCodes.has(role))
+    const allowedKeys = activeRoleList.length === 0
+        ? []
+        : resolveAllowedKeys(matrix, activeRoleList.join(","), [...allKeys])
 
     // 老数据库还未添加足迹编辑菜单权限时，暂以已有的创建权限兼容编辑功能。
     // 008 迁移新增该 key 后，编辑权限将按 RolePermission 独立控制。

@@ -1,7 +1,7 @@
 /** @jest-environment node */
 import NextAuth from "next-auth"
 import { updateUser } from "@/service/user"
-import { auth } from "./auth"
+import { auth } from "./index"
 
 jest.mock("next-auth", () => ({ __esModule: true, default: jest.fn(() => ({ auth: jest.fn() })) }))
 jest.mock("next-auth/providers/github", () => ({ __esModule: true, default: jest.fn() }))
@@ -9,8 +9,8 @@ jest.mock("next-auth/providers/google", () => ({ __esModule: true, default: jest
 jest.mock("next-auth/providers/credentials", () => ({ __esModule: true, default: jest.fn() }))
 jest.mock("bcrypt-ts-edge", () => ({ compareSync: jest.fn() }))
 jest.mock("@/env.mjs", () => ({ env: {} }))
-jest.mock("./prisma", () => ({ __esModule: true, default: {} }))
-jest.mock("./prisma-auth-adapter", () => ({ prismaAuthAdapter: jest.fn() }))
+jest.mock("@/lib/prisma", () => ({ __esModule: true, default: {} }))
+jest.mock("./prisma-adapter", () => ({ prismaAuthAdapter: jest.fn() }))
 jest.mock("@/service/user", () => ({ getUserByEmail: jest.fn(), updateUser: jest.fn() }))
 
 const jwt = jest.mocked(NextAuth).mock.calls[0]![0] as unknown as {

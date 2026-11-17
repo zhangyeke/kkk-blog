@@ -1,5 +1,5 @@
 /** @jest-environment node */
-import { uploadImagePromise } from "./utils"
+import { uploadImagePromise } from "./client"
 import { uploadImage } from "@/service/fileUpload"
 import { toast } from "sonner"
 import { env } from "@/env.mjs"

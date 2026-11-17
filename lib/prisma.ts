@@ -18,13 +18,42 @@ declare global {
 }
 const connectionString = process.env.DATABASE_URL;
 
-// if (!connectionString) {
-//     throw new Error('DATABASE_URL is not defined');
-// }
+/**
+ * Next dev 会把 PrismaClient 放在 global 上跨 Fast Refresh 复用。
+ * Prisma schema 新增模型后，旧实例不会自动获得新 delegate；检测到该情况时重建实例，
+ * 否则会在 prisma.adminSettingGroup.create 等调用处得到难以理解的 undefined 错误。
+ */
+function supportsCurrentSchema(client: PrismaClient | undefined): boolean {
+    if (!client) return false
 
-const adapter = new PrismaNeon({connectionString});
+    const delegates = client as PrismaClient & {
+        adminSettingGroup?: unknown
+        adminSettingField?: unknown
+    }
+    if (typeof delegates.adminSettingGroup !== "object" || typeof delegates.adminSettingField !== "object") {
+        return false
+    }
 
-const prisma = global.prisma ?? new PrismaClient({adapter});
+    // A generated Client can have all delegates while still lacking fields added
+    // to an existing model. Inspect the runtime model so Fast Refresh replaces it.
+    const runtimeModel = (client as PrismaClient & {
+        _runtimeDataModel?: {
+            models?: Record<string, {fields?: Array<{name: string}>}>
+        }
+    })._runtimeDataModel?.models?.AdminMenu
+
+    return runtimeModel?.fields?.some((field) => field.name === "position") ?? false
+}
+
+const cachedPrisma = global.prisma
+const hasCurrentSchema = supportsCurrentSchema(cachedPrisma)
+const prisma = hasCurrentSchema
+    ? cachedPrisma!
+    : new PrismaClient({adapter: new PrismaNeon({connectionString})});
+
+if (cachedPrisma && !hasCurrentSchema) {
+    void cachedPrisma.$disconnect().catch(() => undefined)
+}
 
 if (process.env.NODE_ENV !== 'production') {
     global.prisma = prisma;

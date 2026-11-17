@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { User as DbUser, Prisma, PrismaClient } from "@prisma/client"
 import type { Adapter, AdapterUser } from "next-auth/adapters"
 
-import prisma from "./prisma"
+import prisma from "@/lib/prisma"
 
 /** Prisma 使用 `avatar`；OAuth（Google/GitHub）与 Auth.js 适配器使用 `image`。 */
 

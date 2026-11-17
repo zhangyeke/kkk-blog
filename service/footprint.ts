@@ -7,9 +7,9 @@ import { checkAuth } from "@/service/auth"
 import { addFootprintSchema } from "@/validators/footprint"
 import type { addFootprintParams } from "@/types/footprint"
 import { revalidatePath } from "next/cache"
-import { requireAction, scopeOf } from "@/lib/admin-guard"
+import { requireAction, scopeOf } from "@/lib/admin/guard"
 import { normalizePaging, type Paging } from "@/lib/paging"
-import type { DataScope } from "@/lib/permissions"
+import type { DataScope } from "@/lib/admin/permissions"
 import { getRegionPathLabels } from "@/service/china-map"
 
 const footprintScopeWhere = (scope: DataScope) => (scope.all ? {} : { userId: scope.userId })

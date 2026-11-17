@@ -1,10 +1,10 @@
 "use server"
 
-import { env } from "env.mjs"
 import { z } from "zod"
 
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import { gcj02ToWgs84, isDomesticAdcode } from "@/lib/geo/coords"
+import { getAMapSettings } from "@/lib/maps/amap-config"
+import { gcj02ToWgs84, isDomesticAdcode } from "@/lib/maps/geo/coords"
 import { checkAuth } from "@/service/auth"
 import { getRegionPathLabels } from "@/service/china-map"
 
@@ -22,7 +22,7 @@ type AMapGeocodeResponse = {
 
 function getAMapErrorMessage(infocode?: string) {
   if (infocode === "10001" || infocode === "10009") {
-    return "高德 Web 服务 Key 无效或平台类型不匹配，请检查 GAODI_WEB_SERVICE_KEY 配置。"
+    return "高德 Web 服务 Key 无效或平台类型不匹配，请检查后台「高德地图配置」中的 WEB Key。"
   }
   if (infocode === "10002" || infocode === "10012") {
     return "当前高德 Key 没有地理编码服务权限。"
@@ -43,9 +43,9 @@ export async function geocodeFootprintAddress(input: unknown) {
       return backFailMessage(parsed.error.issues[0]?.message ?? "请填写有效的地点和地区", null)
     }
 
-    const key = env.GAODI_WEB_SERVICE_KEY?.trim()
-    if (!key) {
-      return backFailMessage("请配置高德 Web 服务 API Key（GAODI_WEB_SERVICE_KEY）", null)
+    const { webKey, webUrl } = await getAMapSettings()
+    if (!webKey || !webUrl) {
+      return backFailMessage("请在后台「高德地图配置」中填写有效的 Web 服务地址和 Key", null)
     }
 
     const { address, regionCode } = parsed.data
@@ -58,13 +58,12 @@ export async function geocodeFootprintAddress(input: unknown) {
       return backFailMessage("地区名称加载失败，请稍后重试", null)
     }
 
-    const query = new URLSearchParams({
-      key,
-      address: `${regionNames.join("")}${address}`,
-      city: regionNames[1] ?? regionNames[0]!,
-      output: "JSON",
-    })
-    const response = await fetch(`https://restapi.amap.com/v3/geocode/geo?${query.toString()}`, {
+    const endpoint = new URL(webUrl)
+    endpoint.searchParams.set("key", webKey)
+    endpoint.searchParams.set("address", `${regionNames.join("")}${address}`)
+    endpoint.searchParams.set("city", regionNames[1] ?? regionNames[0]!)
+    endpoint.searchParams.set("output", "JSON")
+    const response = await fetch(endpoint, {
       cache: "no-store",
       signal: AbortSignal.timeout(10_000),
     })

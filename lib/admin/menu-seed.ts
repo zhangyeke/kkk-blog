@@ -1,8 +1,8 @@
 /**
- * 后台菜单树的内置种子（39 行）。
+ * 后台菜单树的内置种子（38 行）。
  *
  * 书签为多级结构（id 5 书签管理 → 33 书签 / 34 书签分类），
- * 现有库由 `006_bookmark_menu_tree.sql` 从 005 的 32 行扁平结构升级而来。
+ * 现有库用 `006_bookmark_menu_tree.sql` 升级书签层级，用 `009_remove_preferences_page.sql` 清理旧偏好菜单。
  *
  * ── 为什么代码里还要再抄一份 SQL 种子 ──
  *
@@ -17,10 +17,11 @@
  * 与 005 + 006 SQL 的最终结构逐字段一致 —— 改一边必须同步改另一边。
  */
 
-import { type AdminMenuNode, buildMenuTree, buildPathIndex, type PathPermissionEntry } from "@/lib/menu-tree"
+import { type AdminMenuNode, buildMenuTree, buildPathIndex, type PathPermissionEntry } from "@/lib/admin/menu-tree"
+import type { AdminMenuPosition, AdminMenuSurface, AdminMenuType } from "@/assets/enumerate/global"
 
 /** 节点类型：目录 / 菜单 / 按钮 */
-export type MenuType = "dir" | "menu" | "button"
+export type MenuType = AdminMenuType
 
 /**
  * 一行菜单（不含 createdAt / updatedAt）。
@@ -30,6 +31,8 @@ export type MenuType = "dir" | "menu" | "button"
  */
 export type AdminMenuRow = {
   id: number
+  surface: AdminMenuSurface
+  position: AdminMenuPosition
   parentId: number | null
   name: string
   type: MenuType
@@ -50,10 +53,12 @@ export type AdminMenuRow = {
   keepAlive: boolean
   /** 内置行：不可删除 */
   isBuiltin: boolean
+  /** 由文章分类实时生成的只读博客菜单行，不在 AdminMenu 中单独维护 */
+  generatedFromCategory?: boolean
 }
 
-/** 与 prisma/manual-sql/005_seed_admin_menu.sql 及后续升级脚本的最终 39 行一致 */
-export const ADMIN_MENU_SEED: readonly AdminMenuRow[] = [
+/** 与 prisma/manual-sql/005_seed_admin_menu.sql 及后续升级脚本的最终 38 行一致 */
+const ADMIN_MENU_SEED_ROWS: readonly Omit<AdminMenuRow, "surface" | "position">[] = [
   // ── 一级 ──
   {
     id: 1,
@@ -287,23 +292,6 @@ export const ADMIN_MENU_SEED: readonly AdminMenuRow[] = [
     isBuiltin: true,
   },
   {
-    id: 12,
-    parentId: 10,
-    name: "偏好",
-    type: "menu",
-    icon: null,
-    path: "/admin/settings/preferences",
-    component: "app/admin/settings/preferences/page.tsx",
-    componentName: "preferences",
-    permissionKey: "page:preferences",
-    sort: 2,
-    status: 1,
-    visible: true,
-    alwaysShow: false,
-    keepAlive: false,
-    isBuiltin: true,
-  },
-  {
     id: 13,
     parentId: 10,
     name: "权限管理",
@@ -313,7 +301,7 @@ export const ADMIN_MENU_SEED: readonly AdminMenuRow[] = [
     component: "app/admin/settings/permissions/page.tsx",
     componentName: "menus",
     permissionKey: "page:menus",
-    sort: 3,
+    sort: 2,
     status: 1,
     visible: true,
     alwaysShow: false,
@@ -744,6 +732,34 @@ export const ADMIN_MENU_SEED: readonly AdminMenuRow[] = [
     keepAlive: false,
     isBuiltin: true,
   },
+]
+
+/** Existing menu seed rows remain in the ADMIN scope. */
+export const ADMIN_MENU_SEED: readonly AdminMenuRow[] = ADMIN_MENU_SEED_ROWS.map((row) => ({
+  ...row,
+  surface: "ADMIN",
+  position: "ADMIN",
+}))
+
+/** Static blog navigation entries; category links are generated from PostCategory rows. */
+export const BLOG_MENU_SEED: readonly AdminMenuRow[] = [
+  { id: 1001, surface: "BLOG", position: "BLOG_NAV", parentId: null, name: "首页", type: "dir", icon: null, path: "/blog", component: null, componentName: null, permissionKey: null, sort: 1, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1002, surface: "BLOG", position: "BLOG_NAV", parentId: 1001, name: "博客", type: "menu", icon: null, path: "/blog", component: null, componentName: null, permissionKey: "blog:page:home", sort: 1, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1003, surface: "BLOG", position: "BLOG_NAV", parentId: 1001, name: "起始页", type: "menu", icon: null, path: "/blog/index", component: null, componentName: null, permissionKey: "blog:page:start", sort: 2, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1004, surface: "BLOG", position: "BLOG_NAV", parentId: null, name: "记录", type: "dir", icon: null, path: "/blog/article/list", component: null, componentName: "blog-category-group", permissionKey: null, sort: 2, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1005, surface: "BLOG", position: "BLOG_NAV", parentId: 1004, name: "文章列表", type: "menu", icon: null, path: "/blog/article/list", component: null, componentName: null, permissionKey: "blog:page:article-list", sort: 1, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1006, surface: "BLOG", position: "BLOG_NAV", parentId: null, name: "藏宝阁", type: "dir", icon: null, path: "/blog/bookmark", component: null, componentName: null, permissionKey: null, sort: 3, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1007, surface: "BLOG", position: "BLOG_NAV", parentId: 1006, name: "书签", type: "menu", icon: null, path: "/blog/bookmark", component: null, componentName: null, permissionKey: "blog:page:bookmarks", sort: 1, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1008, surface: "BLOG", position: "BLOG_NAV", parentId: 1006, name: "江山时序", type: "menu", icon: null, path: "/blog/jiangshan-map", component: null, componentName: null, permissionKey: "blog:page:jiangshan-map", sort: 2, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1009, surface: "BLOG", position: "BLOG_NAV", parentId: null, name: "旅行足迹", type: "menu", icon: null, path: "/blog/travel/map", component: null, componentName: null, permissionKey: "blog:page:travel-map", sort: 4, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1010, surface: "BLOG", position: "USER_BRIEF", parentId: null, name: "账户菜单", type: "dir", icon: null, path: "/blog/me", component: null, componentName: "blog-account-menu-group", permissionKey: null, sort: 5, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1011, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "记录足迹", type: "menu", icon: "footprints", path: "/blog/me/footprints/edit", component: null, componentName: null, permissionKey: "blog:account:footprint-create", sort: 1, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1012, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "添加书签", type: "menu", icon: "bookmarkPlus", path: "/blog/me/bookmark/edit", component: null, componentName: null, permissionKey: "blog:account:bookmark-create", sort: 2, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1013, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "我的文章", type: "menu", icon: "notebookText", path: "/blog/me/articles", component: null, componentName: null, permissionKey: "blog:account:articles", sort: 3, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1014, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "我的收藏", type: "menu", icon: "star", path: "/blog/me/favorite", component: null, componentName: null, permissionKey: "blog:account:favorite", sort: 4, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1015, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "写文章", type: "menu", icon: "notebookPen", path: "/blog/article/write", component: null, componentName: null, permissionKey: "blog:account:write", sort: 5, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1016, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "设置", type: "menu", icon: "settings", path: "/blog/setting", component: null, componentName: null, permissionKey: "blog:account:settings", sort: 6, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
+  { id: 1017, surface: "BLOG", position: "USER_BRIEF", parentId: 1010, name: "个人中心", type: "menu", icon: "userRound", path: "/blog/me", component: null, componentName: null, permissionKey: "blog:account:home", sort: 0, status: 1, visible: true, alwaysShow: false, keepAlive: false, isBuiltin: true },
 ]
 
 /** 种子树：编译期算好，降级时零成本复用 */

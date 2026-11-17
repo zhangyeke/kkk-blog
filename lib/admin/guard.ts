@@ -5,16 +5,15 @@ import { cache } from "react"
 
 import { ActionError, AUTH_FAIL_CODE } from "@/lib/actionMessageBack"
 import { auth } from "@/lib/auth"
+import type { AdminAction, AdminPage } from "@/assets/enumerate/global"
 import {
     actionKey,
-    type AdminAction,
-    type AdminPage,
     type DataScope,
     pageKey,
     parseRoles,
     resolveScope,
-} from "@/lib/permissions"
-import { getAllowedKeys, getPermissionRoles } from "@/lib/permission-store"
+} from "@/lib/admin/permissions"
+import { getAllowedKeys, getPermissionRoles } from "@/lib/admin/permission-store"
 
 export type AdminUser = {
     id: string

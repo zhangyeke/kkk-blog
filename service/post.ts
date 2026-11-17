@@ -11,9 +11,9 @@ import { after } from "next/server"
 import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import { isRedirectError } from "next/dist/client/components/redirect-error"
-import { requireAction, scopeOf } from "@/lib/admin-guard"
+import { requireAction, scopeOf } from "@/lib/admin/guard"
 import { normalizePaging, type Paging } from "@/lib/paging"
-import type { DataScope } from "@/lib/permissions"
+import type { DataScope } from "@/lib/admin/permissions"
 
 const postScopeWhere = (scope: DataScope) => (scope.all ? {} : { userId: scope.userId })
 

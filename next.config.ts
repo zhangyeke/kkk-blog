@@ -9,7 +9,7 @@
 import withBundleAnalyzer from "@next/bundle-analyzer"
 import createMDX from "@next/mdx"
 import { type NextConfig } from "next"
-import { imageUploadLimitBytes } from "./lib/image-upload-policy"
+import { imageUploadLimitBytes } from "./lib/uploads/policy"
 
 const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
@@ -53,6 +53,11 @@ const config: NextConfig = {
   },
   async redirects() {
     return [
+      {
+        source: "/travel/map",
+        destination: "/blog/travel/map",
+        permanent: true,
+      },
       {
         source: "/",
         destination: "/blog",

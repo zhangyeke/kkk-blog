@@ -6,11 +6,11 @@ import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { backFailMessage, backSuccessMessage } from "@/lib/actionMessageBack"
-import { requireAction, scopeOf } from "@/lib/admin-guard"
+import { requireAction, scopeOf } from "@/lib/admin/guard"
 import { checkAuth } from "@/service/auth"
 import { addBookmarkSchema } from "@/validators/bookmark"
 import { normalizePaging, type Paging } from "@/lib/paging"
-import type { DataScope } from "@/lib/permissions"
+import type { DataScope } from "@/lib/admin/permissions"
 
 const bookmarkScopeWhere = (scope: DataScope) => (scope.all ? {} : { userId: scope.userId })
 
