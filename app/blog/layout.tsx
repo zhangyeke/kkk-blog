@@ -46,10 +46,10 @@ export default async function BlogLayout({ children, drawer, footer }: Slots<'ch
     return (
 
         <>
-            <section className={'flex flex-col min-h-screen'}>
+            <section className="flex min-h-screen w-full min-w-0 max-w-full flex-col overflow-x-clip">
 
                 <Header />
-                <main className={'flex-1 relative flex flex-col'}>
+                <main className="relative flex w-full min-w-0 max-w-full flex-1 flex-col">
                     {children}
                 </main>
                 <BackTop />

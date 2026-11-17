@@ -35,8 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: ContainerProps) {
   const session = await auth()
   return (
-    <html suppressHydrationWarning lang="zh-cn" className={`scroll-smooth ${globalFont.className} ${h1Font.variable} `}>
-      <body className={"overflow-x-hidden overflow-y-auto"}>
+    <html suppressHydrationWarning lang="zh-cn" className={`scroll-smooth w-full max-w-full overflow-x-clip ${globalFont.className} ${h1Font.variable} `}>
+      <body className="w-full min-w-0 max-w-full">
         <WebVitals />
         <AppStoreProvider>
           <ThemeProvider roles={session?.user?.roles} attribute="class" defaultTheme="light" disableTransitionOnChange>
