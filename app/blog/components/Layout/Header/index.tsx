@@ -23,13 +23,6 @@ export default async function HeaderContainer() {
         children: item.children?.map((child) => ({name: child.label, href: child.href})),
     }))
 
-    // 后台入口使用后台权限单独判断，不跟随博客菜单授权。
-    if (allowedKeys.includes("page:dashboard")) {
-        const home = menuList.find((item) => item.name === "首页")
-        const adminLink = {name: "后台管理", href: "/admin"}
-        if (home) home.children = [...(home.children ?? []), adminLink]
-        else menuList.unshift({name: "首页", children: [adminLink], href: undefined})
-    }
     return (
         <Header>
             <div className={'flex flex-items'}>
