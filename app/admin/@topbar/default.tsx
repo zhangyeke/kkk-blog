@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 
-import { getAdminUser } from "@/lib/admin-guard"
-import { getNavForUser } from "@/lib/admin-menu-store"
+import { getAdminUser } from "@/lib/admin/guard"
+import { getNavForUser } from "@/lib/admin/menu-store"
 import { AdminTopbar } from "../components/AdminTopbar"
 
 /**

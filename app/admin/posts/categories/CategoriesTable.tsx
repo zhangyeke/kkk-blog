@@ -13,13 +13,14 @@ import { Empty } from "@/components/k-view/Empty"
 import { type RowActionItem, RowActions } from "@/components/k-view/RowActions"
 import { useRenderDialog } from "@/components/k-view/Popup/useRenderDialog"
 import { useTableBusy } from "@/components/k-view/DataTable/busy"
+import type { AdminStatusFilter } from "@/assets/enumerate/global"
 import { formatDate } from "@/lib/date"
 import { type AdminPostCategoryRow, createAdminPostCategory, deleteAdminPostCategory, updateAdminPostCategory } from "@/service/postCategory"
 import { type PostCategoryFormValue, postCategorySchema } from "@/validators/postCategory"
 import { AdminIcon } from "../../components/admin-icons"
 import { CategoryStatusSwitch } from "./CategoryStatusSwitch"
 
-export type CategoryQuery = { keyword: string; status: "all" | "1" | "0" }
+export type CategoryQuery = { keyword: string; status: AdminStatusFilter }
 
 export type CategoriesTableProps = {
     rows: AdminPostCategoryRow[]

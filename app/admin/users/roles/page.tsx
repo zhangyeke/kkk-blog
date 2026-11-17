@@ -3,9 +3,10 @@ import type { Metadata } from "next"
 import { FilterForm } from "@/components/k-view/FilterForm"
 import type { FormFieldConfig } from "@/components/k-view/Form"
 import { TableBusyProvider } from "@/components/k-view/DataTable/busy"
-import { requirePageAccess } from "@/lib/admin-guard"
-import { getMenuRows } from "@/lib/admin-menu-store"
-import { getAllowedKeys } from "@/lib/permission-store"
+import { requirePageAccess } from "@/lib/admin/guard"
+import { getAllMenuRows } from "@/lib/admin/menu-store"
+import { getBlogMenuRows } from "@/lib/blog/menu-store"
+import { getAllowedKeys } from "@/lib/admin/permission-store"
 import { getRoleListView, type RoleListView } from "@/service/role"
 import { type RoleQuery, RolesTable } from "./RolesTable"
 
@@ -37,11 +38,16 @@ export default async function Page({searchParams}: {searchParams: Promise<Search
      * - 当前用户的权限 key 全集（按钮显隐的兜底，与 usePermission 同源）
      * - 菜单行（分配权限弹窗要按菜单树渲染 checkbox，树必须来自同一份菜单数据）
      */
-    const [result, allowed, menuRows] = await Promise.all([
+    const [result, allowed, adminMenuRows, blogMenuRows] = await Promise.all([
         getRoleListView({keyword: query.keyword, type: query.type, status: query.status}),
         getAllowedKeys(user.roles),
-        getMenuRows(),
+        getAllMenuRows(),
+        getBlogMenuRows(),
     ])
+    const menuRows = [
+        ...adminMenuRows.filter((row) => row.surface === "ADMIN" && row.status === 1),
+        ...blogMenuRows.filter((row) => row.status === 1 || row.generatedFromCategory),
+    ]
 
     const data = result.code === 200 ? result.data : EMPTY_VIEW
     const fields: FormFieldConfig[] = [

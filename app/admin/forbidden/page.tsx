@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { requireAdminUser } from "@/lib/admin-guard"
-import { getMenuTree } from "@/lib/admin-menu-store"
-import { flattenTree } from "@/lib/menu-tree"
-import { roleLabel } from "@/lib/permissions"
+import { requireAdminUser } from "@/lib/admin/guard"
+import { getMenuTree } from "@/lib/admin/menu-store"
+import { flattenTree } from "@/lib/admin/menu-tree"
+import { roleLabel } from "@/lib/admin/permissions"
 
 export const metadata: Metadata = {title: "无权访问"}
 

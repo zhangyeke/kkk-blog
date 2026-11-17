@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation"
 import { AdminThemeContext } from "@/components/admin/admin-theme-context"
 import { PermissionProvider } from "@/components/admin/permission-context"
 import { RenderDialogProvider } from "@/components/k-view/Popup/useRenderDialog"
-import { type AdminPresetId, DEFAULT_PRESET, isPresetId, PRESET_STORAGE_KEY } from "@/lib/admin-presets"
-import { cn } from "@/lib/utils"
+import type { AdminPresetId } from "@/assets/enumerate/global"
+import { DEFAULT_PRESET, isPresetId, PRESET_STORAGE_KEY } from "@/lib/admin/presets"
+import { cn } from "@/lib/ui/cn"
 
 /**
  * 窄屏抽屉的开合状态。

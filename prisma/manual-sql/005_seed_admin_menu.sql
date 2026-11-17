@@ -1,7 +1,7 @@
--- AdminMenu 内置菜单初始种子（33 行）
+-- AdminMenu 内置菜单初始种子（32 行）
 --
--- ⚠️ 书签的多级改造见 `006_bookmark_menu_tree.sql`（39 行的最终结构）。
---    全新库请依次执行 005 → 006；已有库只执行 006 即可升级，两个脚本都幂等。
+-- ⚠️ 书签的多级改造见 `006_bookmark_menu_tree.sql`（38 行的最终结构）。
+--    全新库请依次执行 005 → 006；已有库可幂等执行 006，再执行 009 清理旧偏好菜单。
 --    `lib/admin-menu-seed.ts` 与 005+006 的累积结果逐字段一致。
 --
 -- 执行：
@@ -14,7 +14,7 @@
 --   · 目录（dir）permissionKey 为 NULL（纯分组），菜单（menu）page:*，按钮（button）action:*
 --   · 行的 id 顺序即拓扑顺序：子节点 id 恒大于父节点 id，
 --     因此单条多行 INSERT 里自引用外键一定能在同一语句内找到父行
---   · 这 33 行的 permissionKey 覆盖了 RolePermission 现有 22 行的全部 key，
+--   · 这 32 行的 permissionKey 覆盖了 RolePermission 现有 22 行的全部 key，
 --     因此「授权零迁移」：现有授权不需要改一行，菜单树就能全部对上
 
 INSERT INTO "public"."AdminMenu" (
@@ -40,8 +40,7 @@ VALUES
     (10, NULL, '设置',     'dir',  'settings',   '/admin/settings',             NULL,                                         'settings',       NULL,                  6, 1, true, true),
     -- ── 设置 子项 ──
     (11, 10,   '站点信息', 'menu', NULL,         '/admin/settings',             'app/admin/settings/page.tsx',                'settings',       'page:settings',       1, 1, true, true),
-    (12, 10,   '偏好',     'menu', NULL,         '/admin/settings/preferences', 'app/admin/settings/preferences/page.tsx',    'preferences',    'page:preferences',    2, 1, true, true),
-    (13, 10,   '菜单管理', 'menu', NULL,         '/admin/settings/permissions', 'app/admin/settings/permissions/page.tsx',    'menus',          'page:menus',          3, 1, true, true),
+    (13, 10,   '菜单管理', 'menu', NULL,         '/admin/settings/permissions', 'app/admin/settings/permissions/page.tsx',    'menus',          'page:menus',          2, 1, true, true),
 
     -- ── 按钮：文章 ──
     (14, 3,    '新建文章', 'button', NULL, NULL, NULL, NULL, 'action:post:create', 1, 1, true, true),

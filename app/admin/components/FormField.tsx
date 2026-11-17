@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 /** 字段外壳：标签 + 控件 + 行内错误 */
 export function FormField({

@@ -19,8 +19,8 @@ import { Tag } from "@/components/k-view/Tag"
 import { useRenderDialog } from "@/components/k-view/Popup/useRenderDialog"
 import { useTableBusy } from "@/components/k-view/DataTable/busy"
 import { formatRelative } from "@/lib/date"
-import { postStatusLabel } from "@/lib/post-status"
-import { formatNumber } from "@/lib/utils"
+import { postStatusLabel } from "@/lib/posts/status"
+import { formatNumber } from "@/lib/number"
 import { type AdminPostRow, deleteAdminPost, getAdminPostForEdit, updateAdminPostStatus } from "@/service/post"
 
 async function handleDeletePost(postId: number) {

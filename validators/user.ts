@@ -2,7 +2,7 @@ import { z } from "zod"
 import { fieldConfig } from "@autoform/zod"
 import { publicUserSchema } from "./auth"
 import dayjs from "dayjs"
-import { str2num } from "@/lib/utils"
+import { str2num } from "@/lib/number"
 import { isAfterToday } from "@/lib/date"
 
 /*更新用户校验*/
@@ -69,6 +69,17 @@ export const adminUserFormSchema = z
       .superRefine(
         fieldConfig({ label: "角色", fieldType: "userRoleSelect", inputProps: { placeholder: "请选择角色" } })
       ),
+
+    password: z
+      .string()
+      .optional()
+      .superRefine(
+        fieldConfig({
+          label: "密码",
+          description: "新增时可留空以允许 OAuth 登录，编辑时留空表示不修改",
+          inputProps: { placeholder: "至少 6 位", type: "password", autoComplete: "new-password" },
+        })
+      ),
     avatar: z
       .string()
       .url("封面必须是一个有效的URL地址")
@@ -80,16 +91,6 @@ export const adminUserFormSchema = z
           inputProps: {
             placeholder: "请上传头像",
           },
-        })
-      ),
-    password: z
-      .string()
-      .optional()
-      .superRefine(
-        fieldConfig({
-          label: "密码",
-          description: "新增时可留空以允许 OAuth 登录，编辑时留空表示不修改",
-          inputProps: { placeholder: "至少 6 位", type: "password", autoComplete: "new-password" },
         })
       ),
   })

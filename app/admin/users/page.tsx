@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { requirePageAccess, scopeOf } from "@/lib/admin-guard"
+import { requirePageAccess, scopeOf } from "@/lib/admin/guard"
 import { normalizePageSize } from "@/lib/paging"
 import { FilterForm } from "@/components/k-view/FilterForm"
 import type { FormFieldConfig } from "@/components/k-view/Form"

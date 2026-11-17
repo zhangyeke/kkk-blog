@@ -2,7 +2,7 @@
 
 import { createContext } from "react"
 
-import type { AdminPresetId } from "@/lib/admin-presets"
+import type { AdminPresetId } from "@/assets/enumerate/global"
 
 export const AdminThemeContext = createContext<{
     preset: AdminPresetId

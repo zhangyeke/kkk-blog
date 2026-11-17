@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import type { AdminAction } from "@/lib/permissions"
+import type { AdminAction } from "@/assets/enumerate/global"
 import { usePermission } from "./permission-context"
 
 /**

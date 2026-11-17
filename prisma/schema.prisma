@@ -38,18 +38,18 @@ model PostCategory {
 }
 
 model User {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String     @default("NO_NAME")
-  email         String     @unique(map: "user_email_idx")
-  emailVerified DateTime?  @default(now()) @db.Timestamp(6)
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String      @default("NO_NAME")
+  email         String      @unique(map: "user_email_idx")
+  emailVerified DateTime?   @default(now()) @db.Timestamp(6)
   avatar        String?
-  roles         String     @default("user")
-  address       Json?      @db.Json
-  createdAt     DateTime   @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime   @default(now()) @updatedAt
+  roles         String      @default("user")
+  address       Json?       @db.Json
+  createdAt     DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime    @default(now()) @updatedAt
   password      String?
   // 生日，使用时间戳类型
-  birthday      DateTime?  @db.Timestamp(6)
+  birthday      DateTime?   @db.Timestamp(6)
   // 性别
   gender        Int?
   accounts      Account[]
@@ -67,7 +67,7 @@ model BookmarkCategory {
   /// 0：禁用 1：正常（与其它模型 status 约定一致时可按需扩展）
   status    Int        @default(1)
   createdAt DateTime   @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt DateTime   @default(now()) @updatedAt
   bookmarks Bookmark[]
 }
 
@@ -159,6 +159,17 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
+enum AdminMenuSurface {
+  ADMIN
+  BLOG
+}
+
+enum AdminMenuPosition {
+  ADMIN
+  BLOG_NAV
+  USER_BRIEF
+}
+
 /// 后台角色。code 是业务主键 —— User.roles 逗号串里存的就是 code。
 model Role {
   id          Int              @id @default(autoincrement())
@@ -185,28 +196,32 @@ model Role {
 /// permissionKey 是权限判定唯一标识，RolePermission.permissionKey 直接指向它。
 /// 目录 permissionKey 为 null（纯分组）；菜单/按钮必须非空（service 层强制）。
 model AdminMenu {
-  id            Int       @id @default(autoincrement())
+  id            Int               @id @default(autoincrement())
+  surface       AdminMenuSurface  @default(ADMIN)
+  position      AdminMenuPosition @default(ADMIN)
   parentId      Int?
   name          String
-  type          String    @db.VarChar(16)
+  type          String            @db.VarChar(16)
   icon          String?
   path          String?
   component     String?
   componentName String?
-  permissionKey String?   @unique(map: "AdminMenu_permissionKey_key")
-  sort          Int       @default(0)
-  status        Int       @default(1)
-  visible       Boolean   @default(true)
-  alwaysShow    Boolean   @default(false)
-  keepAlive     Boolean   @default(false)
-  isBuiltin     Boolean   @default(false)
-  createdAt     DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime  @default(now()) @updatedAt @db.Timestamp(6)
+  permissionKey String?           @unique(map: "AdminMenu_permissionKey_key")
+  sort          Int               @default(0)
+  status        Int               @default(1)
+  visible       Boolean           @default(true)
+  alwaysShow    Boolean           @default(false)
+  keepAlive     Boolean           @default(false)
+  isBuiltin     Boolean           @default(false)
+  createdAt     DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime          @default(now()) @updatedAt @db.Timestamp(6)
 
   parent   AdminMenu?  @relation("AdminMenuTree", fields: [parentId], references: [id], onDelete: Cascade)
   children AdminMenu[] @relation("AdminMenuTree")
 
   @@index([parentId, sort])
+  @@index([surface, parentId, sort])
+  @@index([position, parentId, sort])
   @@index([type, status, visible])
   @@index([status, sort])
 }
@@ -222,4 +237,42 @@ model RolePermission {
   role          Role     @relation(fields: [roleCode], references: [code], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([roleCode, permissionKey], map: "RolePermission_roleCode_permissionKey_key")
+}
+
+/// 后台设置分组：固定品牌分组与用户自定义 Tab 共用。
+model AdminSettingGroup {
+  id          Int                 @id @default(autoincrement())
+  /// 稳定读取标识；创建后不变。
+  key         String              @unique(map: "AdminSettingGroup_key_key") @db.VarChar(80)
+  name        String              @db.VarChar(100)
+  description String?             @db.VarChar(240)
+  sort        Int                 @default(0)
+  isBuiltin   Boolean             @default(false)
+  createdAt   DateTime            @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime            @default(now()) @updatedAt @db.Timestamp(6)
+  fields      AdminSettingField[]
+
+  @@index([sort, id])
+}
+
+/// 后台设置字段定义和值；config 仅保存受校验的声明式控件参数。
+model AdminSettingField {
+  id          Int               @id @default(autoincrement())
+  groupId     Int
+  /// 在分组内稳定读取标识；创建后不变。
+  key         String            @db.VarChar(80)
+  label       String            @db.VarChar(100)
+  type        String            @db.VarChar(32)
+  required    Boolean           @default(false)
+  description String?           @db.VarChar(240)
+  config      Json              @default("{}") @db.JsonB
+  value       Json?             @db.JsonB
+  sort        Int               @default(0)
+  isBuiltin   Boolean           @default(false)
+  createdAt   DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime          @default(now()) @updatedAt @db.Timestamp(6)
+  group       AdminSettingGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, key], map: "AdminSettingField_groupId_key_key")
+  @@index([groupId, sort, id])
 }

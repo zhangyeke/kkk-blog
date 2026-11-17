@@ -3,16 +3,25 @@ import { redirect } from "next/navigation"
 
 import "@/styles/admin-theme.css"
 
-import { getAdminUser } from "@/lib/admin-guard"
-import { getAllowedKeys } from "@/lib/permission-store"
+import { getAdminUser } from "@/lib/admin/guard"
+import { getAllowedKeys } from "@/lib/admin/permission-store"
+import { getAdminBranding } from "@/lib/admin/settings-store"
 import { AdminShell } from "./components/AdminShell"
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getAdminBranding()
+  return {
     title: {
-        template: "%s | 后台",
-        default: "后台管理",
+      template: `%s | ${brand.name}`,
+      default: brand.name,
     },
-    robots: {index: false, follow: false},
+    icons: {
+      icon: brand.favicon,
+      shortcut: brand.favicon,
+      apple: brand.favicon,
+    },
+    robots: { index: false, follow: false },
+  }
 }
 
 /**
@@ -27,30 +36,30 @@ export const metadata: Metadata = {
  * 也不会出现「切页时菜单闪一下」。
  */
 export default async function AdminLayout({
-    children,
-    sidebar,
-    topbar,
+  children,
+  sidebar,
+  topbar,
 }: {
-    children: React.ReactNode
-    /** 并行路由插槽 */
-    sidebar: React.ReactNode
-    topbar: React.ReactNode
+  children: React.ReactNode
+  /** 并行路由插槽 */
+  sidebar: React.ReactNode
+  topbar: React.ReactNode
 }) {
-    const user = await getAdminUser()
-    if (!user) redirect("/login")
+  const user = await getAdminUser()
+  if (!user) redirect("/login")
 
-    /*
-     * 权限 key 全集在服务端算好（走 DB 矩阵，与 requireAction 同源），
-     * 客户端只拿结果，不拿矩阵 —— 客户端不需要知道别的角色有什么权限。
-     *
-     * 传 key 全集（而不是动作白名单）是为了容纳「后台新建的 permissionKey」：
-     * 菜单树驱动的 RBAC 里 key 是数据，AdminAction 联合类型覆盖不全。
-     */
-    const keys = await getAllowedKeys(user.roles)
+  /*
+   * 权限 key 全集在服务端算好（走 DB 矩阵，与 requireAction 同源），
+   * 客户端只拿结果，不拿矩阵 —— 客户端不需要知道别的角色有什么权限。
+   *
+   * 传 key 全集（而不是动作白名单）是为了容纳「后台新建的 permissionKey」：
+   * 菜单树驱动的 RBAC 里 key 是数据，AdminAction 联合类型覆盖不全。
+   */
+  const keys = await getAllowedKeys(user.roles)
 
-    return (
-        <AdminShell user={user} keys={keys} sidebar={sidebar} topbar={topbar}>
-            {children}
-        </AdminShell>
-    )
+  return (
+    <AdminShell user={user} keys={keys} sidebar={sidebar} topbar={topbar}>
+      {children}
+    </AdminShell>
+  )
 }

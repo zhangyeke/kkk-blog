@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation"
 
-import { getAdminUser } from "@/lib/admin-guard"
-import { getNavForUser } from "@/lib/admin-menu-store"
+import { getAdminUser } from "@/lib/admin/guard"
+import { getNavForUser } from "@/lib/admin/menu-store"
+import { getAdminBranding } from "@/lib/admin/settings-store"
 import { AdminSidebar } from "../components/AdminSidebar"
 
 /**
@@ -16,7 +17,7 @@ export default async function SidebarSlot() {
     const user = await getAdminUser()
     if (!user) redirect("/login")
 
-    const nav = await getNavForUser(user.roles)
+    const [nav, brand] = await Promise.all([getNavForUser(user.roles), getAdminBranding()])
 
-    return <AdminSidebar items={nav} user={user} />
+    return <AdminSidebar items={nav} user={user} brand={brand} />
 }

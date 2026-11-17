@@ -2,7 +2,7 @@
  * 角色 / 权限相关入参校验。
  *
  * 只做「形状 + 基本范围」校验；权限 key 的合法性不在这里管 ——
- * key 的合法集合由 lib/permissions.ts 的 PERMISSION_KEY_SET 定义，
+ * key 的合法集合由 lib/admin/permissions.ts 的 PERMISSION_KEY_SET 定义，
  * service 层用集合过滤（未知 key 静默丢弃），这样新增权限项时
  * 不必回头改这个 schema。
  */

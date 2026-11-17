@@ -2,12 +2,12 @@
 
 import React from "react"
 
-import { ADMIN_ICON_NAMES } from "@/lib/admin-icon-names"
-import { cn } from "@/lib/utils"
+import type { AdminIconName } from "@/assets/enumerate/global"
+import { cn } from "@/lib/ui/cn"
 
-export { ADMIN_ICON_NAMES } from "@/lib/admin-icon-names"
+export { ADMIN_ICON_NAMES } from "@/assets/enumerate/global"
 
-type AdminIconName = (typeof ADMIN_ICON_NAMES)[number] | "fallback"
+type AdminIconKey = AdminIconName | "fallback"
 
 /**
  * 后台图标字典（侧栏 + 菜单管理共用）。
@@ -23,7 +23,7 @@ type AdminIconName = (typeof ADMIN_ICON_NAMES)[number] | "fallback"
  */
 
 /** 图标名 → path 集合。`fallback` 不参与选择器，只在名字认不出来时兜底 */
-export const ADMIN_ICONS: Record<AdminIconName, React.ReactNode> = {
+export const ADMIN_ICONS: Record<AdminIconKey, React.ReactNode> = {
     dashboard: (
         <>
             <rect x="3" y="3" width="7" height="9" rx="1.5"/>
@@ -62,6 +62,12 @@ export const ADMIN_ICONS: Record<AdminIconName, React.ReactNode> = {
         <>
             <circle cx="12" cy="12" r="3"/>
             <path d="M12 2.8v2.4M12 18.8v2.4M21.2 12h-2.4M5.2 12H2.8M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7M18.5 18.5l-1.7-1.7M7.2 7.2 5.5 5.5"/>
+        </>
+    ),
+    book: (
+        <>
+            <path d="M4.5 5.2A2.2 2.2 0 0 1 6.7 3h4.1c1.2 0 2.3.5 3.2 1.4C14.9 3.5 16 3 17.2 3h.1a2.2 2.2 0 0 1 2.2 2.2v13.1a1.7 1.7 0 0 1-1.7 1.7h-.7c-1.3 0-2.4.5-3.1 1.4-.8-.9-1.9-1.4-3.2-1.4H6.2a1.7 1.7 0 0 1-1.7-1.7z"/>
+            <path d="M14 4.4v16M5 18.5c.4-.3.8-.5 1.3-.5h4.5M19 18.5c-.4-.3-.8-.5-1.3-.5H14"/>
         </>
     ),
     /** 以下为「后台新建菜单」时可选的一组通用图标 */

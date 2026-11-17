@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { fieldConfig } from "@autoform/zod"
-import { STATUS_OPTIONS } from "@/assets/enumerate/global"
-import { ADMIN_ICON_NAMES } from "@/lib/admin-icon-names"
+import { ADMIN_ICON_NAMES, STATUS_OPTIONS } from "@/assets/enumerate/global"
 
 /**
  * 文章分类表单校验。

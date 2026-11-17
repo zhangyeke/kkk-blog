@@ -23,6 +23,11 @@ import { adminUserFormSchema, type AdminUserFormValue } from "@/validators/user"
 
 export type UserRoleOption = { code: string; name: string }
 
+const LOGIN_PROVIDER_LABELS: Record<string, string> = {
+  google: "Google",
+  github: "GitHub",
+}
+
 export function UsersToolbar({roleOptions}: {roleOptions: UserRoleOption[]}) {
   return (
     <AdminCreateToolbar
@@ -160,6 +165,24 @@ export function UsersTable({
       title: "邮箱",
       copy: true,
       className: "text-xs md:text-sm text-[var(--adm-ink-3)]",
+    },
+    {
+      key: "loginProviders",
+      title: "第三方平台",
+      render: (row) => {
+        const providers = [...new Set(row.loginProviders)]
+        return providers.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {providers.map((provider) => (
+              <Tag key={provider} tone="primary" appearance="soft" size="sm">
+                {LOGIN_PROVIDER_LABELS[provider.toLowerCase()] ?? provider}
+              </Tag>
+            ))}
+          </div>
+        ) : (
+          <span className="text-xs md:text-sm" style={{ color: "var(--adm-ink-3)" }}>—</span>
+        )
+      },
     },
     {
       key: "roles",

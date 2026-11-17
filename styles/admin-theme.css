@@ -247,6 +247,12 @@
     background: var(--adm-paper-2);
 }
 
+@media (max-width: 639px) {
+    .admin-shell:is([role="dialog"], [role="alertdialog"]) :is([data-slot="button"], .admin-dialog-cancel, .admin-dialog-submit) {
+        min-height: 44px;
+    }
+}
+
 .admin-article-dialog {
     --adm-dialog-gutter: 1rem;
     --adm-dialog-max-width: 880px;

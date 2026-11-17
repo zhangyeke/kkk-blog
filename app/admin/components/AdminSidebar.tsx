@@ -7,14 +7,16 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { ArrowUpRight, BookOpen, ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import type { AdminNavItem } from "@/lib/menu-tree"
-import { roleLabel } from "@/lib/permissions"
+import { Image } from "@/components/k-view/Image"
+import { cn } from "@/lib/ui/cn"
+import type { AdminNavItem } from "@/lib/admin/menu-tree"
+import { roleLabel } from "@/lib/admin/permissions"
+import type { AdminBranding } from "@/lib/admin/settings-store"
 import { AdminIcon } from "./admin-icons"
 import { AdminUserAvatar } from "./AdminUserAvatar"
 import { type AdminShellUser, useAdminMobileNav } from "./AdminShell"
 
-export function AdminSidebar({items, user}: { items: AdminNavItem[]; user: AdminShellUser }) {
+export function AdminSidebar({items, user, brand}: { items: AdminNavItem[]; user: AdminShellUser; brand: AdminBranding }) {
     const pathname = usePathname()
     const reduce = useReducedMotion()
     const nav = useAdminMobileNav()
@@ -38,16 +40,24 @@ export function AdminSidebar({items, user}: { items: AdminNavItem[]; user: Admin
     return (
         <div className={cn("flex h-full flex-col py-5 transition-[padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none", collapsed ? "px-2" : "px-3")}>
             <div className={cn("flex items-center gap-2.5 overflow-hidden pb-5 transition-[gap,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none", collapsed ? "justify-center gap-0 px-0" : "px-2")}>
-                <svg viewBox="0 0 40 40" className="size-9 shrink-0" fill="none" stroke="var(--adm-c1)" strokeWidth="1.4">
-                    <path d="M8 9.5c0-1 .8-1.8 1.8-1.8h9.4c1.6 0 3 .6 4 1.7 1-1.1 2.4-1.7 4-1.7h4c1 0 1.8.8 1.8 1.8v21c0 1-.8 1.8-1.8 1.8h-4c-1.6 0-3 .6-4 1.7-1-1.1-2.4-1.7-4-1.7H9.8c-1 0-1.8-.8-1.8-1.8z"/>
-                    <path d="M20 9v23" strokeDasharray="2 3"/>
-                </svg>
+                <span className="grid size-9 shrink-0 place-items-center" style={{color: "var(--adm-c1)"}}>
+                    {brand.icon ? (
+                        <Image
+                            src={brand.icon}
+                            alt={brand.name}
+                            loading="eager"
+                            objectFit="contain"
+                            className="size-8"
+                            fallback={<AdminIcon name="book" className="size-8"/>}
+                        />
+                    ) : <AdminIcon name="book" className="size-8"/>}
+                </span>
                 <div className={cn("min-w-0 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none md:max-w-[160px]", collapsed && "md:max-w-0 md:-translate-x-1 md:opacity-0")}>
                     <div className="adm-serif truncate text-base md:text-lg" style={{color: "var(--adm-ink)"}}>
-                        博客后台
+                        {brand.name}
                     </div>
                     <div className="text-xs md:text-sm tracking-[0.22em]" style={{color: "var(--adm-ink-3)"}}>
-                        BLOG ADMIN
+                        {brand.subtitle}
                     </div>
                 </div>
             </div>

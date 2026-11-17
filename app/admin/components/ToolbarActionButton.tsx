@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react"
 
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 type ToolbarActionButtonProps = Omit<ComponentProps<typeof Button>, "variant" | "size">
 

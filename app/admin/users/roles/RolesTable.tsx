@@ -16,11 +16,12 @@ import { useTableBusy } from "@/components/k-view/DataTable/busy"
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import {useAdminTheme} from "@/app/admin/components/AdminShell"
+import type { AdminRoleFilter, AdminStatusFilter } from "@/assets/enumerate/global"
 import { AdminForm } from "@/app/admin/components/AdminForm"
 import { ToolbarActionButton } from "@/app/admin/components/ToolbarActionButton"
 import { TableToolbar } from "@/app/admin/components/TableToolbar"
-import type { AdminMenuRow } from "@/lib/admin-menu-seed"
-import { cn } from "@/lib/utils"
+import type { AdminMenuRow } from "@/lib/admin/menu-seed"
+import { cn } from "@/lib/ui/cn"
 import { createRole, deleteRole, type RoleListRow, updateRole } from "@/service/role"
 import { roleFormSchema } from "@/validators/role"
 import { RolePermissionDialog } from "./RolePermissionDialog"
@@ -41,8 +42,8 @@ import { AdminDialogContent } from "../../components/AdminDialogContent"
 /** 筛选条件（与 page.tsx 的 URL 解析结果同构） */
 export type RoleQuery = {
     keyword: string
-    type: "all" | "builtin" | "custom"
-    status: "all" | "1" | "0"
+    type: AdminRoleFilter
+    status: AdminStatusFilter
 }
 
 type RoleFormValue = {
@@ -419,7 +420,7 @@ export function RolesTable({rows, total, allowed, menuRows, query}: RolesTablePr
                             type="button"
                             onClick={handleDelete}
                             disabled={deleting}
-                            className="h-8 cursor-pointer rounded-md px-4 text-sm md:text-base transition-colors disabled:cursor-not-allowed disabled:opacity-45"
+                            className="admin-dialog-submit h-8 cursor-pointer rounded-md px-4 text-sm md:text-base transition-colors disabled:cursor-not-allowed disabled:opacity-45"
                             style={{background: "var(--adm-c2)", color: "var(--adm-paper-2)"}}
                             data-testid="role-delete-confirm"
                         >

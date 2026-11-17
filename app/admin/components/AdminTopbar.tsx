@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Menu, Moon, Sun } from "lucide-react"
 
-import { type AdminNavItem, breadcrumbFor } from "@/lib/menu-tree"
+import { type AdminNavItem, breadcrumbFor } from "@/lib/admin/menu-tree"
 import { AdminUserAvatar } from "./AdminUserAvatar"
 import { type AdminShellUser, useAdminMobileNav } from "./AdminShell"
 import { ThemeSwitcher } from "./ThemeSwitcher"

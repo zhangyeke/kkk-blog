@@ -6,9 +6,10 @@ import { Check, Minus } from "lucide-react"
 import { toast } from "sonner"
 
 import { Dialog, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import type { AdminMenuRow } from "@/lib/admin-menu-seed"
-import { type AdminMenuNode, buildMenuTree } from "@/lib/menu-tree"
-import { cn } from "@/lib/utils"
+import type { AdminMenuRow } from "@/lib/admin/menu-seed"
+import type { AdminMenuSurface } from "@/assets/enumerate/global"
+import { type AdminMenuNode, buildMenuTree } from "@/lib/admin/menu-tree"
+import { cn } from "@/lib/ui/cn"
 import { Spinner } from "@/components/k-view/Loader/Spinner"
 import { Tag } from "@/components/k-view/Tag"
 import { getRoleMenuKeys, type RoleListRow, saveRolePermissions } from "@/service/role"
@@ -56,9 +57,13 @@ export function RolePermissionDialog({open, role, menuRows, onClose}: RolePermis
 
     const code = role?.code ?? ""
     const isSuperAdmin = code === SUPER_ADMIN
+    const [surface, setSurface] = React.useState<AdminMenuSurface>("ADMIN")
 
-    /** 行 → 树（同级已按 sort ASC, id ASC 排好） */
-    const tree = React.useMemo(() => buildMenuTree(menuRows), [menuRows])
+    /** 当前范围的行 → 树；博客分类节点由 PostCategory 实时生成。 */
+    const tree = React.useMemo(
+        () => buildMenuTree(menuRows.filter((row) => row.surface === surface)),
+        [menuRows, surface],
+    )
 
     /** 先序拍平：父在子前，索引与渲染共用 */
     const flat = React.useMemo<FlatNode[]>(() => {
@@ -182,13 +187,17 @@ export function RolePermissionDialog({open, role, menuRows, onClose}: RolePermis
 
     const handleSelectAll = React.useCallback(() => {
         if (isSuperAdmin) return
-        setChecked(new Set(allTreeKeys))
+        setChecked((previous) => new Set([...previous, ...allTreeKeys]))
     }, [allTreeKeys, isSuperAdmin])
 
     const handleClear = React.useCallback(() => {
         if (isSuperAdmin) return
-        setChecked(new Set<string>())
-    }, [isSuperAdmin])
+        setChecked((previous) => {
+            const next = new Set(previous)
+            for (const key of allTreeKeys) next.delete(key)
+            return next
+        })
+    }, [allTreeKeys, isSuperAdmin])
 
     const handleSave = React.useCallback(async () => {
         if (isSuperAdmin || code === "") return
@@ -236,6 +245,22 @@ export function RolePermissionDialog({open, role, menuRows, onClose}: RolePermis
                         )}
                     </DialogTitle>
                 </DialogHeader>
+
+                <div className="flex shrink-0 gap-1 border-b px-5 py-2" style={{borderColor: "var(--adm-line-2)"}} role="tablist" aria-label="权限范围">
+                    {([ ["ADMIN", "后台菜单"], ["BLOG", "博客菜单"] ] as const).map(([value, label]) => (
+                        <button
+                            key={value}
+                            type="button"
+                            role="tab"
+                            aria-selected={surface === value}
+                            onClick={() => setSurface(value)}
+                            className={cn("rounded-md px-3 py-1.5 text-sm transition-colors", surface === value ? "bg-[var(--adm-paper-3)] font-medium" : "hover:bg-[var(--adm-paper-3)]")}
+                            style={{color: surface === value ? "var(--adm-c1)" : "var(--adm-ink-2)"}}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
 
                 {/* 快捷操作条 */}
                 <div
@@ -355,6 +380,8 @@ export function RolePermissionDialog({open, role, menuRows, onClose}: RolePermis
                                         </span>
 
                                         {isDir && <Tag tone="muted" appearance="soft" shape="rounded" size="sm" className="px-1 py-0 text-xs leading-tight">目录</Tag>}
+                                        {node.row.generatedFromCategory && <Tag tone="primary" appearance="soft" shape="rounded" size="sm" className="px-1 py-0 text-xs leading-tight">分类</Tag>}
+                                        {node.row.generatedFromCategory && node.row.status !== 1 && <Tag tone="muted" appearance="soft" shape="rounded" size="sm" className="px-1 py-0 text-xs leading-tight">停用</Tag>}
 
                                         <span
                                             className="ml-auto shrink-0 truncate pl-2 font-mono text-xs md:text-sm leading-tight"

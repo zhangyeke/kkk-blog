@@ -4,7 +4,7 @@ import React from "react"
 import { Check, Palette } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
-import { ADMIN_PRESETS } from "@/lib/admin-presets"
+import { ADMIN_PRESETS } from "@/lib/admin/presets"
 import { useAdminTheme } from "./AdminShell"
 
 export function ThemeSwitcher() {

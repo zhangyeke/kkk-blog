@@ -3,7 +3,7 @@
 import type { ComponentProps } from "react"
 
 import { DialogContent } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { useAdminTheme } from "./AdminShell"
 
 export function AdminDialogContent({ className, ...props }: ComponentProps<typeof DialogContent>) {

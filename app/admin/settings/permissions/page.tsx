@@ -1,15 +1,16 @@
 import type { Metadata } from "next"
 
-import { requirePageAccess } from "@/lib/admin-guard"
-import { getAllowedKeys } from "@/lib/permission-store"
+import { requirePageAccess } from "@/lib/admin/guard"
+import { getAllowedKeys } from "@/lib/admin/permission-store"
 import { getMenuListView, type MenuListView } from "@/service/menu"
+import { TableBusyProvider } from "@/components/k-view/DataTable/busy"
 import { MenuManager } from "./MenuManager"
 
 export const metadata: Metadata = {title: "菜单管理"}
 export const dynamic = "force-dynamic"
 
 /** 读失败时的空壳，保证客户端组件永远拿到合法 props */
-const EMPTY_VIEW: MenuListView = {rows: [], grantCounts: {}, roles: []}
+const EMPTY_VIEW: MenuListView = {rows: [], grantCounts: {}}
 
 export default async function Page() {
     /*
@@ -22,13 +23,14 @@ export default async function Page() {
     const data = result.code === 200 ? result.data : EMPTY_VIEW
 
     return (
-        <div className="flex h-full min-h-0 flex-col">
-            <MenuManager
-                rows={data.rows}
-                grantCounts={data.grantCounts}
-                roles={data.roles}
-                allowed={allowed}
-            />
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-[1600px] flex-col">
+            <TableBusyProvider>
+                <MenuManager
+                    rows={data.rows}
+                    grantCounts={data.grantCounts}
+                    allowed={allowed}
+                />
+            </TableBusyProvider>
         </div>
     )
 }

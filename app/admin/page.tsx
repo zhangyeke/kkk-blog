@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { requirePageAccess, scopeOf } from "@/lib/admin-guard"
+import { requirePageAccess, scopeOf } from "@/lib/admin/guard"
 import { formatRelative } from "@/lib/date"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { getAdminOverview } from "@/service/admin/overview"
 import { CountUp } from "./components/CountUp"
 import { Empty } from "@/components/k-view/Empty"
