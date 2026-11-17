@@ -1,4 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "菜单",
+    robots: {index: false, follow: false},
+}
 
 export default async function Page({params}: PageParams<{ slug: string[] }>) {
     const p = await params

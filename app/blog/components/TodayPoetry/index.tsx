@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card"
 import {getTodayPoem} from "@/service/poem";
 import { TextLine } from "@/components/k-view/Text";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 
 
 export default async function TodayPoetry({className, style}: BaseComponentProps) {

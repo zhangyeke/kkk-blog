@@ -1,6 +1,6 @@
 "use client"
 
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {useRouter} from "next/navigation";
 import {MouseEventHandler, useCallback} from "react";
 

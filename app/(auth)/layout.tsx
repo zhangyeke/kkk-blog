@@ -10,7 +10,7 @@
 import {useState} from "react"
 import Elf from "@/components/Elf"
 import {defaultState, ElfFormContext} from "@/context/elf-form-context";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import Aurora from "@/components/bits/Aurora";
 
 

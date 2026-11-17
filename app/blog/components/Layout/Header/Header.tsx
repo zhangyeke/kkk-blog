@@ -10,7 +10,7 @@
 import { useSelectedLayoutSegments } from "next/navigation"
 import { useWindowScroll } from "react-use";
 import { HEADER_BLACKS, HEADER_FIXED_WHITES } from "@/config/blog";
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 import { useClientMounted } from "@/hooks"
 

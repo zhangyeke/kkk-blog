@@ -10,7 +10,7 @@ import { Drawer } from "@/components/k-view/Popup";
 import { Image } from "@/components/k-view/Image";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { AvatarGroup, AvatarGroupCount } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

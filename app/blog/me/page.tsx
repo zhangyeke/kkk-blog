@@ -11,13 +11,17 @@ import { CopyText } from "@/components/k-view/Text";
 import { Image } from "@/components/k-view/Image";
 import { Section } from "@/components/k-view/Section";
 import EditUserForm from "./components/EditUserForm"
-import {findUniqueUser, userStatisticsInfo} from "@/service/user";
+import {userStatisticsInfo} from "@/service/user";
 import {notFound} from "next/navigation";
 import {UpdateUserSchema} from "@/validators/user";
-import {navList, statistics} from "@/assets/enumerate/menu";
+import {statistics} from "@/assets/enumerate/menu";
 import Link from "next/link";
 import {auth} from "@/lib/auth";
 import {Separator} from "@/components/ui/separator";
+import {getBlogMenuRows} from "@/lib/blog/menu-store";
+import {requireBlogAccountPathAccess} from "@/lib/blog/permissions";
+import {getBlogAccountMenu} from "@/lib/blog/account-menu";
+import {BookmarkPlus, Footprints, Link2, type LucideIcon, NotebookPen, NotebookText, Settings, Star, UserRound} from "lucide-react";
 
 export const metadata = {
     title: "个人中心"
@@ -26,24 +30,22 @@ export const metadata = {
 
 
 export default async function MePage() {
-    const session = await auth()
-    let user;
-    if (session && session.user) {
-        user = await userStatisticsInfo(session.user.id)
-    } else {
-        const up = await findUniqueUser({
-            email: "997610780@qq.com",
-            roles: "superAdmin"
-        })
-        user = await userStatisticsInfo(up?.id)
-    }
+    const [session, menuRows, access] = await Promise.all([auth(), getBlogMenuRows(), requireBlogAccountPathAccess("/blog/me")])
+    if (!session?.user?.id) return notFound()
+    const user = await userStatisticsInfo(session.user.id)
 
     if (!user.data) return notFound()
 
-    const menuList = navList.filter((item) => {
-        if (!("permission" in item)) return true
-        return user.data?.roles === item.permission
-    })
+    const menuList = getBlogAccountMenu(menuRows, access.keys).items.filter((item) => item.href !== "/blog/me")
+    const menuIcons = {
+        footprints: Footprints,
+        bookmarkPlus: BookmarkPlus,
+        notebookText: NotebookText,
+        notebookPen: NotebookPen,
+        settings: Settings,
+        star: Star,
+        userRound: UserRound,
+    } satisfies Record<string, LucideIcon>
 
     return (
         <>
@@ -54,7 +56,7 @@ export default async function MePage() {
                     </Link>
                     <div>
                         <div className={'text-lg'}>{user.data.name}</div>
-                        <CopyText className={'text-gray-500'} showIcon={true} text={user.data.email}>{user.data.email}</CopyText>
+                        <CopyText className={'text-gray-500'} showIcon={true} text={user.data.email ?? ''}>{user.data.email ?? ''}</CopyText>
                     </div>
                 </div>
                 <div className={'flex justify-around w-full rounded-md py-3 mt-4 shadow-md bg-card/80'}>
@@ -76,15 +78,20 @@ export default async function MePage() {
                 </div>
                 <div className={'w-full mt-4 flex-1'}>
                     {
-                        menuList.map((item, index) => (
-                            <div key={index}>
-                                <Link href={item.href} className={'flex py-3'}>
-                                    {item.icon}
-                                    <span className={'flex-1 ml-1 text-gray-500'}>{item.label}</span>
-                                </Link>
-                                {index < (menuList.length - 1) && <Separator/>}
-                            </div>
-                        ))
+                        menuList.map((item, index) => {
+                            const Icon = item.icon && item.icon in menuIcons
+                                ? menuIcons[item.icon as keyof typeof menuIcons]
+                                : Link2
+                            return (
+                                <div key={item.key}>
+                                    <Link href={item.href} className={'flex py-3'}>
+                                        <Icon className="size-5" aria-hidden="true" />
+                                        <span className={'flex-1 ml-1 text-gray-500'}>{item.label}</span>
+                                    </Link>
+                                    {index < (menuList.length - 1) && <Separator/>}
+                                </div>
+                            )
+                        })
                     }
                 </div>
             </div>

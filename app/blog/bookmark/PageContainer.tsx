@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { BookmarkCategoryWithBookmarks } from "@/types/bookmark"
 import { useClickAway } from "react-use"
 import { AnimatePresence, motion } from "framer-motion"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import SearchBar, { SearchBarProps } from "@/app/blog/components/Article/SearchBar"
 import { Search } from "lucide-react"
 

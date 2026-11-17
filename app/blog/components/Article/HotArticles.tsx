@@ -8,20 +8,21 @@
  */
 import { CalendarRange, Flame } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPostsByPage } from "@/service/post";
 import { dateFormat } from "@/lib/date";
 import { Empty } from "@/components/k-view/Empty";
 import { Image } from "@/components/k-view/Image";
 
-export default async function HotArticles({ className, style }: BaseComponentProps) {
+export default async function HotArticles({ className, style, categoryIds }: BaseComponentProps & {categoryIds: number[]}) {
     const posts = await getPostsByPage({
         page: 1,
         pageSize: 3,
         orderBy: {
             pv: 'desc'
         },
+        where: {categoryId: {in: categoryIds}},
 
     });
     return (

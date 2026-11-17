@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { CircleX, Search } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 export interface SearchBarProps extends BaseComponentProps {
   ref?: Ref<HTMLInputElement>

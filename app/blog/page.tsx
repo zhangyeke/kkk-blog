@@ -6,23 +6,22 @@
  * @FilePath: \blog\app\blog\page.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import { Metadata } from "next"
 import { Suspense } from "@/components/k-view/Loader";
-import { GLOBAL_TITLE } from "@/config/blog"
+import type { Metadata } from "next"
+import { createPublicPageMetadata } from "@/lib/seo/metadata"
 import Master from "./components/Master";
 import TodayPoetry from "./components/TodayPoetry";
 import HomeHedaer from "./components/HomeHeader";
 import HomeArticleList from "./components/HomeArticleList";
 import Article from "./components/Article"
 import ScrollElement from "@/components/scroll-animation";
+import { BLOG_PAGE_KEYS, requireBlogPageAccess } from "@/lib/blog/permissions"
 
-export const metadata: Metadata = {
-    title: {
-        /** 忽略父级 layout 的 `template`，整页标题仅为 GLOBAL_TITLE */
-        absolute: GLOBAL_TITLE,
-    },
-}
-
+export const metadata: Metadata = createPublicPageMetadata({
+    title: "首页",
+    description: "记录技术实践、生活见闻与旅行足迹，浏览最新文章和精选内容。",
+    path: "/blog",
+})
 
 const scrollElementProps = {
     viewport: { once: true, amount: 0.5, margin: '0px 0px 0px 0px' },
@@ -30,15 +29,20 @@ const scrollElementProps = {
 }
 
 export default async function Web() {
+    const access = await requireBlogPageAccess(BLOG_PAGE_KEYS.home)
+    const allowedCategoryIds = [...access.categoryIds]
+    const canSearchArticles = access.keys.has(BLOG_PAGE_KEYS.articleList)
     return (
         <div>
             <HomeHedaer />
 
             <div className={'container flex py-4'}>
                 <aside className={'w-1/4 lg:block hidden'}>
-                    <ScrollElement {...scrollElementProps}>
-                        <Article.SearchBar className={'bg-card mb-4'} />
-                    </ScrollElement>
+                    {canSearchArticles && (
+                        <ScrollElement {...scrollElementProps}>
+                            <Article.SearchBar className={'bg-card mb-4'} />
+                        </ScrollElement>
+                    )}
 
                     {/*作者信息组件*/}
                     <Suspense className={'w-full h-[330px]'}>
@@ -57,13 +61,13 @@ export default async function Web() {
                     {/*推荐文章*/}
                     <Suspense className={'w-full h-[300px]'}>
                         <ScrollElement {...scrollElementProps}>
-                            <Article.HotArticles className={'mt-4'} />
+                        <Article.HotArticles className={'mt-4'} categoryIds={allowedCategoryIds} />
                         </ScrollElement>
                     </Suspense>
                 </aside>
                 <section className={'lg:ml-10 flex-1'}>
                     <Suspense className={'w-full min-h-[600px]'}>
-                        <HomeArticleList />
+                        <HomeArticleList categoryIds={allowedCategoryIds} canSearch={canSearchArticles} />
                     </Suspense>
                 </section>
 

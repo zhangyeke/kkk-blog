@@ -8,12 +8,14 @@
  */
 import { Section } from "@/components/k-view/Section";
 import EditBookMarkForm from "../../components/EditBookMarkForm";
+import { requireBlogAccountPathAccess } from "@/lib/blog/permissions"
 
 export const metadata = {
   title: "添加书签"
 }
 
 export default async function Page() {
+  await requireBlogAccountPathAccess("/blog/me/bookmark/edit")
   return (
     <div className="header-padding pb-4 px-4 w-full lg:w-1/2 md:w-4/5">
       <div className={'mt-4 bg-card/80 rounded-sm border border-solid border-input w-full  shadow-md'}>

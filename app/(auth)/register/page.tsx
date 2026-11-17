@@ -4,7 +4,8 @@ import {auth} from "@/lib/auth";
 import {redirect} from "next/navigation";
 
 export const metadata: Metadata = {
-    title: '注册'
+    title: '注册',
+    robots: {index: false, follow: false},
 }
 
 export default async function registerPage() {

@@ -3,25 +3,27 @@
 import { type PointerEvent, useEffect, useRef, useState } from "react"
 import type { Session } from "next-auth"
 import Link from "next/link"
-import { ChevronRight, LogOut, UserRound } from "lucide-react"
+import { ChevronRight, LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { navList } from "@/assets/enumerate/menu"
-import { Image } from "@/components/k-view/Image"
+import { Image, LucideIcon } from "@/components/k-view"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { LogOutButton } from "./LogOutButton"
+import type { BlogAccountMenuItem } from "@/lib/blog/account-menu"
 
-const profileHref = "/blog/me"
-const rowClass = "hover:bg-muted focus-visible:bg-muted flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-sm focus-visible:outline-none"
+const rowClass =
+  "hover:bg-muted focus-visible:bg-muted flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-sm focus-visible:outline-none"
 
 export type UserBriefProps = {
   session: Session | null
+  accountMenuItems?: BlogAccountMenuItem[]
 }
 
-export function UserBrief({ session }: UserBriefProps) {
+export function UserBrief({ session, accountMenuItems = [] }: UserBriefProps) {
   const user = session?.user
   const username = user?.name || "kkk"
+  const profileItem = accountMenuItems.find((item) => item.key === "blog:account:home")
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const content = useRef<HTMLDivElement>(null)
@@ -65,12 +67,18 @@ export function UserBrief({ session }: UserBriefProps) {
         className="focus-visible:outline-ring relative flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full focus-visible:outline-2"
         onPointerEnter={enter}
         onPointerLeave={leave}
-        onPointerDown={(event) => { pointerType.current = event.pointerType }}
+        onPointerDown={(event) => {
+          pointerType.current = event.pointerType
+        }}
         onClick={(event) => {
           if (event.detail === 0 || pointerType.current !== "mouse") return
           event.preventDefault()
-          changeOpen(false)
-          router.push(profileHref)
+          if (profileItem) {
+            changeOpen(false)
+            router.push(profileItem.href)
+          } else {
+            changeOpen(!open)
+          }
         }}
       >
         <Image
@@ -78,8 +86,8 @@ export function UserBrief({ session }: UserBriefProps) {
           alt=""
           fallback={username.slice(0, 1)}
           className={cn(
-            "rounded-full size-10 transition-transform duration-350 ease-in-out motion-reduce:transition-none",
-            open && "translate-y-5 -translate-x-5 scale-200 ring-2 ring-background"
+            "size-10 rounded-full transition-transform duration-350 ease-in-out motion-reduce:transition-none",
+            open && "ring-background -translate-x-5 translate-y-5 scale-200 ring-2"
           )}
         />
       </PopoverTrigger>
@@ -88,7 +96,7 @@ export function UserBrief({ session }: UserBriefProps) {
         aria-label="账户菜单"
         sideOffset={10}
         collisionPadding={12}
-        className="z-[299] w-[300px] max-w-[calc(100vw-1.5rem)] rounded-lg px-3 pt-10 pb-2 shadow-lg motion-reduce:animate-none transform -translate-x-5"
+        className="z-[299] w-[300px] max-w-[calc(100vw-1.5rem)] -translate-x-5 transform rounded-lg px-3 pt-10 pb-2 shadow-lg motion-reduce:animate-none"
         onPointerEnter={enter}
         onPointerLeave={leave}
         onOpenAutoFocus={(event) => {
@@ -98,20 +106,19 @@ export function UserBrief({ session }: UserBriefProps) {
           if (hoverOpened.current) event.preventDefault()
         }}
       >
-        <div className="mb-2 truncate px-3 text-center text-lg font-medium" title={username}>{username}</div>
-        <Link href={profileHref} className={rowClass} onClick={() => changeOpen(false)}>
-          <UserRound className="size-4" aria-hidden="true" />
-          <span className="flex-1">个人中心</span>
-          <ChevronRight className="size-3.5" aria-hidden="true" />
-        </Link>
-        {navList.filter((item) => !("permission" in item) || user?.roles === item.permission).map((item) => (
-          <Link key={item.href} href={item.href} className={cn(rowClass, "group")} onClick={() => changeOpen(false)}>
-            <span className="[&_svg]:size-4" aria-hidden="true">{item.icon}</span>
-            <span className="flex-1">{item.label}</span>
-            <ChevronRight className="size-3.5" aria-hidden="true" />
-          </Link>
-        ))}
-        <Separator className="my-1" />
+        <div className="mb-2 truncate px-3 text-center text-lg font-medium" title={username}>
+          {username}
+        </div>
+        {accountMenuItems.map((item) => {
+          return (
+            <Link key={item.key} href={item.href} className={cn(rowClass, "group")} onClick={() => changeOpen(false)}>
+              <LucideIcon name={item.icon ?? ""} className="size-4" aria-hidden="true" />
+              <span className="flex-1">{item.label}</span>
+              <ChevronRight className="size-3.5" aria-hidden="true" />
+            </Link>
+          )
+        })}
+        {accountMenuItems.length > 0 && <Separator className="my-1" />}
         <LogOutButton className={cn(rowClass, "cursor-pointer")}>
           <LogOut className="size-4" aria-hidden="true" />
           退出登录

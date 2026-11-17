@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Image } from "@/components/k-view/Image";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 
 export default function NotLoginAvatar({className}:BaseComponentProps) {
 

@@ -4,7 +4,8 @@ import {auth} from "@/lib/auth"
 import LoginForm from "../components/LoginForm";
 
 export const metadata: Metadata = {
-    title: '登录'
+    title: '登录',
+    robots: {index: false, follow: false},
 }
 
 

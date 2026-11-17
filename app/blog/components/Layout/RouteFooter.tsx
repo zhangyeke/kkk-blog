@@ -7,11 +7,10 @@ const hiddenFooterPaths = new Set([
   "/blog/article/list",
   "/blog/index",
   "/blog/jiangshan-map",
-  "/blog/map",
   "/blog/me",
   "/blog/setting",
   // 照片地图是全屏地图页，footer 会把地图挤出视口
-  "/blog/pictures/map"
+  "/blog/travel/map"
 ])
 
 export default function RouteFooter({ children }: ContainerProps) {

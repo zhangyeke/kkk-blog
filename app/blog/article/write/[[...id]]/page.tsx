@@ -11,12 +11,15 @@ import {ArticleForm} from "../components/ArticleForm";
 import "@/styles/cube-bg.css";
 import { PostWithFavorites } from "@/types/post";
 import { getPostById } from "@/service/post";
+import { requireBlogAccountPathAccess } from "@/lib/blog/permissions"
 
 export const metadata = {
-    title: "编写文章"
+    title: "编写文章",
+    robots: {index: false, follow: false},
 };
 
 export default async function Page({params}: PageParams<{ id: string }>) {
+    await requireBlogAccountPathAccess("/blog/article/write")
     const routeParams = await params
     const id = parseInt(routeParams.id?.[0] || '') || undefined
     let post: PostWithFavorites | null = null

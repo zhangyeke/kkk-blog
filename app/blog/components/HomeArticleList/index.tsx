@@ -3,20 +3,21 @@ import {getPostsByPage} from "@/service/post";
 import Article from "@/app/blog/components/Article";
 import { Empty } from "@/components/k-view/Empty";
 
-export default async function HomeArticleList() {
+export default async function HomeArticleList({categoryIds, canSearch}: {categoryIds: number[]; canSearch: boolean}) {
     const [postCategory, posts] = await Promise.all([
-        getPostCategoryWithPosts(),
+        getPostCategoryWithPosts({where: {id: {in: categoryIds}}}),
         getPostsByPage({
         page: 1,
         pageSize: 6,
-        orderBy: {createdAt: 'desc'}
+        orderBy: {createdAt: 'desc'},
+        where: {categoryId: {in: categoryIds}},
         })
     ])
 
 
     return (
         <>
-            <Article.HeadCategory name={'最新'}/>
+            <Article.HeadCategory name={'最新'} isMore={canSearch}/>
             {
                 posts.data.list.length > 0 ?
                     <Article.List

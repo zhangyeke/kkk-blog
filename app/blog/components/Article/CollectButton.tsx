@@ -3,7 +3,7 @@ import React from "react"
 import {Star} from "lucide-react";
 import { LikeButton, type LikeButtonProps } from "@/components/k-view/LikeButton";
 import {updatePostFavorite} from "@/service/postFavorite"
-import {responseAsyncHandle} from "@/lib/utils";
+import {responseAsyncHandle} from "@/lib/action-response";
 
 type CollectButtonProps = Pick<LikeButtonProps, 'defaultValue' | 'initialCount'> & BaseComponentProps & {
     postId: number

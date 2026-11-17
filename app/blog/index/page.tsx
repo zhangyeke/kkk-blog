@@ -11,12 +11,15 @@ import { GlassSearchBar } from "@/components/GlassSearchBar"
 import { TodayCalendarBar } from "@/components/TodayCalendarBar"
 
 import MountainVistaParallax from "@/components/ui/mountain-vista-bg"
+import { BLOG_PAGE_KEYS, requireBlogPageAccess } from "@/lib/blog/permissions"
 
 export const metadata = {
   title: "起始页",
+  robots: { index: false, follow: false },
 }
 
-export default function IndexPage() {
+export default async function IndexPage() {
+  await requireBlogPageAccess(BLOG_PAGE_KEYS.start)
 
   return (
     <div className="h-screen bg-primary/20 dark:bg-transparent">

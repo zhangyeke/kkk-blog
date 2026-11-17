@@ -1,6 +1,6 @@
 import {motion} from 'framer-motion';
 import Link from "next/link";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import { Drawer } from "@/components/k-view/Popup";
 import { Image } from "@/components/k-view/Image";
 import {
@@ -15,6 +15,7 @@ import {ArrowRight, ChevronRight, LogOut, Menu} from 'lucide-react';
 import {DrawerClose} from "@/components/ui/drawer";
 import {LogOutButton} from "./LogOutButton";
 import NotLoginAvatar from "./NotLoginAvatar";
+import type { BlogAccountMenuItem } from "@/lib/blog/account-menu"
 
 type ToggleButtonProps = {
     isOpen?: boolean
@@ -87,9 +88,10 @@ const ToggleButton = ({style, className, isOpen, onChange}: ToggleButtonProps) =
 type MobileNavigationProps = {
     menuList: NavigationMenuType[]
     session: Session | null
+    accountMenuItems: BlogAccountMenuItem[]
 } & BaseComponentProps
 
-const UserInfo = ({session}: Pick<MobileNavigationProps, 'session'>) => {
+const UserInfo = ({session, accountMenuItems}: Pick<MobileNavigationProps, 'session' | 'accountMenuItems'>) => {
     if (!session) return <NotLoginAvatar/>
     return (
         <DrawerClose className={'flex items-center w-full'}>
@@ -97,10 +99,12 @@ const UserInfo = ({session}: Pick<MobileNavigationProps, 'session'>) => {
                 <Image className={'rounded-full size-8 shadow-md'} src={session.user.avatar || ''}/>
                 <span>{session.user.name}</span>
             </Link>
-            <Link className={'text-xs text-gray-600 flex items-center gap-x-1'} href={'/blog/article/write'}>
-                写文章
-                <ArrowRight className={'size-4'}/>
-            </Link>
+            {accountMenuItems.some((item) => item.href === "/blog/article/write") && (
+                <Link className={'text-xs text-gray-600 flex items-center gap-x-1'} href={'/blog/article/write'}>
+                    写文章
+                    <ArrowRight className={'size-4'}/>
+                </Link>
+            )}
         </DrawerClose>
     )
 }
@@ -115,7 +119,7 @@ const Exit = () => {
     )
 }
 
-const MobileNavigation = ({style, className, menuList, session}: MobileNavigationProps) => {
+const MobileNavigation = ({style, className, menuList, session, accountMenuItems}: MobileNavigationProps) => {
     const defaultValues = menuList.map((_, i) => String(i));
 
     return (
@@ -123,7 +127,7 @@ const MobileNavigation = ({style, className, menuList, session}: MobileNavigatio
             <Drawer
                 showCloseIcon={!session}
                 direction={'right'}
-                title={<UserInfo session={session}/>}
+                title={<UserInfo session={session} accountMenuItems={accountMenuItems}/>}
                 trigger={<Menu style={style} className={cn('text-primary text-lg mr-4 ', className)}/>}
                 footer={session ? <Exit/> : null}
             >

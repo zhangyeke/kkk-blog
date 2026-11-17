@@ -1,13 +1,17 @@
 import type { Metadata } from "next"
+import { createPublicPageMetadata } from "@/lib/seo/metadata"
+import { BLOG_PAGE_KEYS, requireBlogPageAccess } from "@/lib/blog/permissions"
 
 const atlasUrl = "https://deanchen.me/jiangshan-map/"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicPageMetadata({
   title: "江山时序",
   description: "通过交互地图和时间轴，查看战国至今的疆域变迁、古今地名与历史事件。",
-}
+  path: "/blog/jiangshan-map",
+})
 
-export default function JiangshanMapPage() {
+export default async function JiangshanMapPage() {
+  await requireBlogPageAccess(BLOG_PAGE_KEYS.jiangshanMap)
   return (
     <section className="flex h-dvh w-full flex-col pt-15">
       <iframe

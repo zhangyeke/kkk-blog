@@ -1,5 +1,4 @@
 "use client"
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react"
@@ -19,9 +18,9 @@ import { DatePicker } from "@/components/k-view/DatePicker";
 import { FixSpin } from "@/components/k-view/Loader";
 import { Image } from "@/components/k-view/Image";
 import { Button } from "@/components/ui/button";
-import { uploadImagePromise } from "@/lib/utils";
+import { uploadImagePromise } from "@/lib/uploads/client";
 import { UploadRouteSelect } from "@/components/ui/upload-route-select";
-import { DEFAULT_UPLOAD_ROUTE, type UploadRouteId } from "@/lib/image-upload-routes";
+import { DEFAULT_UPLOAD_ROUTE, type UploadRouteId } from "@/lib/uploads/policy";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { updateAuth } from "@/service/auth";
 import { useRouter } from "next/navigation";

@@ -11,7 +11,7 @@ test("updates footer visibility when navigating between blog routes", () => {
   const { rerender } = render(view)
   expect(screen.getByRole("contentinfo")).toBeInTheDocument()
 
-  for (const path of ["/blog/index", "/blog/map", "/blog/jiangshan-map", "/blog/article/list/", "/blog/me", "/blog/me/articles"]) {
+  for (const path of ["/blog/index", "/blog/travel/map", "/blog/jiangshan-map", "/blog/article/list/", "/blog/me", "/blog/me/articles"]) {
     pathname.mockReturnValue(path)
     rerender(<RouteFooter><footer>博客页脚</footer></RouteFooter>)
     expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument()

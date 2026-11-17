@@ -9,46 +9,43 @@
 
 import "styles/tailwind.css"
 import "styles/iconfont.css"
+import type { Metadata } from "next"
 import { globalFont, h1Font } from "@/assets/fonts"
 import { RenderDialogProvider } from "@/components/k-view/Popup/useRenderDialog"
 import { Toaster } from "@/components/ui/sonner"
-import WebVitals from "@/components/WebVitals/WebVitals";
-import { AppStoreProvider, ThemeProvider } from "@/providers";
-import { auth } from "@/lib/auth";
+import WebVitals from "@/components/WebVitals/WebVitals"
+import { AppStoreProvider, ThemeProvider } from "@/providers"
+import { auth } from "@/lib/auth"
 import BlogEffects from "./blog/components/BlogEffects"
+import { getAdminBranding } from "@/lib/admin/settings-store"
+import { SITE_URL } from "@/lib/seo/site"
 
-
-export const metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getAdminBranding()
+  return {
+    metadataBase: SITE_URL,
     icons: {
-        icon: '/images/global_logo.png',
-        apple: '/images/global_logo.png',
+      icon: brand.favicon,
+      shortcut: brand.favicon,
+      apple: brand.favicon,
     },
+  }
 }
 
-
-
 export default async function RootLayout({ children }: ContainerProps) {
-    const session = await auth()
-    return (
-        <html suppressHydrationWarning lang="zh-cn" className={`scroll-smooth ${globalFont.className} ${h1Font.variable} `}>
-            <body className={'overflow-y-auto overflow-x-hidden '}>
-                <WebVitals />
-                <AppStoreProvider>
-                    <ThemeProvider
-                        roles={session?.user?.roles}
-                        attribute="class"
-                        defaultTheme="light"
-                        disableTransitionOnChange
-                    >
-                        <RenderDialogProvider>{children}</RenderDialogProvider>
-                        <BlogEffects />
-                        <Toaster position="top-center" richColors duration={1500} />
-                    </ThemeProvider>
-
-                </AppStoreProvider>
-
-            </body>
-        </html>
-
-    )
+  const session = await auth()
+  return (
+    <html suppressHydrationWarning lang="zh-cn" className={`scroll-smooth ${globalFont.className} ${h1Font.variable} `}>
+      <body className={"overflow-x-hidden overflow-y-auto"}>
+        <WebVitals />
+        <AppStoreProvider>
+          <ThemeProvider roles={session?.user?.roles} attribute="class" defaultTheme="light" disableTransitionOnChange>
+            <RenderDialogProvider>{children}</RenderDialogProvider>
+            <BlogEffects />
+            <Toaster position="top-center" richColors duration={1500} />
+          </ThemeProvider>
+        </AppStoreProvider>
+      </body>
+    </html>
+  )
 }
