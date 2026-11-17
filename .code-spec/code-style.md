@@ -92,7 +92,7 @@
   ```ts
   import { NextResponse } from "next/server"
 
-  import { canAccessPage, requiredPageFor } from "@/lib/permissions"
+  import { canAccessPage, requiredPageFor } from "@/lib/admin/permissions"
   ```
 
 ### [CODE-18] 导出方式

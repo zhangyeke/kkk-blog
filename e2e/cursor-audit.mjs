@@ -12,7 +12,6 @@ const PAGES = [
     "/admin/footprints",
     "/admin/users",
     "/admin/settings",
-    "/admin/settings/preferences",
     "/admin/settings/permissions",
     "/admin/forbidden",
 ]

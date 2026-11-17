@@ -2,8 +2,7 @@
  * 回归验证：cursor-pointer 修复的行为回归
  * 1) 刷新按钮 disabled 态 cursor 应为 not-allowed
  * 2) 主题预设按钮点击后 data-preset 切换 + 浮层关闭
- * 3) 偏好开关 aria-checked 可切换
- * 4) 无 console error / pageerror
+ * 3) 无 console error / pageerror
  *
  * 只读验证，不修改源码。运行：node e2e/cursor-regression.mjs
  */
@@ -163,36 +162,7 @@ if (disabledSamples.length > 0) {
 }
 
 /* ============================================================
- * 回归点 3：偏好开关 aria-checked 切换
- * ============================================================ */
-await page.goto(`${BASE}/admin/settings/preferences`, { waitUntil: "networkidle" })
-await page.waitForTimeout(400)
-
-const switches = page.locator('[role="switch"]')
-const swCount = await switches.count()
-const swCursors = await switches.evaluateAll((els) => els.map((e) => getComputedStyle(e).cursor))
-ok("偏好开关数量 = 4", swCount === 4, `实际 ${swCount}`)
-ok(
-    "4 个开关 cursor 全为 pointer",
-    swCursors.length > 0 && swCursors.every((c) => c === "pointer"),
-    `cursors=${JSON.stringify([...new Set(swCursors)])}`,
-)
-
-const first = switches.first()
-const before = await first.getAttribute("aria-checked")
-await first.click()
-await page.waitForTimeout(350)
-const after = await first.getAttribute("aria-checked")
-ok("点击开关后 aria-checked 翻转", before !== after, `${before} -> ${after}`)
-
-// 复原
-await first.click()
-await page.waitForTimeout(350)
-const back = await first.getAttribute("aria-checked")
-ok("再次点击开关恢复原状态", back === before, `${after} -> ${back}`)
-
-/* ============================================================
- * 回归点 4：控制台错误
+ * 回归点 3：控制台错误
  * ============================================================ */
 const realConsoleErrors = consoleErrors.filter((t) => !/favicon|Download the React DevTools/i.test(t))
 ok("无 pageerror", pageErrors.length === 0, pageErrors.length ? JSON.stringify(pageErrors.slice(0, 3)) : "")

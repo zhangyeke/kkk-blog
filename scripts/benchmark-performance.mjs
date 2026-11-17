@@ -106,7 +106,7 @@ function loadService(source) {
     "@/lib/prisma": { __esModule: true, default: { post: postStore } },
     "@/types/post": { postWithUserInclude, postListSelect },
     "@/lib/actionMessageBack": { backSuccessMessage: success, backFailMessage: failure },
-    "@/lib/utils": { getPlainText },
+    "@/lib/ui/cn": { getPlainText },
     "@/lib/markdown": { getPlainText },
     "@/service/auth": { checkAuth: async () => ({ id: "test-user" }) },
     "@/validators/post": {},
@@ -114,7 +114,7 @@ function loadService(source) {
     "next/cache": { revalidatePath: () => {} },
     "next/dist/client/components/redirect-error": { isRedirectError: () => false },
     "@/lib/auth": {},
-    "@/lib/admin-guard": { requireAction: async () => {}, scopeOf: async () => ({ all: true, userId: "test-user" }) },
+    "@/lib/admin/guard": { requireAction: async () => {}, scopeOf: async () => ({ all: true, userId: "test-user" }) },
     "@/lib/paging": { normalizePaging: (paging = {}) => ({ page: 1, pageSize: 10, ...paging }) },
   }
   const mod = { exports: {} }
