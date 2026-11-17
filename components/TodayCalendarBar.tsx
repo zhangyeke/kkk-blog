@@ -12,7 +12,7 @@ import { useEffect, useState } from "react"
 
 import type { TodayCalendar } from "@/lib/date"
 import { getTodayCalendar } from "@/lib/date"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 
 /** 农历月日（上，略小）+ 公历月日与短星期（下，略大）；不含年份；每 30 分钟刷新 */

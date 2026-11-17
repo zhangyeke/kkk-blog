@@ -14,7 +14,7 @@ import {
     downloadInternetShortcut,
     sanitizeWindowsFileName,
 } from "@/lib/download-internet-shortcut"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 function labelForShortcut(): string {
     if (typeof document === "undefined") return "博客"

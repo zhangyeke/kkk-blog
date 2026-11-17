@@ -3,7 +3,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { flushSync } from "react-dom"
 import { gsap } from "gsap"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 const SCRAMBLE_CHARSET = "0123456789"
 
