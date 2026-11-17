@@ -37,10 +37,9 @@ export default function SettingPage() {
     const [banners, setBanners] = useState([...homeBanners])
 
 
-    const handleDrawerClose = useCallback((nextOpen: boolean = false) => {
-        setOpen(true)
+    const handleDrawerClose = useCallback((nextOpen: boolean) => {
         if (!nextOpen) router.back()
-    }, [setOpen])
+    }, [router])
 
     const handlePrimaryColorConfirm = useCallback((color: string) => {
         updateThemes(color, 'primary')
