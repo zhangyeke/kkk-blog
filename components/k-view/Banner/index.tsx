@@ -1,7 +1,8 @@
 "use client"
 import "./mask.style.css"
 import {AnimationEventHandler, useCallback, useEffect, useMemo, useState} from "react";
-import {cn, getDeepValue, sleep} from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
+import { getDeepValue } from "@/lib/object"
 
 
 export interface BannerProps<T> extends BaseComponentProps {
@@ -60,7 +61,7 @@ export function Banner<T>(props: BannerProps<T>) {
 
     const handleAnimationEnd: AnimationEventHandler<HTMLDivElement> = useCallback(async (e) => {
         if (e.animationName === 'maskMove') {
-            await sleep(delay)
+            await new Promise<void>((resolve) => window.setTimeout(resolve, delay))
             changeNextImage()
         }
     }, [changeNextImage])

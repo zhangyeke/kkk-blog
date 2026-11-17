@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
 import {Image} from "@/components/k-view/Image"
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 
 const placeholderImages = [
     {name: "address", path: "/images/placeholder/address.png", tips: "暂无地址"},

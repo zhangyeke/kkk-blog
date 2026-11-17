@@ -1,7 +1,7 @@
 "use client"
 import React, {ReactNode} from "react";
 import {AnimatePresence, motion} from "framer-motion";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {animations} from "./animation-setting"
 import {LikeIcon, LikeIconProps} from "./LikeIcon";
 

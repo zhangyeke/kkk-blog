@@ -1,5 +1,5 @@
 /** 分段选择器：可配置选项的互斥按钮组。 */
-export function SegmentedControl<T extends string | number>({
+export function SegmentedControl<T extends string | number | boolean>({
     ariaLabel,
     options,
     value,

@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { InfiniteScrollList } from "./index"
 
-jest.mock("@/lib/utils", () => ({ cn: (...values: string[]) => values.join(" "), addUnit: String }))
+jest.mock("@/lib/ui/cn", () => ({ cn: (...values: string[]) => values.join(" ") }))
+jest.mock("@/lib/number", () => ({ addUnit: String }))
 jest.mock("@/components/ui/button", () => ({
   Button: (props: React.ComponentProps<"button">) => <button {...props} />,
 }))

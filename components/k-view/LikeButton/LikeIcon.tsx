@@ -2,7 +2,7 @@
 import React from "react"
 import {debounce} from "lodash"
 import {AnimatePresence, motion} from "framer-motion";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {animations} from "./animation-setting"
 import {Heart, LucideIcon} from "lucide-react";
 

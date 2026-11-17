@@ -36,7 +36,7 @@ import {
 
     UndoRedo
 } from '@mdxeditor/editor'
-import {uploadImagePromise} from "@/lib/utils";
+import {uploadImagePromise} from "@/lib/uploads/client";
 import {EditorImageDialog} from "./EditorImageDialog";
 import {VideoDirectiveDescriptor} from "./video-directive";
 import {InsertVideo} from "./InsertVideo";

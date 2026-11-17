@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 type TableProps = React.ComponentProps<"table"> & {
   /** Allows scroll-aware tables to observe the same wrapper that owns horizontal scrolling. */

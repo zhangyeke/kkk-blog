@@ -9,8 +9,8 @@ import {
     DialogTrigger,
     Dialog as ShadDialog
 } from "@/components/ui/dialog";
-import {createTeleporter} from "@/lib/teleporter";
-import {cn} from "@/lib/utils";
+import {createTeleporter} from "@/lib/ui/teleporter";
+import {cn} from "@/lib/ui/cn";
 import {merge} from "lodash";
 import {FooterButtons} from "./FooterButtons";
 
@@ -22,6 +22,7 @@ export type DialogProps = {
     footer?: React.ReactNode
     headerClassName?: string
     titleClassName?: string
+    footerClassName?: string
     contentClassName?: string
     contentProps?: Omit<React.ComponentProps<typeof DialogContent>, "children" | "className"> & {
         "data-preset"?: string
@@ -40,6 +41,7 @@ export function Dialog(props: DialogProps) {
         children,
         headerClassName,
         titleClassName,
+        footerClassName,
         contentClassName,
         contentProps,
         onConfirm,
@@ -68,7 +70,7 @@ export function Dialog(props: DialogProps) {
                     {hasDescription && <DialogDescription>{description}</DialogDescription>}
                 </DialogHeader>
                 {children}
-                <DialogFooter className={`${footer === null && 'hidden'} border-t border-solid border-gray-200 `}>
+                <DialogFooter className={cn("border-t border-solid border-gray-200", footer === null && "hidden", footerClassName)}>
                     {
                         footer === undefined ? (
                             <FooterButtons className={'px-6'} onCancel={onCancel} onConfirm={onConfirm}/>

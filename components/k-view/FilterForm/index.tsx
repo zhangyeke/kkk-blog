@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "motion/react"
 import { ChevronDown, RotateCcw, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { Form, type FormFieldConfig, type FormInstance } from "../Form"
 import { useTableBusy } from "../DataTable/busy"
 

@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo} from "react";
 import {AsyncSelect} from "@/components/ui/async-select";
-import { getDeepValue, isStringNumber, str2num} from "@/lib/utils"
+import { getDeepValue } from "@/lib/object"
+import { isStringNumber, str2num } from "@/lib/number"
 import {CustomControlProps} from "../type";
 
 export interface FetchSearchParams<T> {

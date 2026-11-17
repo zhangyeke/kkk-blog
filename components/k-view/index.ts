@@ -30,7 +30,7 @@ export {RemoteSelect} from "./Form/components/RemoteSelectField"
 export {SegmentedControl} from "./Form/components/SegmentedControl"
 export {IconPickerField} from "./Form/components/IconPickerField"
 export { Empty, type EmptyProps } from "./Empty"
-export { Icon, type IconProps,LucideIcon } from "./Icon"
+export { Icon, IconFont, LucideIcon, type IconFontProps, type IconProps } from "./Icon"
 
 export {
   InfiniteScrollList,

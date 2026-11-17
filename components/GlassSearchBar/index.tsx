@@ -6,7 +6,7 @@ import React from "react"
 import { useClickAway } from "react-use"
 
 import { Image } from "@/components/k-view/Image"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import styles from "./GlassSearchBar.module.css"
 
 export const SEARCH_SHORTCUTS = [

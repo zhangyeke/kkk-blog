@@ -18,7 +18,7 @@ import {
 import {useTheme} from "next-themes";
 
 import {ALL_PLUGINS, createToolbarConfig, MDX_EDITOR_ZH_CN} from "./boilerplate"
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 
 interface EditorProps extends Omit<MDXEditorProps, 'markdown'> {
     value?: string

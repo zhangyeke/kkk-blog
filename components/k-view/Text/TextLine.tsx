@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
-import {addUnit, cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
+import {addUnit} from "@/lib/number";
 
 export interface TextLineProps extends BaseComponentProps, ContainerProps {
     lineHeight?: number | string;

@@ -6,9 +6,9 @@ import { ChevronDown } from "lucide-react"
 import { AdminIcon } from "@/app/admin/components/admin-icons"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { AdminThemeContext } from "@/components/admin/admin-theme-context"
-import { DEFAULT_PRESET } from "@/lib/admin-presets"
+import { DEFAULT_PRESET } from "@/lib/admin/presets"
 
 /** 后台图标选择器，菜单和分类表单共用同一套图标字典。 */
 export function IconPickerField({

@@ -7,7 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import type { CustomControlProps } from "../type"
 
 type SelectOption = { label: string; value: string }

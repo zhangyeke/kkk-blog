@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Draft, produce } from "immer";
 import { ChevronRight, ChevronsUpDown, X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {

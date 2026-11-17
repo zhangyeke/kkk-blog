@@ -11,7 +11,7 @@ import {
     DrawerTrigger,
     Drawer as ShadDrawer
 } from "@/components/ui/drawer";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {FooterButtons} from "./FooterButtons";
 
 

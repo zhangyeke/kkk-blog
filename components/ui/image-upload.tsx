@@ -7,8 +7,8 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {UploadRouteSelect} from "@/components/ui/upload-route-select"
 import {useImageUpload} from "@/hooks/use-image-upload"
-import {cn} from "@/lib/utils"
-import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/image-upload-routes"
+import {cn} from "@/lib/ui/cn"
+import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/uploads/policy"
 import { FixSpin } from "@/components/k-view/Loader";
 import { Image } from "@/components/k-view/Image";
 

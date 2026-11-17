@@ -16,8 +16,8 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Button, buttonVariants } from "@/components/ui/button"
-import type { AdminAction } from "@/lib/permissions"
-import { cn } from "@/lib/utils"
+import type { AdminAction } from "@/assets/enumerate/global"
+import { cn } from "@/lib/ui/cn"
 
 /**
  * 表格行操作列。

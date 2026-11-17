@@ -1,5 +1,5 @@
 import {Loader} from "lucide-react"
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 
 export interface SpinnerProps extends BaseComponentProps {
     text?: string

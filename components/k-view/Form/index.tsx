@@ -1,6 +1,6 @@
 "use client"
 import React, { useMemo } from "react"
-import { FieldValues, useForm, UseFormReturn } from "react-hook-form"
+import { FieldValues, useForm, UseFormReturn, useWatch } from "react-hook-form"
 import { ZodEffects, ZodObject } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -16,12 +16,14 @@ import { Control, FieldComponentsType } from "./components/Control"
 import type { AutoFormFieldProps, AutoFormProps } from "@autoform/react"
 import { ZodProvider } from "@autoform/zod"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { CustomControlProps } from "./type"
 
 export type FormInstance = UseFormReturn
 export type FormFieldConfig = AutoFormFieldProps["field"]
 export type FormSchema = ZodEffects<ZodObject<FieldValues>> | ZodObject<FieldValues>
+
+const EMPTY_WATCH_FIELDS: string[] = []
 
 type FormSharedProps = Partial<
   Omit<AutoFormProps<FieldValues>, "onFormInit" | "schema" | "formComponents" | "uiComponents">
@@ -29,12 +31,15 @@ type FormSharedProps = Partial<
   formComponents?: {
     [key: string]: (props: CustomControlProps) => React.ReactNode
   }
-  onSubmit?: (v: FieldValues) => void
+  onSubmit?: (v: FieldValues) => void | Promise<void>
   onFormSubmit?: React.FormEventHandler<HTMLFormElement>
   ref?: React.Ref<FormInstance>
   fieldsClassName?: string
-  fieldClassName?: (name: string) => string | undefined
-  fieldHidden?: (name: string) => boolean
+  fieldClassName?: (name: string, values: FieldValues) => string | undefined
+  fieldHidden?: (name: string, values: FieldValues) => boolean
+  fieldHiddenClassName?: string
+  fieldDisabled?: (name: string, values: FieldValues) => boolean
+  watchFields?: string[]
   labelClassName?: string
 }
 
@@ -64,6 +69,9 @@ export function Form(props: FormProps & BaseComponentProps) {
     fieldsClassName,
     fieldClassName,
     fieldHidden,
+    fieldHiddenClassName,
+    fieldDisabled,
+    watchFields = EMPTY_WATCH_FIELDS,
     labelClassName,
     onFormSubmit,
     style,
@@ -76,7 +84,12 @@ export function Form(props: FormProps & BaseComponentProps) {
     if (configuredFields) return configuredFields
     if (!schema) throw new Error("Form requires either a schema or a fields configuration")
 
-    const zodProvider = new ZodProvider(schema)
+    let fieldSchema = schema
+    while (fieldSchema instanceof ZodEffects) {
+      fieldSchema = fieldSchema.innerType() as FormSchema
+    }
+
+    const zodProvider = new ZodProvider(fieldSchema)
     return zodProvider.parseSchema().fields
   }, [configuredFields, schema])
 
@@ -89,11 +102,15 @@ export function Form(props: FormProps & BaseComponentProps) {
       return acc
     }, {} as FieldValues),
   })
+  // Subscribe only to fields that affect other fields. Most forms need no
+  // whole-form subscription, which avoids rerendering every field per keystroke.
+  useWatch({control: form.control, name: watchFields})
+  const values = form.getValues() as FieldValues
 
   React.useImperativeHandle(ref, () => form)
 
   const formFields = fields.map((item) => {
-    const hidden = fieldHidden?.(item.key) ?? false
+    const hidden = fieldHidden?.(item.key, values) ?? false
 
     return (
       <FormField
@@ -102,7 +119,7 @@ export function Form(props: FormProps & BaseComponentProps) {
         name={item.key}
         render={({ field }) => (
           <FormItem
-            className={fieldClassName?.(item.key)}
+            className={cn(hidden && fieldHiddenClassName, fieldClassName?.(item.key, values))}
             aria-hidden={hidden || undefined}
             inert={hidden || undefined}
           >
@@ -114,7 +131,12 @@ export function Form(props: FormProps & BaseComponentProps) {
               <Control
                 formComponents={formComponents}
                 type={item.type}
-                attrs={{ label: item.fieldConfig?.label, ...item.fieldConfig?.inputProps, ...field }}
+                attrs={{
+                  label: item.fieldConfig?.label,
+                  ...item.fieldConfig?.inputProps,
+                  ...field,
+                  disabled: fieldDisabled?.(item.key, values) ?? item.fieldConfig?.inputProps?.disabled,
+                }}
               />
             </FormControl>
             {item.fieldConfig?.description && <FormDescription>{item.fieldConfig.description}</FormDescription>}
@@ -126,14 +148,25 @@ export function Form(props: FormProps & BaseComponentProps) {
   })
 
   const handleSubmitClick = () => {
-    form.handleSubmit((values) => {
-      onSubmit?.(values)
-    })()
+    if (onSubmit) void form.handleSubmit(onSubmit)()
+  }
+
+  const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    if (onSubmit) {
+      event.preventDefault()
+      void form.handleSubmit(onSubmit)()
+      return
+    }
+    if (onFormSubmit) {
+      onFormSubmit(event)
+      return
+    }
+    event.preventDefault()
   }
 
   return (
     <ShadForm {...form}>
-      <form className={cn("space-y-4 px-6", className)} style={style} onSubmit={onFormSubmit}>
+      <form className={cn("space-y-4 px-6", className)} style={style} onSubmit={handleFormSubmit}>
         <div className={fieldsClassName}>{formFields}</div>
         {children}
         {withSubmit && (

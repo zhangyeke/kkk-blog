@@ -4,7 +4,7 @@ import React from "react"
 import { useRouter } from "next/navigation"
 import { RefreshCw } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { useTableBusy } from "../DataTable/busy"
 
 /**

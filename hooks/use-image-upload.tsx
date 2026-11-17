@@ -1,6 +1,6 @@
 import {ChangeEvent, useCallback, useEffect, useRef, useState} from "react";
-import {uploadImagePromise} from "@/lib/utils";
-import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/image-upload-routes";
+import {uploadImagePromise} from "@/lib/uploads/client";
+import {DEFAULT_UPLOAD_ROUTE, type UploadRouteId} from "@/lib/uploads/policy";
 
 interface UseImageUploadProps {
     value?: string;

@@ -1,6 +1,6 @@
 import type {CSSProperties, ReactNode} from "react"
 
-import {cn} from "@/lib/utils"
+import {cn} from "@/lib/ui/cn"
 
 export type TagTone = "neutral" | "muted" | "primary" | "success" | "warning" | "danger"
 export type TagAppearance = "outline" | "soft" | "plain"

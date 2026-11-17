@@ -1,7 +1,8 @@
 "use client"
 
 import React, { ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
-import { addUnit, cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
+import { addUnit } from "@/lib/number"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "../Loader/Spinner"
 import { Empty } from "../Empty"

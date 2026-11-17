@@ -11,7 +11,7 @@ import React from "react"
 import { DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { DrawerClose } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/ui/cn";
 
 export interface FooterButtonsProps extends BaseComponentProps {
     type?: 'dialog' | 'drawer';
@@ -43,14 +43,14 @@ export function PopupClose({ type, children }: Pick<FooterButtonsProps, 'type'> 
 export function FooterButtons(props: FooterButtonsProps & Partial<ContainerProps>) {
     const { children, type, cancelText = '取消', confirmText = '确定', style, className, onCancel, onConfirm } = props;
     return (
-        <div style={style} className={cn('flex items-center justify-end gap-x-4 w-full py-4', className)}>
+        <div style={style} className={cn('flex w-full flex-col-reverse items-stretch justify-end gap-2 py-4 sm:flex-row sm:items-center sm:gap-x-4 [&>*]:min-h-11 [&>*]:w-full sm:[&>*]:min-h-9 sm:[&>*]:w-auto', className)}>
             {
                 children ? children : (
                     <>
                         <PopupClose type={type}>
-                            <Button type={'button'} variant="outline" onClick={onCancel}>{cancelText}</Button>
+                            <Button type={'button'} variant="outline" className="min-h-11 w-full sm:min-h-9 sm:w-auto" onClick={onCancel}>{cancelText}</Button>
                         </PopupClose>
-                        <Button type={'button'} onClick={onConfirm}>{confirmText}</Button>
+                        <Button type={'button'} className="min-h-11 w-full sm:min-h-9 sm:w-auto" onClick={onConfirm}>{confirmText}</Button>
                     </>
                 )
             }

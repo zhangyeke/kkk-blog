@@ -5,7 +5,7 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
 import {dateFormat} from "@/lib/date";
 import {Calendar} from "@/components/ui/calendar";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {CalendarDays} from "lucide-react";
 
 export type DatePickerProps = {

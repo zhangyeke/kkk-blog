@@ -1,8 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { useImageUpload } from "./use-image-upload"
-import { uploadImagePromise } from "@/lib/utils"
+import { uploadImagePromise } from "@/lib/uploads/client"
 
-jest.mock("@/lib/utils", () => ({ uploadImagePromise: jest.fn() }))
+jest.mock("@/lib/uploads/client", () => ({ uploadImagePromise: jest.fn() }))
 
 test("a failed upload clears pending state and preserves the previous picture", async () => {
   jest.mocked(uploadImagePromise).mockRejectedValueOnce(new Error("provider unavailable"))

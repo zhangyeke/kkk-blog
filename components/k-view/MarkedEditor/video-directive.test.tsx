@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import { buildVideoDirective, extractVideoUrl, isEmbedCode, resolveVideoSource, VideoEmbed } from "./video-directive"
 
-// lib/utils 会经 service/fileUpload 拉入 "use server" 链路，env.mjs 又是纯 ESM，jsdom 里都要切断
+// 视频指令测试只验证解析和渲染，不访问上传 Server Action。
 jest.mock("@/env.mjs", () => ({ env: { NEXT_PUBLIC_IMG_UPLOAD_LIMIT: "3mb" } }))
 jest.mock("@/service/fileUpload", () => ({ uploadImage: jest.fn() }))
 

@@ -4,101 +4,11 @@ import React from "react"
 import { PlayCircle, Trash2 } from "lucide-react"
 import type { DirectiveDescriptor, DirectiveEditorProps } from "@mdxeditor/editor"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
+import { extractVideoUrl, resolveVideoSource } from "@/lib/video-source"
 
-/** 解析后的视频来源：`file` 用 <video>，`iframe` 是站外播放器，`link` 表示只能跳转观看 */
-export type VideoSource = { kind: "file" | "iframe" | "link"; src: string }
-
-const VIDEO_FILE_RE = /\.(mp4|webm|ogg|ogv|mov|m4v)$/i
-/** 站外无法嵌入的平台：页面带 X-Frame-Options / CSP frame-ancestors，只认自家域名 */
-const LINK_ONLY_HOSTS = ["douyin.com", "iesdouyin.com"]
-/** 从任意文本里抓第一个 http(s) 链接，兼容各平台「复制链接」带标题的分享文案 */
-const URL_IN_TEXT_RE = /https?:\/\/[^\s<>"'“”‘’【】（）()，。；、]+/i
-/** B 站 / 油管「嵌入代码」里的 iframe、video 等标签 */
-const EMBED_TAG_RE = /<(?:iframe|video|embed|source)\b[^>]*\ssrc\s*=\s*["']([^"']+)["']/i
-
-/** 把 `//player.bilibili.com/...` 这类协议相对地址补成 https，并只放行 http(s) */
-function normalizeUrl(raw: string): string | null {
-    const value = raw.trim()
-    if (!value) return null
-    const candidate = value.startsWith("//") ? `https:${value}` : value
-    try {
-        const url = new URL(candidate)
-        if (url.protocol !== "http:" && url.protocol !== "https:") return null
-        return url.href
-    } catch {
-        return null
-    }
-}
-
-/** 输入是否为一段 HTML 嵌入代码（而不是纯文本分享文案） */
-export function isEmbedCode(input: string): boolean {
-    return EMBED_TAG_RE.test(input)
-}
-
-/**
- * 抽出可用的链接，按优先级：
- * 1. 嵌入代码里的 `src`（B 站 / 油管后台「复制嵌入代码」）；
- * 2. 文本里的第一个 http(s) 链接（各平台带标题的分享文案）；
- * 3. 整段就是协议相对地址 `//host/path`。
- */
-export function extractVideoUrl(input: string): string | null {
-    const embedSrc = input.match(EMBED_TAG_RE)?.[1]
-    if (embedSrc) {
-        const normalized = normalizeUrl(embedSrc)
-        if (normalized) return normalized
-    }
-
-    const match = input.match(URL_IN_TEXT_RE)
-    if (match) return normalizeUrl(match[0])
-
-    if (input.trim().startsWith("//")) return normalizeUrl(input)
-
-    return null
-}
-
-/**
- * 把用户粘贴的地址归一化成可嵌入的来源。
- * 只接受 http(s)：`javascript:` / `data:` 之类一律拒绝。
- */
-export function resolveVideoSource(input: string): VideoSource | null {
-    const href = extractVideoUrl(input)
-    if (!href) return null
-
-    const url = new URL(href)
-    const host = url.hostname.replace(/^www\./, "").toLowerCase()
-
-    // YouTube：watch?v= / youtu.be/ / shorts/ / embed/
-    if (host === "youtube.com" || host === "m.youtube.com" || host === "youtu.be") {
-        const id =
-            host === "youtu.be"
-                ? url.pathname.slice(1)
-                : (url.searchParams.get("v") ??
-                    url.pathname.match(/\/(?:shorts|embed)\/([\w-]+)/)?.[1] ??
-                    "")
-        return id ? { kind: "iframe", src: `https://www.youtube.com/embed/${encodeURIComponent(id)}` } : null
-    }
-
-    // Bilibili：/video/BVxxxx 或 /video/av123
-    if (host === "bilibili.com" || host === "m.bilibili.com") {
-        const bvid = url.pathname.match(/\/video\/(BV[\w]+)/i)?.[1]
-        if (bvid) return { kind: "iframe", src: `https://player.bilibili.com/player.html?bvid=${bvid}&autoplay=0` }
-        const aid = url.pathname.match(/\/video\/av(\d+)/i)?.[1]
-        if (aid) return { kind: "iframe", src: `https://player.bilibili.com/player.html?aid=${aid}&autoplay=0` }
-        return null
-    }
-
-    if (VIDEO_FILE_RE.test(url.pathname)) return { kind: "file", src: url.href }
-
-    // 抖音（含 v.douyin.com 短链）：官方播放器需要签名接口拿到的 vid，站外一律无法嵌入，
-    // 而且分享页显式禁止被 iframe，这里降级成跳转卡片。
-    if (LINK_ONLY_HOSTS.some((item) => host === item || host.endsWith(`.${item}`))) {
-        return { kind: "link", src: url.href }
-    }
-
-    // 其余地址按可嵌入页面处理（自建播放页等）
-    return { kind: "iframe", src: url.href }
-}
+export { extractVideoUrl, isEmbedCode, resolveVideoSource } from "@/lib/video-source"
+export type { VideoSource } from "@/lib/video-source"
 
 /** 无法嵌入的平台：渲染成可点击的跳转卡片，避免留下一个黑框 */
 function VideoLinkCard({ href, className }: { href: string; className?: string }) {

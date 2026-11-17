@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {Copy} from "lucide-react";
 import {useCopyToClipboard} from "react-use";
 import {toast} from "sonner";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 
 export interface CopyTextProps extends BaseComponentProps, Omit<React.HTMLAttributes<HTMLDivElement>, "onCopy"> {
     /** 需要复制到剪贴板中的文本内容 */

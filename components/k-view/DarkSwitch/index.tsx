@@ -1,7 +1,7 @@
 "use client"
 import React, {useState} from 'react';
 import {useTheme} from "next-themes";
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {LeftTree} from "./LeftTree";
 import {RightTree, RightTreeTwo} from "./RightTree";
 import {Star} from "./Star";

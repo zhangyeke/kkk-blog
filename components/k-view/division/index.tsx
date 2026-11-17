@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 export type DivisionProps = BaseComponentProps & Partial<ContainerProps> & {
   lineClassName?: string;

@@ -1,32 +1,39 @@
-import React from "react"
-import { LucideProps } from "lucide-react"
-import { toKebabCase } from "@/lib/utils"
-import { dynamicIconImports } from "lucide-react/dynamic"
-import dynamic from "next/dynamic"
+import { CircleHelp } from "lucide-react"
+import { DynamicIcon, iconNames } from "lucide-react/dynamic"
+import type { IconName } from "lucide-react/dynamic"
+import type { LucideProps } from "lucide-react"
 
-
-
-
-
-interface LucideIconProps extends Omit<LucideProps, "ref"> {
+/** String based Lucide icon props. Names accept `ArrowRight`, `arrow-right`, or `arrow_right`. */
+export type IconProps = Omit<LucideProps, "ref"> & {
   name: string
 }
 
-export function LucideIcon({ name, ...props }: LucideIconProps) {
-  // 1. 将 'ArrowRight' 转换成 'arrow-right'
-  const kebabName = toKebabCase(name) as keyof typeof dynamicIconImports
+const availableIconNames = new Set<string>(iconNames)
 
-  // 2. 安全性校验：如果传入的图标名称不存在，则渲染一个兜底图标（例如 help-circle）
-  if (!dynamicIconImports[kebabName]) {
-    console.warn(`[Lucide Icon] 图标 "${name}" (${kebabName}) 未找到，已自动渲染兜底图标`)
-    const FallbackIcon = dynamic(dynamicIconImports["help-circle"])
-    return <FallbackIcon {...props} />
-  }
-
-  // 3. 动态加载对应的图标块
-  const Icon = dynamic(dynamicIconImports[kebabName])
-
-  return <Icon {...props} />
+function normalizeIconName(name: string): string {
+  return name
+    .trim()
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .toLowerCase()
 }
 
-export { Icon, type IconProps } from "./Icon";
+/** Render a Lucide icon by name without creating a new dynamic component on each render. */
+export function LucideIcon({ name, ...props }: IconProps) {
+  const normalizedName = normalizeIconName(name)
+
+  if (!availableIconNames.has(normalizedName)) {
+    return <CircleHelp {...props} />
+  }
+
+  return <DynamicIcon name={normalizedName as IconName} {...props} />
+}
+
+/** Main package entry renders Lucide icons; the legacy iconfont remains available by name. */
+export function Icon(props: IconProps) {
+  return <LucideIcon {...props} />
+}
+
+export { Icon as IconFont, type IconProps as IconFontProps } from "./Icon"

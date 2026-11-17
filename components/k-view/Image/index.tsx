@@ -8,7 +8,7 @@
  */
 "use client"
 import React from "react"
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {Skeleton} from "@/components/ui/skeleton"
 

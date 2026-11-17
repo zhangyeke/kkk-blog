@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from "react";
 import {Check, ChevronsUpDown, Loader2, Search} from "lucide-react";
 import {useDebounce} from "@/hooks/use-debounce";
 
-import {cn} from "@/lib/utils";
+import {cn} from "@/lib/ui/cn";
 import {Button} from "@/components/ui/button";
 import {
     Command,

@@ -3,8 +3,8 @@
 import React from "react"
 
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
-import { UPLOAD_ROUTES, type UploadRouteId } from "@/lib/image-upload-routes"
-import { cn } from "@/lib/utils"
+import { UPLOAD_ROUTES, type UploadRouteId } from "@/lib/uploads/policy"
+import { cn } from "@/lib/ui/cn"
 
 interface UploadRouteSelectProps {
     value: UploadRouteId

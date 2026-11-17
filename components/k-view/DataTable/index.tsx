@@ -13,7 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/lib/paging"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {CopyText, type CopyTextProps} from "../Text/CopyText"
@@ -77,6 +77,8 @@ export type DataTableProps<T> = {
     /** 给读屏用的表格说明 */
     caption?: string
     className?: string
+    /** 表格滚动容器的附加样式；默认仅限制横向溢出。 */
+    scrollClassName?: string
 }
 
 const ALIGN: Record<NonNullable<DataTableColumn<unknown>["align"]>, string> = {
@@ -107,6 +109,7 @@ export function DataTable<T>({
     skeletonRows = 5,
     caption,
     className,
+    scrollClassName,
 }: DataTableProps<T>) {
     const cellPad = dense ? "px-4 py-1.5" : "px-4 py-2"
 
@@ -155,7 +158,7 @@ export function DataTable<T>({
             {/* overscroll-x-contain：触屏上横滑到头不要触发浏览器的前进/后退手势 */}
             <Table
                 containerRef={scrollRef}
-                containerClassName="overscroll-x-contain"
+                containerClassName={cn("overscroll-x-contain", scrollClassName)}
                 containerProps={{
                     role: "region",
                     tabIndex: 0,

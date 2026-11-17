@@ -18,7 +18,7 @@ import { AdminThemeContext } from "@/components/admin/admin-theme-context"
 import UploadFileField from "@/components/k-view/Form/components/UploadFileField"
 import { Dialog, FooterButtons } from "@/components/k-view/Popup"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 export function EditorImageDialog() {
     const [state, activeEditor, rootEditor] = useCellValues(imageDialogState$, activeEditor$, rootEditor$)

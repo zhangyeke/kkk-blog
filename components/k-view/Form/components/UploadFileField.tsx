@@ -2,8 +2,8 @@
 import React from "react";
 import { FileUploadCard, UploadedFile, uploadedFileFromRemoteUrl } from "@/components/ui/file-upload-card";
 import { UploadRouteSelect } from "@/components/ui/upload-route-select";
-import { uploadImagePromise } from "@/lib/utils";
-import { DEFAULT_UPLOAD_ROUTE, type UploadRouteId } from "@/lib/image-upload-routes";
+import { uploadImagePromise } from "@/lib/uploads/client";
+import { DEFAULT_UPLOAD_ROUTE, type UploadRouteId } from "@/lib/uploads/policy";
 import { CustomControlProps } from "../type";
 import { Textarea } from "@/components/ui/textarea"
 
