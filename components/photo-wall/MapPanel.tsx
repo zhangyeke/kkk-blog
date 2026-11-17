@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react"
 
 import type { ChinaGeoJSON } from "@/types/china-map"
 import { Spinner } from "@/components/k-view/Loader/Spinner"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { type Camera, CAMERA_COUNTRY } from "./geo-projection"
 import { PhotoWallMap } from "./PhotoWallMap"
 import { PW_GRAIN } from "./tokens"

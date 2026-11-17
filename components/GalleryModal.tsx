@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { Image } from "@/components/k-view/Image"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, RotateCw, Undo2, X, ZoomIn, ZoomOut } from "lucide-react"
-import type { MapGalleryLocationMeta } from "@/lib/map-project-data"
+import type { PhotoLocationMeta } from "@/types/photo-wall"
 
 /** 主图 transform: scale 下限 / 上限 / 按钮与滚轮的单次步进 */
 const PREVIEW_SCALE_MIN = 0.5
@@ -63,8 +63,8 @@ export type GalleryModalProps = {
   urls: Array<string>
   /** 打开时默认选中的下标（会夹紧到 [0, urls.length-1]） */
   defaultIndex?: number
-  /** 地图下钻等场景：省/市/区（不含拼接的多条 address） */
-  locationMeta?: MapGalleryLocationMeta | null
+  /** 地图或照片墙场景：省/市/区（不含拼接的多条 address） */
+  locationMeta?: PhotoLocationMeta | null
   /** 与 urls 等长时每张图对应足迹的唯一 address */
   imageAddresses?: string[]
 }
@@ -121,15 +121,15 @@ const GalleryThumb = memo(function GalleryThumb({
       ref={btnRef}
       type="button"
       role="listitem"
-      className={`ring-offset-background relative block h-16 w-20 shrink-0 rounded-md p-1 text-left ring-offset-2 transition md:w-full ${
-        isSelected ? "ring-primary opacity-100 ring-2" : "opacity-80 hover:opacity-100"
+      className={`relative block h-16 w-20 shrink-0 overflow-hidden rounded-md border-2 text-left transition md:w-full ${
+        isSelected ? "border-primary opacity-100" : "border-transparent opacity-80 hover:opacity-100"
       }`}
       onClick={() => onPick(index)}
     >
       {shouldLoad ? (
-        <Image src={url} alt={`thumb_${index}`} className="pointer-events-none h-16 w-full rounded-md" loading="lazy" />
+        <Image src={url} alt={`thumb_${index}`} className="pointer-events-none h-full w-full rounded-sm" loading="lazy" />
       ) : (
-        <div className="bg-muted h-16 w-full rounded-md" aria-hidden />
+        <div className="bg-muted h-full w-full rounded-sm" aria-hidden />
       )}
     </button>
   )

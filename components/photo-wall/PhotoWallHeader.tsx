@@ -3,7 +3,7 @@
 import React from "react"
 import { RotateCcw } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 interface PhotoWallHeaderProps {
     photoCount: number

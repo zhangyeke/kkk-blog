@@ -23,6 +23,9 @@ export type PhotoSpot = {
     createdAt: string
 }
 
+/** 照片预览标题使用的省 / 市 / 区信息 */
+export type PhotoLocationMeta = Pick<PhotoSpot, "provinceName" | "cityName" | "districtName">
+
 /** 省 → 市 两级分组，供列表渲染 */
 export type PhotoCityGroup = {
     cityCode: string

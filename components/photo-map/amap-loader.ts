@@ -41,27 +41,28 @@ export interface AMapNamespace {
 
 type AMapWindow = Window & {
     AMap?: AMapNamespace
-    _AMapSecurityConfig?: { securityJsCode?: string }
 }
 
 const SCRIPT_ID = "amap-jsapi-v2"
 
 let loading: Promise<AMapNamespace> | null = null
 
-export function loadAMap(key: string, securityCode?: string): Promise<AMapNamespace> {
+export function loadAMap(apiUrl: string, key: string): Promise<AMapNamespace> {
     const w = window as AMapWindow
 
     if (w.AMap) return Promise.resolve(w.AMap)
     if (loading) return loading
 
-    if (!key) {
-        return Promise.reject(new Error("缺少高德 key"))
+    let scriptUrl: URL
+    try {
+        scriptUrl = new URL(apiUrl)
+    } catch {
+        return Promise.reject(new Error("高德地图 JS API 地址无效"))
     }
-
-    // 2.0 若配置了安全密钥，必须在脚本加载前写入
-    if (securityCode) {
-        w._AMapSecurityConfig = {securityJsCode: securityCode}
+    if (!key || scriptUrl.protocol !== "https:" || scriptUrl.hostname !== "webapi.amap.com" || scriptUrl.pathname !== "/maps") {
+        return Promise.reject(new Error("请配置有效的高德地图 JS API 地址和 Key"))
     }
+    scriptUrl.searchParams.set("key", key)
 
     loading = new Promise<AMapNamespace>((resolve, reject) => {
         const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null
@@ -74,7 +75,7 @@ export function loadAMap(key: string, securityCode?: string): Promise<AMapNamesp
         const script = document.createElement("script")
         script.id = SCRIPT_ID
         script.async = true
-        script.src = `https://webapi.amap.com/maps?v=2.0&key=${encodeURIComponent(key)}`
+        script.src = scriptUrl.toString()
         script.onload = () => {
             if (w.AMap) resolve(w.AMap)
             else reject(new Error("高德脚本已加载但未挂载 AMap"))

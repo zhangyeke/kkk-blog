@@ -7,9 +7,9 @@ import { useTheme } from "next-themes"
 import { Empty } from "@/components/k-view/Empty"
 import { Spinner } from "@/components/k-view/Loader/Spinner"
 import { Drawer } from "@/components/k-view/Popup/Drawer"
-import { cn } from "@/lib/utils"
-import { countPhotos } from "@/lib/photo-wall"
-import { clusterByGrid, type ClusterPoint, clusterPolicy } from "@/lib/geo/cluster"
+import { cn } from "@/lib/ui/cn"
+import { countPhotos } from "@/lib/maps/photo-wall"
+import { clusterByGrid, type ClusterPoint, clusterPolicy } from "@/lib/maps/geo/cluster"
 import type { PhotoMapPoint } from "@/types/photo-map"
 import type { PhotoSpot } from "@/types/photo-wall"
 import styles from "./PhotoMap.module.css"
@@ -32,11 +32,7 @@ const PhotoWallSidebar = dynamic(
   },
 )
 
-/**
- * 高德官方内置底图样式（不需要在控制台额外开通）。
- * normal 是默认底图；dark 用于站点暗色模式。
- * 配了 GAODI_MAP_STYLE 时会被自定义样式覆盖。
- */
+/** 高德官方内置底图样式用于随站点主题切换。 */
 const MAP_STYLE_LIGHT = "amap://styles/normal"
 const MAP_STYLE_DARK = "amap://styles/dark"
 function currentMapStyle(): string {
@@ -49,16 +45,13 @@ const INITIAL_ZOOM = 4
 export type PhotoMapSkin = "terrain" | "vector"
 
 interface PhotoMapProps {
-  /** 由 Server Component 传入（服务端变量） */
+  /** JS API Key 必须交给浏览器地图 SDK；Web 服务 Key 只留在服务端。 */
   apiKey: string
-  /** 高德安全密钥（可选，2.0 需要时配置） */
-  securityCode?: string
+  apiUrl: string
   points: PhotoMapPoint[]
   spots: PhotoSpot[]
   /** terrain：卫星影像（蓝海 + 绿植被 + 棕裸地）；vector：向量样式底图 */
   skin?: PhotoMapSkin
-  /** 自定义底图样式（如 `amap://styles/xxxx`），给了就优先于内置样式 */
-  mapStyle?: string
   className?: string
 }
 
@@ -72,11 +65,10 @@ type GalleryState = {
 
 export function PhotoMap({
   apiKey,
-  securityCode,
+  apiUrl,
   points,
   spots,
   skin = "vector",
-  mapStyle,
   className,
 }: PhotoMapProps) {
   const containerRef = React.useRef<HTMLDivElement>(null)
@@ -219,15 +211,15 @@ export function PhotoMap({
   React.useEffect(() => {
     let disposed = false
 
-    if (!apiKey) {
+    if (!apiKey || !apiUrl) {
       setStatus("error")
-      setErrorMsg("未配置 GAODI_MAP_KEY，请在 .env 中填入高德 key 后重启服务")
+      setErrorMsg("请在后台设置的「高德地图配置」中填写有效的 JS API 地址和 Key")
       return
     }
 
     setStatus("loading")
 
-    loadAMap(apiKey, securityCode)
+    loadAMap(apiUrl, apiKey)
       .then((AMap) => {
         if (disposed || !containerRef.current) return
         amapRef.current = AMap
@@ -239,7 +231,7 @@ export function PhotoMap({
           viewMode: "2D",
           resizeEnable: true,
           // 地形模式用普通底图打底再叠卫星影像；向量模式直接走样式表
-          mapStyle: terrain ? "amap://styles/normal" : mapStyle ?? currentMapStyle(),
+          mapStyle: terrain ? MAP_STYLE_LIGHT : currentMapStyle(),
         })
         mapRef.current = map
 
@@ -269,15 +261,15 @@ export function PhotoMap({
       mapRef.current?.destroy()
       mapRef.current = null
     }
-  }, [apiKey, securityCode, skin, renderMarkers])
+  }, [apiKey, apiUrl, skin, renderMarkers])
 
   // 主题切换时同步底图样式
   React.useEffect(() => {
     const map = mapRef.current
     // 地形模式没有暗色变体，靠 mapDark 类做整体压暗
-    if (!map || skin === "terrain" || mapStyle) return
+    if (!map || skin === "terrain") return
     map.setMapStyle(resolvedTheme === "dark" ? MAP_STYLE_DARK : MAP_STYLE_LIGHT)
-  }, [resolvedTheme, skin, mapStyle])
+  }, [resolvedTheme, skin])
 
   // 数据变化时重绘，并自动框选全部点
   React.useEffect(() => {

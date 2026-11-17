@@ -3,7 +3,7 @@
 import React from "react"
 
 import type { ChinaGeoJSON } from "@/types/china-map"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import {
     applyCamera,
     type Camera,

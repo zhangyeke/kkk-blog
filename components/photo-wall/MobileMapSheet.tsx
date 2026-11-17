@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { X } from "lucide-react"
 
 import type { ChinaGeoJSON } from "@/types/china-map"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import { PhotoWallMap } from "./PhotoWallMap"
 import { useElementWidth } from "./use-element-width"
 

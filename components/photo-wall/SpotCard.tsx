@@ -12,7 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import type { PhotoSpot } from "@/types/photo-wall"
 import { CARD_ENTER, DUR, EASE_OUT_EXPO, FADE_ONLY } from "./motion"
 

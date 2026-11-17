@@ -4,7 +4,7 @@ import React from "react"
 
 import { Empty } from "@/components/k-view/Empty"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 import type { PhotoProvinceGroup, PhotoSpot } from "@/types/photo-wall"
 import { SpotCard } from "./SpotCard"
 

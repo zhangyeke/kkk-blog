@@ -3,7 +3,7 @@
 import React from "react"
 import { Map } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/ui/cn"
 
 interface FilterCapsuleBarProps {
     provinces: Array<{ code: string; name: string; count: number }>

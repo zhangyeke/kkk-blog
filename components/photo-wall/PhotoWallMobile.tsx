@@ -12,7 +12,7 @@ import {
     filterSpots,
     groupSpots,
     sortSpots,
-} from "@/lib/photo-wall"
+} from "@/lib/maps/photo-wall"
 import type { ChinaGeoJSON } from "@/types/china-map"
 import type { PhotoFilter, PhotoSpot } from "@/types/photo-wall"
 import { FilterCapsuleBar } from "./FilterCapsuleBar"
