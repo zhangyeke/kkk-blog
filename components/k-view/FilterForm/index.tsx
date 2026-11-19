@@ -111,7 +111,7 @@ export function FilterForm({ fields, basePath, visibleCount = 5, className }: Fi
       defaultValues={defaultValues}
       withSubmit={false}
       onFormSubmit={handleSubmit}
-      fieldsClassName="contents"
+      fieldsClassName="contents space-y-0"
       fieldHidden={(name) => extraFieldNames.has(name) && !expanded}
       fieldClassName={(name) => {
         const isExtra = extraFieldNames.has(name)
